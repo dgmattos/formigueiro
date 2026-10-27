@@ -121,6 +121,7 @@ public sealed class MushroomTests
     {
         var state = SimulationFactory.Create(new(42, 64, 48));
         var ant = state.Ants.First(a => a.Caste == AntCaste.Worker); var colony = state.Colonies[0];
+        ant.WorkerRole = WorkerRole.Collector;
         // This scenario isolates resource collection; hungry brood is covered by care tests.
         foreach (var larva in state.Ants.Where(a => a.Stage == LifeStage.Larva)) larva.Energy = larva.MaxEnergy;
         var support = new CellPosition(ant.Position.X, ant.Position.Y + 1);

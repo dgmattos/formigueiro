@@ -46,7 +46,10 @@ try
         season = new[] { "Primavera", "Verão", "Outono", "Inverno" }[state.Season],
         ants = state.Ants.Count, elapsedMilliseconds = watch.Elapsed.TotalMilliseconds,
         ticksPerSecond = ticks / Math.Max(.000001, watch.Elapsed.TotalSeconds),
-        colonies = state.Colonies.Select(c => new { c.Id, species = c.Species switch { 3 => "Superfície", 2 => "Forte", 1 => "Musgo", _ => "Normal/Brasa" }, c.Generation, alive = c.IsAlive, population = state.Ants.Count(a => a.ColonyId == c.Id), food = Math.Round(c.Food, 2), queenHealth = Math.Round(c.QueenHealth, 2), c.Births, c.Deaths })
+        colonies = state.Colonies.Select(c => new { c.Id, species = c.Species switch { 3 => "Superfície", 2 => "Forte", 1 => "Musgo", _ => "Normal/Brasa" }, c.Generation, alive = c.IsAlive, population = state.Ants.Count(a => a.ColonyId == c.Id), food = Math.Round(c.Food, 2), queenHealth = Math.Round(c.QueenHealth, 2), c.Births, c.Deaths, c.ExpansionLevel, queenY = c.Queen?.Position.Y, nurseryY = c.BroodChamber.Y,
+            collectors = state.Ants.Count(a => a.ColonyId == c.Id && a.WorkerRole == WorkerRole.Collector),
+            diggers = state.Ants.Count(a => a.ColonyId == c.Id && a.WorkerRole == WorkerRole.Digger),
+            surfaceSpoil = state.World.ResourceCatalog.Definitions.Where(d => d.Kind == ExcavationSpoil.Kind).Sum(d => state.World.GetResource(ExcavationSpoil.Exit(state.World,c), d.Id).Quantity) })
     }, new JsonSerializerOptions { WriteIndented = true }));
     return 0;
 }

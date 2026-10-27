@@ -18,7 +18,7 @@ public sealed class SurvivalTests
         { state.Tick++; biology.Step(state,egg); }
         Assert.True(egg.IsAlive); Assert.Equal(LifeStage.Larva,egg.Stage);
         Assert.True(egg.Age>=2L*SimulationState.TicksPerDay);
-        Assert.InRange(egg.Energy,39.99,40.01); Assert.InRange(egg.Nutrition,.749,.751); Assert.True(egg.Hydration>.6);
+        Assert.Equal(80,egg.Energy); Assert.InRange(egg.Nutrition,.749,.751); Assert.True(egg.Hydration>.6);
         egg.Damage(egg.Health,DamageCause.Combat); Assert.False(egg.IsAlive);
     }
     [Fact]

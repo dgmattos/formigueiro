@@ -31,9 +31,9 @@ São parâmetros do simulador, não valores biológicos universais. A postura us
 
 ### Ovos e pupas
 
-Fases fechadas usam reservas internas finitas proporcionalmente ao desenvolvimento: uma fase completa consome 40 unidades de energia, 0,25 de nutrição e 0,25 de hidratação. Há também perda ambiental de água de 2% da taxa diária, com modificador térmico. Não recebem o metabolismo de um adulto que caminha/escava. Não recebem alimento gratuitamente e continuam suscetíveis a temperatura, reservas esgotadas e dano.
+Fases fechadas usam reservas internas finitas proporcionalmente ao desenvolvimento: uma fase completa consome 0,25 de nutrição e 0,25 de hidratação. Após a atualização de funções das operárias, ovos não gastam energia; pupas continuam consumindo 40 unidades por desenvolvimento completo. Há também perda ambiental de água de 2% da taxa diária, com modificador térmico. Não recebem o metabolismo de um adulto que caminha/escava. Não recebem alimento gratuitamente e continuam suscetíveis a temperatura, reservas esgotadas e dano.
 
-Larvas usam metade do consumo basal de energia/nutrição de um adulto e mantêm necessidade de hidratação e alimentação assistida. Desenvolvimento depende de tempo, nutrição, temperatura e saúde. Nenhuma fase avança por FPS ou ganha adultos instantaneamente.
+Após a atualização de funções, larvas usam um quarto do consumo basal de energia/nutrição de um adulto (redução de 50% da taxa anterior) e mantêm necessidade de hidratação e alimentação assistida. Desenvolvimento depende de tempo, nutrição, temperatura e saúde. Nenhuma fase avança por FPS ou ganha adultos instantaneamente.
 
 ### Alimentação, água e descanso
 
@@ -50,7 +50,7 @@ A postura exige alimento suficiente para o custo do ovo **mais** a reserva por p
 
 ## Persistência
 
-Snapshots novos usam **v7**, incluindo as dez taxas de sobrevivência. v5 e v6 continuam legíveis, preservando os dados dos agentes, recursos, colônias e configurações existentes; recebem explicitamente os padrões novos de sobrevivência. **A trajetória futura muda**, pois os sistemas biológicos e de decisão foram corrigidos. Isso não é uma promessa de reproduzir os resultados antigos defeituosos.
+A correção original introduziu **v7**, incluindo as dez taxas de sobrevivência. v5 e v6 continuam legíveis, preservando os dados dos agentes, recursos, colônias e configurações existentes; recebem explicitamente os padrões novos de sobrevivência. **A trajetória futura muda**, pois os sistemas biológicos e de decisão foram corrigidos. Isso não é uma promessa de reproduzir os resultados antigos defeituosos.
 
 O teste de compatibilidade usa arquivos reais gerados pelos executáveis v5/v6. A continuação determinística é comparada entre duas execuções das regras atuais. v1–v4 continuam rejeitados. Mortalidade já ocorrida em um save não é desfeita: para começar novamente, reinicie o jogo com o preset.
 
@@ -86,3 +86,5 @@ python3 scripts/analyze-diagnostics.py artifacts/survival-final-two-days
 ```
 
 Para jogar com a correção: feche a janela atual e execute `sh scripts/run-game.sh`. O processo já aberto continua usando a versão que carregou anteriormente.
+
+A atualização posterior de funções/expansão usa v8. As medições acima são históricas da correção de sobrevivência; os resultados da nova versão ficam em [worker-expansion.md](worker-expansion.md).

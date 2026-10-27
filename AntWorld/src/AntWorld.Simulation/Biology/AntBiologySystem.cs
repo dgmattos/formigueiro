@@ -19,7 +19,7 @@ public sealed class AntBiologySystem
         }
         else
         {
-            var metabolism = ant.Stage == LifeStage.Larva ? .5 : 1;
+            var metabolism = ant.Stage == LifeStage.Larva ? .25 : 1;
             ant.Energy -= rules.EnergyPerDay * ant.Genes.Metabolism * metabolism * (1 + stress * .12) * elapsedDays;
             ant.Nutrition -= rules.NutritionPerDay * metabolism * elapsedDays;
             ant.Hydration -= rules.HydrationPerDay * (1 + stress * .05) * elapsedDays;
@@ -57,15 +57,17 @@ public sealed class AntBiologySystem
         var progress = Math.Min(growth, Math.Max(0, required - ant.DevelopmentTicks));
         if (ant.Stage is LifeStage.Egg or LifeStage.Pupa)
         {
-            // A complete sealed stage consumes 40 energy and 25% of each material reserve, not adult metabolic expenditure.
+            // Eggs consume no energy. Both sealed stages retain their material development costs.
             var fraction = progress / required;
-            ant.Energy -= 40 * fraction; ant.Nutrition -= .25 * fraction; ant.Hydration -= .25 * fraction;
+            if (ant.Stage == LifeStage.Pupa) ant.Energy -= 40 * fraction;
+            ant.Nutrition -= .25 * fraction; ant.Hydration -= .25 * fraction;
         }
         ant.DevelopmentTicks += progress;
         if (ant.DevelopmentTicks < required) return;
         ant.DevelopmentTicks = 0; ant.Stage++;
         if (ant.Stage == LifeStage.Adult)
         {
+            AntFactory.AssignWorkerRole(state, ant);
             var health = AntCapabilities.Definition(state, ant).MaximumHealth;
             ant.ChangeMaximumHealth(health); ant.Recover(health);
         }

@@ -58,6 +58,13 @@ public partial class EntityView : Node2D
             var size = (float)Math.Clamp(world.Food[i] / 5, 2, 6);
             DrawRect(new(i % world.Width * Cell + 3, i / world.Width * Cell + 10 - size, 4, size), new("debd72"));
         }
+        foreach (var (key, stack) in world.ChunkManager.ResourceChanges)
+        {
+            if (stack.Quantity <= 0 || !ExcavationSpoil.Is(world, key.ResourceId)) continue;
+            var p = world.Position(key.CellIndex);
+            var rect = new Rect2(p.X * Cell + 2, (p.Y + 1) * Cell - 4, Cell - 4, 4);
+            if (rect.Intersects(bounds)) DrawRect(rect, new("9b8c7b"));
+        }
         foreach(var ant in rendered)
         {
             if (RenderedCount >= State.Performance.MaxRenderedAgents) break;
@@ -72,7 +79,7 @@ public partial class EntityView : Node2D
             if(world.HorizontalDelta(ant.PreviousPosition.X,ant.Position.X)<0) { rect.Position+=new Vector2(size.X,0); rect.Size=new(-size.X,size.Y); }
             var atlas = ant.SpeciesId switch { 3 => surfaceAtlas, 2 => strongAtlas, _ => antAtlas };
             DrawTextureRectRegion(atlas,rect,AntSpriteAtlas.FrameRegion(row,frame,ant.SpeciesId));
-            if(ant.Carrying>.1) DrawRect(new(position.X,position.Y-5,2,2),new("f3d988"));
+            if(ant.Carrying>.1) DrawRect(new(position.X,position.Y-5,2,2),new(ExcavationSpoil.Is(world,ant.CargoResourceId) ? "9b8c7b" : "f3d988"));
         }
         if (State.RainIntensity <= 0) return;
         for (var i = 0; i < 90; i++)

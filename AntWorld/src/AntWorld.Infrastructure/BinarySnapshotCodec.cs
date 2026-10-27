@@ -6,7 +6,7 @@ namespace AntWorld.Infrastructure;
 public sealed class BinarySnapshotCodec
 {
     private static readonly byte[] Magic = "ANTWORLD"u8.ToArray();
-    public const int Version = 7;
+    public const int Version = 8;
     public const int MaximumBytes = 64 * 1024 * 1024;
 
     public byte[] Encode(SimulationState state)
@@ -29,7 +29,7 @@ public sealed class BinarySnapshotCodec
         using var reader = new BinaryReader(stream);
         if (!reader.ReadBytes(8).SequenceEqual(Magic)) throw new InvalidDataException("Assinatura de snapshot inválida.");
         var version = reader.ReadInt32();
-        if (version is not (5 or 6 or Version)) throw new InvalidDataException("Versão de snapshot incompatível: formato 7 com leitura compatível dos formatos 5 e 6. Saves dos formatos 1 a 4 não são migrados automaticamente; preserve o arquivo original.");
+        if (version is not (5 or 6 or 7 or Version)) throw new InvalidDataException("Versão de snapshot incompatível: formato 8 com leitura compatível dos formatos 5, 6 e 7. Saves dos formatos 1 a 4 não são migrados automaticamente; preserve o arquivo original.");
         var size = reader.ReadInt32();
         if (size < 0 || size != snapshot.Length - 48) throw new InvalidDataException("Snapshot truncado ou tamanho inválido.");
         var hash = reader.ReadBytes(32);
@@ -92,7 +92,7 @@ public sealed class BinarySnapshotCodec
             var colony = new Colony(r.ReadInt32(), r.ReadInt32(), ReadPosition(r), ReadGenome(r), r.ReadInt32())
             { Food = r.ReadDouble(), QueenHealth = r.ReadDouble(), ReproductionProgress = r.ReadInt32(), Births = r.ReadInt32(), Deaths = r.ReadInt32() };
             state.Colonies.Add(colony);
-            AgentSnapshotCodec.ReadColony(r,colony);
+            AgentSnapshotCodec.ReadColony(r,colony,version);
             var trail = new PheromoneField(world.CellCount) { LastUpdateTick=r.ReadInt64() };
             for(var type=0;type<4;type++)
             {
@@ -114,7 +114,7 @@ public sealed class BinarySnapshotCodec
             var energy=r.ReadDouble(); var health=r.ReadDouble();
             if(!double.IsFinite(energy)||energy<0||energy>100) throw new InvalidDataException("Energia inválida.");
             var ant=new Ant(id,colonyId,position,genes) { PreviousPosition=previous,Energy=energy,Carrying=r.ReadDouble(),Age=r.ReadInt64(),Returning=r.ReadBoolean() };
-            AgentSnapshotCodec.Read(r,ant,health); state.Ants.Add(ant);
+            AgentSnapshotCodec.Read(r,ant,health,version); state.Ants.Add(ant);
         }
         var ants=state.Ants.ToDictionary(a=>a.Id);
         foreach(var colony in state.Colonies) colony.Queen=ants.GetValueOrDefault(colony.QueenId);

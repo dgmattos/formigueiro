@@ -14,6 +14,7 @@ public sealed class Ant(int id, int colonyId, CellPosition position, Genome gene
     public AntIdentity Identity => new(Id, ColonyId, SpeciesId, LineageId, MotherId, FatherId);
     public ChemicalSignature Signature { get; set; }
     public AntCaste Caste { get; set; } = AntCaste.Worker;
+    public WorkerRole WorkerRole { get; set; }
     public LifeStage Stage { get; set; } = LifeStage.Adult;
     public BiologicalSex Sex => Caste == AntCaste.MaleReproductive ? BiologicalSex.Male : BiologicalSex.Female;
     public CellPosition Position { get; set; } = position;

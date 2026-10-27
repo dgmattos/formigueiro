@@ -19,6 +19,7 @@ public sealed class WorldMap
     public double[] Moisture { get; }
     public int ResourceLayoutRevision { get; private set; }
     public int TerrainRevision { get; private set; }
+    public int NavigationRevision { get; private set; }
     private int visualRevision;
     private readonly Dictionary<int, int> chunkRevisions = [];
     public int ChunkRevision(int x, int y) => chunkRevisions.GetValueOrDefault(ChunkManager.ChunkId(new(x, y)));
@@ -62,6 +63,7 @@ public sealed class WorldMap
         RemoveUnsupportedMushrooms(p);
         if (p.Y + 1 < Height) RemoveUnsupportedMushrooms(new(p.X, p.Y + 1));
         if (previous.SolidFill != cell.SolidFill || previous.RockFraction != cell.RockFraction || previous.Flags.HasFlag(CellFlags.Excavated) != cell.Flags.HasFlag(CellFlags.Excavated)) TerrainRevision++;
+        if (previous.IsPassable != cell.IsPassable || previous.Flags.HasFlag(CellFlags.Excavated) != cell.Flags.HasFlag(CellFlags.Excavated)) NavigationRevision++;
         visualRevision++;
         // Adjacent chunks can change autotile edges, including at the circular seam.
         for (var dy = -1; dy <= 1; dy++)

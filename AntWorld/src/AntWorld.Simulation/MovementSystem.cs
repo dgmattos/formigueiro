@@ -5,6 +5,7 @@ public sealed class MovementSystem
     private readonly NestNavigation navigation=new();
     public bool CanReachBroodChamber(AntContext c) =>
         navigation.Distances(c.State.World,c.Colony,true).ContainsKey(c.State.World.Index(c.Ant.Position));
+    public bool CanReach(AntContext c, CellPosition destination) => navigation.Distances(c.State.World, destination).ContainsKey(c.State.World.Index(c.Ant.Position));
     public double EffectiveSpeed(SimulationState state,Ant ant)
     {
         if(!AntCapabilities.Has(state,ant,AntCapability.Move)) return 0;
@@ -20,14 +21,13 @@ public sealed class MovementSystem
     public bool Move(AntContext c,bool explore=false,bool flee=false)
     {
         var ant=c.Ant; var state=c.State; var world=state.World;
-        if(ant.MovementCredit<1) return false;
+        if(ant.MovementCredit<1 || ant.Destination == ant.Position && !flee) return false;
         Span<CellPosition> candidates=stackalloc CellPosition[8]; Span<double> weights=stackalloc double[8];
         var count=world.GetWalkableNeighbors(ant.Position,candidates);
         if(count==0) return false;
         var total=0.0;
         var destination=ant.Destination;
-        var home=destination==c.Colony.Nest ? navigation.Distances(world,c.Colony) :
-            destination==c.Colony.BroodChamber ? navigation.Distances(world,c.Colony,true) : null;
+        var home=destination is {} goal && world.CanWalk(goal) ? navigation.Distances(world,goal) : null;
         if(home is not null && !home.ContainsKey(world.Index(ant.Position))) return false;
         for(var i=0;i<count;i++)
         {
@@ -60,7 +60,7 @@ public sealed class MovementSystem
             ant.Position.Y!=ant.PreviousPosition.Y?MovementState.Climbing:MovementState.Walking;
         var field=state.Pheromones[ant.ColonyId]; var index=world.Index(ant.Position);
         field.Deposit(PheromoneType.HomeTrail,index,.1);
-        if(ant.Carrying>0) field.Deposit(PheromoneType.FoodTrail,index,Math.Min(2,ant.Carrying*.4));
+        if(ant.Carrying>0 && ResourceIds.IsEdible(ant.CargoResourceId)) field.Deposit(PheromoneType.FoodTrail,index,Math.Min(2,ant.Carrying*.4));
         if(AntCapabilities.Has(state,ant,AntCapability.Attack)) field.Deposit(PheromoneType.Territory,index,.2);
         return true;
     }

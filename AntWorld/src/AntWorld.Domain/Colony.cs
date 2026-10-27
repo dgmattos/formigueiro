@@ -4,7 +4,18 @@ public sealed class Colony(int id, int species, CellPosition nest, Genome queenG
 {
     public int Id { get; } = id;
     public int Species { get; } = species;
-    public CellPosition Nest { get; } = nest;
+    public CellPosition Nest { get; private set; } = nest;
+    public int ExpansionLevel { get; private set; }
+    public void AdvanceFloor()
+    {
+        Nest = BroodChamber;
+        ExpansionLevel++;
+    }
+    public void RestoreExpansionLevel(int level)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(level);
+        ExpansionLevel = level;
+    }
     public const int BroodChamberDepth = 4;
     public CellPosition BroodChamber => new(Nest.X, Nest.Y + BroodChamberDepth);
     public Genome QueenGenome { get; } = queenGenome;

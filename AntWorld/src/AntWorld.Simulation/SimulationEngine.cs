@@ -12,6 +12,7 @@ public sealed class SimulationEngine
     private readonly AgentSpatialIndex spatial=new();
     private readonly ColonyAiSystem colonyAi=new();
     private readonly ColonySystem colonies=new();
+    private readonly ColonyExpansionSystem expansion=new();
     private readonly ActionCatalog actions=new();
     private readonly MovementSystem movement=new();
     private readonly AntBehaviorSystem behavior;
@@ -37,7 +38,7 @@ public sealed class SimulationEngine
             ant.MovementCredit=Math.Min(2,ant.MovementCredit+movement.EffectiveSpeed(State,ant)*SimulationState.TickSeconds);
         }
         spatial.Rebuild(State);
-        if(State.Tick%State.Performance.ColonyIntervalTicks==0) { colonyAi.Step(State,spatial); colonies.Step(State); }
+        if(State.Tick%State.Performance.ColonyIntervalTicks==0) { colonyAi.Step(State,spatial); expansion.Step(State); colonies.Step(State); }
         Scheduler.Decide(State,a=>decision.Decide(Context(a)));
         // Rotating execution order avoids permanent priority for low IDs at contested resources.
         for(var i=0;i<count;i++)
@@ -62,6 +63,8 @@ public sealed class SimulationEngine
             if(!ant.IsAlive)
             {
                 var colony = colonyIndex[ant.ColonyId]; colony.Deaths++;
+                if (ant.Carrying > 0 && ExcavationSpoil.Is(State.World, ant.CargoResourceId))
+                    ExcavationSpoil.Drop(State.World, ant.Position, ant.Carrying);
                 if (AntDied is not null)
                     AntDied(new(State.Tick, ant.Identity, ant.Caste, ant.Stage, ant.Position, ant.Destination,
                         ant.Age, ant.CurrentTask, ant.FatalDamageCauses, ant.FatalAttackerId,

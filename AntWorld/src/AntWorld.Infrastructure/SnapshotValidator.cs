@@ -32,6 +32,8 @@ public static class SnapshotValidator
         foreach (var colony in state.Colonies)
         {
             colony.QueenGenome.Validate();
+            Require(colony.ExpansionLevel >= 0 && colony.ExpansionLevel <= world.Height / Colony.BroodChamberDepth &&
+                colony.Nest.Y - colony.ExpansionLevel * Colony.BroodChamberDepth >= 0 && world.IsCanonical(colony.BroodChamber), "Andares da colônia inválidos.");
             Require(colony.Id > 0 && state.Species.ContainsKey(colony.Species) && colony.Generation >= 0 && world.IsCanonical(colony.Nest) && world.CanWalk(colony.Nest), "Colônia inválida.");
             Require(Range(colony.Food, 0, 1e12) && double.IsFinite(colony.QueenHealth) && colony.ReproductionProgress >= 0 && colony.Births >= 0 && colony.Deaths >= 0, "Fisiologia da rainha inválida.");
             Require(state.Pheromones.TryGetValue(colony.Id, out var trail) && trail.Length == world.Terrain.Length && trail.LastUpdateTick>=0 && trail.LastUpdateTick<=state.Tick && Enumerable.Range(0,4).All(t=>trail.Entries((PheromoneType)t).All(p=>p.Key>=0&&p.Key<world.CellCount&&Range(p.Value,.001,15))), "Feromônios inválidos.");
@@ -44,6 +46,7 @@ public static class SnapshotValidator
         foreach (var ant in state.Ants)
         {
             ant.Genes.Validate();
+            Require(Enum.IsDefined(ant.WorkerRole) && (ant.WorkerRole == WorkerRole.None || ant.Caste == AntCaste.Worker && ant.Stage == LifeStage.Adult), "Função de operária inválida.");
             Require(state.Species.ContainsKey(ant.SpeciesId) && Enum.IsDefined(ant.Caste)&&Enum.IsDefined(ant.Stage)&&Enum.IsDefined(ant.Movement)&&Enum.IsDefined(ant.CurrentTask),"Estado biológico inválido.");
             Require(ant.SpeciesId==state.Colonies.First(c=>c.Id==ant.ColonyId).Species && ant.LineageId>0 && (ant.MotherId is null or >0) && (ant.FatherId is null or >0),"Identidade familiar inválida.");
             Require(Range(ant.MaxHealth,.001,100000)&&Range(ant.RecoveryRate,0,100000)&&Range(ant.Nutrition,0,1)&&Range(ant.Hydration,0,1)&&Range(ant.BiologicalCondition,0,1)&&Range(ant.DevelopmentTicks,0,1e12)&&Range(ant.MovementCredit,0,2),"Biologia inválida.");

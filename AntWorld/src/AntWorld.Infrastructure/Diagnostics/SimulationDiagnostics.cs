@@ -60,7 +60,8 @@ public sealed class SimulationDiagnostics : IDisposable
                 return new
                 {
                     c.Id, c.Species, c.Nest, biome = state.World.Biomes[c.Nest.X], population = ants.Length,
-                    c.Food, c.Births, c.Deaths, c.QueenHealth,
+                    c.Food, c.Births, c.Deaths, c.QueenHealth, c.ExpansionLevel, c.BroodChamber,
+                    workerRoles = ants.Where(a => a.Caste == AntCaste.Worker && a.Stage == LifeStage.Adult).GroupBy(a => a.WorkerRole).ToDictionary(g => g.Key, g => g.Count()),
                     meanHealthPercent = ants.Length == 0 ? 0 : ants.Average(a => a.Health / a.MaxHealth),
                     meanEnergy = ants.Length == 0 ? 0 : ants.Average(a => a.Energy),
                     meanNutrition = ants.Length == 0 ? 0 : ants.Average(a => a.Nutrition),

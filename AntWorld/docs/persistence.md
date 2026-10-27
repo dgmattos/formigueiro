@@ -4,7 +4,7 @@
 
 `BinarySnapshotCodec` usa `BinaryWriter/BinaryReader`, com ordem de campos explícita, tipos primitivos e tamanho limitado. É a alternativa binária ao MessagePack: evita depender de pacotes não disponíveis e permite controlar versionamento/validação. Não usa JSON como snapshot nem `BinaryFormatter`.
 
-Cabeçalho: ASCII `ANTWORLD` (8 bytes), versão Int32 (7), tamanho do payload Int32 e SHA-256 (32 bytes). Inteiros e doubles seguem a representação little-endian do BinaryWriter. O payload contém versão do gerador, seed/configuração, extensões do catálogo e alterações de células/recursos/clima, além de PRNG, relógio, IDs, colônias, genes e agentes. Feromônios são serializados esparsamente. Terreno e depósitos base são reconstruídos; a estratégia de blocos continua descrita em [world-blocks.md](world-blocks.md#persistência). Saves v1/v2/v3/v4 são rejeitados explicitamente, sem alterar o arquivo.
+Cabeçalho: ASCII `ANTWORLD` (8 bytes), versão Int32 (8), tamanho do payload Int32 e SHA-256 (32 bytes). Inteiros e doubles seguem a representação little-endian do BinaryWriter. O payload contém versão do gerador, seed/configuração, extensões do catálogo e alterações de células/recursos/clima, além de PRNG, relógio, IDs, colônias, genes e agentes. Feromônios são serializados esparsamente. Terreno e depósitos base são reconstruídos; a estratégia de blocos continua descrita em [world-blocks.md](world-blocks.md#persistência). Saves v1/v2/v3/v4 são rejeitados explicitamente, sem alterar o arquivo.
 
 A leitura exige integridade, versão conhecida, tamanho consistente, ausência de bytes extras e invariantes válidas de mundo/agentes. O limite é 64 MiB de payload. Contagens e dimensões são verificadas antes das principais alocações. SHA-256 detecta corrupção acidental; não autentica arquivos de terceiros.
 
@@ -38,10 +38,14 @@ Persiste `VegetationSettings`, `NestSettings`, os quatro coeficientes de escava�
 
 O gerador físico permanece na versão 3. Formatos v1–v4 são rejeitados; a evolução v5→v6 está descrita abaixo. Veja [tilesets, vegetação e Forte](tilesets-vegetation-strong-species.md).
 
-## Formato atual 6 — Superfície
+## Evolução do formato 6 — Superfície
 
-Novas gravações usam v6; o leitor mantém suporte explícito a v5. Acrescenta profundidade do ninho Superfície e multiplicador de movimento superficial por espécie. Na leitura de v5, os multiplicadores são 1,0 e a profundidade superficial é 2; os indivíduos, espécies e colônias do arquivo são preservados. A continuação foi validada contra fixtures produzidos pelo executável v5. As referências a v5 acima descrevem a introdução desses campos anteriores; [detalhes da evolução para v6](surface-species.md).
+Na introdução dessa versão, gravações usavam v6; o leitor mantém suporte explícito a v5. Acrescenta profundidade do ninho Superfície e multiplicador de movimento superficial por espécie. Na leitura de v5, os multiplicadores são 1,0 e a profundidade superficial é 2; os indivíduos, espécies e colônias do arquivo são preservados. A continuação foi validada contra fixtures produzidos pelo executável v5. As referências a v5 acima descrevem a introdução desses campos anteriores; [detalhes da evolução para v6](surface-species.md).
 
-## Formato atual 7 — sobrevivência
+## Evolução do formato 7 — sobrevivência
 
 Persiste `SurvivalSettings`. Leitores v7 aceitam v5/v6 e atribuem os padrões atuais de sobrevivência aos campos ausentes. Os dados salvos são preservados, mas a trajetória futura segue as regras corrigidas; não se promete reproduzir resultados de sistemas biológicos anteriores. Continuação determinística é verificada entre execuções da mesma versão atual. Veja [correção de mortalidade](survival-fix.md).
+
+## Formato atual 8 — funções e expansão
+
+Acrescenta um byte `WorkerRole` por agente e um Int32 `ExpansionLevel` por colônia. Posição do ninho, cargas e recursos esparsos preservam câmaras e entulho. Leitura de v5/v6/v7 atribui funções determinísticas por ID a operárias adultas, sem avançar o PRNG, e nível zero à expansão. O fixture v7 real e a continuação byte a byte na versão atual são testados. [Regras e limites](worker-expansion.md).

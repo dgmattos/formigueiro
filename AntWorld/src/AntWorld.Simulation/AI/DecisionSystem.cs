@@ -10,6 +10,9 @@ public sealed class DecisionSystem(ActionCatalog actions)
         var ant=context.Ant; var state=context.State; var world=state.World; var colony=context.Colony;
         var profile=state.Species[ant.SpeciesId].Behaviors[(int)ant.Caste];
         var priorities=colony.Priorities;
+        var digger = ant.WorkerRole == WorkerRole.Digger;
+        var collector = ant.Caste != AntCaste.Worker || ant.WorkerRole != WorkerRole.Digger;
+        var spoil = ant.Carrying > 0 && ExcavationSpoil.Is(world, ant.CargoResourceId);
         var best=AntTask.Rest; var score=-1.0; int? target=null; CellPosition? destination=null;
         void Consider(AntTask task,double utility,int? candidateTarget=null,CellPosition? candidateDestination=null,bool emergency=false)
         {
@@ -30,29 +33,35 @@ public sealed class DecisionSystem(ActionCatalog actions)
         Consider(AntTask.Drink,(1-ant.Hydration)*4);
         Consider(AntTask.RecoverHealth,(1-ant.Health/ant.MaxHealth)*1.5);
         Consider(AntTask.LayEgg,profile.Reproduction*.8);
-        Consider(AntTask.Deposit,ant.Carrying>0?2:0);
-        if(ant.Carrying>0) Consider(AntTask.Carry,1.8,null,colony.Nest);
+        Consider(AntTask.Deposit,ant.Carrying>0 ? (spoil ? 3.2 : 2) : 0);
+        if(ant.Carrying>0) Consider(AntTask.Carry,spoil ? 3 : 1.8,null,spoil ? ExcavationSpoil.Exit(world,colony) : colony.Nest);
+        if (ant.Id == colony.QueenId && ant.Position != colony.Nest)
+            Consider(AntTask.Move,3,null,colony.Nest);
         if(ant.CarriedAntId is {} carriedId) Consider(AntTask.Carry,2.8*profile.BroodCare,carriedId,colony.BroodChamber);
         if (ant.Hydration < .5 && !WaterSources.TryAccessible(world,ant.Position,out _) && waterSearch.NextStep(world,ant.Position) is {} waterStep)
             Consider(AntTask.Move,1.4+(1-ant.Hydration)*2,null,waterStep);
         if(colony.Food>0 && ant.Position!=colony.Nest && (ant.Energy<40 || ant.Nutrition<.5 || ant.Hydration<.4))
             Consider(AntTask.Move,1.2+(1-ant.Energy/100),null,colony.Nest);
         if(flood) Consider(AntTask.Flee,10,null,FindDry(world,ant.Position),true);
-        Consider(AntTask.Collect,(.7+priorities.FoodCollection)*profile.Foraging);
-        if(ant.Carrying==0 && ant.CarriedAntId is null)
+        if (collector) Consider(AntTask.Collect,(.7+priorities.FoodCollection)*profile.Foraging);
+        if(collector && ant.Carrying==0 && ant.CarriedAntId is null)
         {
             var food=FindFood(world,ant.Position);
             Consider(AntTask.Explore,(.25+priorities.Exploration+priorities.FoodCollection*.3)*profile.Exploration,null,food);
         }
-        // Continue a valid excavation instead of switching cells at every evaluation.
-        if(ant.CurrentTask==AntTask.Dig && ant.CarriedAntId is null) Consider(AntTask.Dig,.25*profile.Excavation+priorities.Excavation,null,ant.Destination);
-        Span<CellPosition> cells=stackalloc CellPosition[4];
-        var cellCount=world.ChunkManager.GetNeighbors(ant.Position,cells);
-        for(var i=0;i<cellCount;i++)
+        if (digger && ant.Carrying == 0 && ant.CarriedAntId is null)
         {
-            if(world.Distance(ant.Position,colony.Nest)<8 && ant.CarriedAntId is null)
-                Consider(AntTask.Dig,(.02+priorities.Excavation*.4)*profile.Excavation*(.2+(ant.Id%11)/10.0),null,cells[i]);
-            if(ant.CarriedAntId is null) Consider(AntTask.Build,.3*profile.Excavation,null,cells[i]);
+            if (ColonyExpansionSystem.FindJob(context, out var digTarget, out var access))
+            {
+                var utility = 1.3 + priorities.Excavation * profile.Excavation;
+                Consider(AntTask.Dig, utility, null, digTarget);
+                if (ant.Position != access) Consider(AntTask.Move, utility, null, access);
+            }
+            if (DroppedSpoil.Find(world, ant.Position, out var dropped))
+            {
+                if (ant.Position == dropped) Consider(AntTask.Collect, 2.4);
+                else Consider(AntTask.Move, 2.4, null, dropped);
+            }
         }
         var count=context.Index.Nearby(world,ant.Position,nearby,4,ant.Id+(int)(state.Tick%10000));
         for(var i=0;i<count;i++)
