@@ -8,10 +8,10 @@ O jogo lê o preset de `src/AntWorld.Game/settings.json` ao iniciar, junto com j
 |---|---|---|
 | `world.seed` | Seed determinística | 12345 |
 | `world.width`, `world.height` | Dimensões em blocos, independentes do tamanho da janela | 240 × 96 |
-| `world.chunkSize` | Lado de cada chunk em blocos | 16 |
+| `world.chunkSize` | Lado de cada chunk em blocos | 32 |
 | `world.maximumLoadedChunks` | Limite do cache de chunks | 64 |
 | `colonies` | Lista de colônias a criar; adicionar/remover itens muda a quantidade | 2 colônias |
-| `speciesId` | 0 = Brasa, 1 = Musgo; espécies podem se repetir em colônias diferentes | Uma de cada |
+| `speciesId` | 0 = Normal/Brasa, 1 = Musgo, 2 = Forte; espécies podem se repetir em colônias diferentes | Normal e Forte |
 | `nestPositionRatio` | Posição horizontal proporcional à largura, entre 0 e 1 (exclusive) | 0,25 e 0,75 |
 | `queens` | Rainhas iniciais; o modelo atual exige exatamente uma por colônia | 1 |
 | `workers`, `soldiers`, `larvae` | População inicial de cada colônia | 21, 3 e 2 |
@@ -68,3 +68,7 @@ Câmera: WASD e arrasto com botão direito para mover. Use rolagem do mouse ou *
 Foram removidas da interface e dos atalhos as ações de novo mundo, inspeção/seleção, feromônios e save/load. Persistência continua disponível na infraestrutura, CLI e testes. Não há comandos diretos sobre formigas.
 
 Assets originais preservados em `src/sprites/player-time-controle.png` e `001-formiga-normal.png`. Cópias no projeto Godot são usadas por regiões do atlas, sem criar um Node por agente. Os quatro atlas de terreno acompanham a estação do mês. Um dia dura três horas simuladas; cada estação tem 28 dias. `world.mushrooms` configura chances, renovação e limites dos cogumelos; veja [regras completas](season-nursery-mushrooms.md).
+
+## Terreno e ninhos
+
+`rendering.tileSize` define o tamanho visual de uma célula (padrão 16 pixels; múltiplos de 16 até 64). Com `world.chunkSize: 32`, cada chunk ocupa 512 × 512 pixels. `world.vegetation` contém densidades por bioma, distância entre árvores, limites ambientais e colisão opcional da madeira. `world.nests.normalBaseDepth: 4` e `normalDepthMultiplier: 1.25` resultam em cinco blocos abaixo da superfície. `strongUndergroundRatio: 0.75` posiciona o ninho Forte a 75% do subterrâneo disponível, reservando o espaço da câmara de crias. Veja [regras completas](tilesets-vegetation-strong-species.md).

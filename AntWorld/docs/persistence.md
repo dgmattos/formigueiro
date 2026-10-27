@@ -4,7 +4,7 @@
 
 `BinarySnapshotCodec` usa `BinaryWriter/BinaryReader`, com ordem de campos explícita, tipos primitivos e tamanho limitado. É a alternativa binária ao MessagePack: evita depender de pacotes não disponíveis e permite controlar versionamento/validação. Não usa JSON como snapshot nem `BinaryFormatter`.
 
-Cabeçalho: ASCII `ANTWORLD` (8 bytes), versão Int32 (4), tamanho do payload Int32 e SHA-256 (32 bytes). Inteiros e doubles seguem a representação little-endian do BinaryWriter. O payload contém versão do gerador, seed/configuração, extensões do catálogo e alterações de células/recursos/clima, além de PRNG, relógio, IDs, colônias, genes e agentes. Feromônios são serializados esparsamente. Terreno e depósitos base são reconstruídos; a estratégia de blocos continua descrita em [world-blocks.md](world-blocks.md#persistência). Saves v1/v2/v3 são rejeitados explicitamente, sem alterar o arquivo.
+Cabeçalho: ASCII `ANTWORLD` (8 bytes), versão Int32 (5), tamanho do payload Int32 e SHA-256 (32 bytes). Inteiros e doubles seguem a representação little-endian do BinaryWriter. O payload contém versão do gerador, seed/configuração, extensões do catálogo e alterações de células/recursos/clima, além de PRNG, relógio, IDs, colônias, genes e agentes. Feromônios são serializados esparsamente. Terreno e depósitos base são reconstruídos; a estratégia de blocos continua descrita em [world-blocks.md](world-blocks.md#persistência). Saves v1/v2/v3/v4 são rejeitados explicitamente, sem alterar o arquivo.
 
 A leitura exige integridade, versão conhecida, tamanho consistente, ausência de bytes extras e invariantes válidas de mundo/agentes. O limite é 64 MiB de payload. Contagens e dimensões são verificadas antes das principais alocações. SHA-256 detecta corrupção acidental; não autentica arquivos de terceiros.
 
@@ -24,10 +24,16 @@ Testes xUnit de persistência usam banco temporário real, reabertura, overwrite
 
 A restauração inicialmente resolveu `SQLitePCLRaw.lib.e_sqlite3` 2.1.11, sinalizada pelo NuGet como vulnerável ([GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q)). A referência explícita a **3.53.3** atualiza a biblioteca nativa e eliminou o erro de auditoria no build final; a auditoria não foi desativada no projeto.
 
-## Estado de agentes no formato 4
+## Estado de agentes no formato 5
 
 Inclui configurações de espécie/casta/perfil comportamental, limites de desempenho, cursor do escalonador, prioridades coletivas, referência à rainha individual, relações sociais e quatro mapas esparsos de feromônios com data de atualização. Cada agente persiste sexo derivável por casta, fase, identidade familiar, assinatura química, saúde máxima/atual/recuperação, idade, necessidades, progresso de desenvolvimento e skills, carga/transportador, posição anterior, destino, tarefa, alvo, créditos de movimento e cooldowns.
 
 Pais ausentes não precisam ser reconstruídos. Transporte exige referências recíprocas consistentes. Perfis, enums, recursos, capacidades numéricas e relações são validados. Índice espacial, buffers, seleção gráfica e BFS são reconstruídos. O arquivo de velocidades é configuração de apresentação carregada no início, independente do snapshot; ele não altera o estado biológico salvo.
 
-O formato 4 inclui `MushroomSettings` e exige gerador 3: o calendário agora usa dias de três horas e a distribuição base inclui cogumelos. Cogumelos coletados, parcialmente consumidos ou renovados usam o diário esparso de recursos existente. Renovações derivam do tick persistido, seed e coordenadas do chunk; não há relógio oculto de crescimento. Na restauração, remoções de recursos precedem nascimentos para respeitar o limite por chunk durante a aplicação dos deltas. Ovos transportados persistem os IDs recíprocos e a posição do transportador.
+O formato 5 preserva `MushroomSettings` e exige gerador 3: o calendário agora usa dias de três horas e a distribuição base inclui cogumelos. Cogumelos coletados, parcialmente consumidos ou renovados usam o diário esparso de recursos existente. Renovações derivam do tick persistido, seed e coordenadas do chunk; não há relógio oculto de crescimento. Na restauração, remoções de recursos precedem nascimentos para respeitar o limite por chunk durante a aplicação dos deltas. Ovos transportados persistem os IDs recíprocos e a posição do transportador.
+
+## Vegetação e espécies no formato 5
+
+Persiste `VegetationSettings`, `NestSettings`, os quatro coeficientes de escavação por espécie e alterações esparsas de vegetação (identidade, tipo, saúde, idade e remoção). O plano vegetal é reconstruído pela seed; não é repetido integralmente em cada snapshot. IDs e posições são validados contra esse plano. Caches visuais e de navegação são reconstruídos. Mudanças de estação não alteram a identidade vegetal.
+
+O gerador físico permanece na versão 3; o novo formato binário é incompatível com v4 e rejeita versões anteriores com mensagem explícita. Não há migração automática. Veja [tilesets, vegetação e Forte](tilesets-vegetation-strong-species.md).

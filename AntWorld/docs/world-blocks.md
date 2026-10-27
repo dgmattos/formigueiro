@@ -1,4 +1,4 @@
-# Blocos físicos, recursos e chunks — gerador v3 / snapshot v4
+# Blocos físicos, recursos e chunks — gerador v3 / snapshot v5
 
 ## Escopo e compatibilidade
 
@@ -83,11 +83,11 @@ Máscaras ortogonais de exposição produzem bordas e superfícies, recortes seg
 
 ## Persistência
 
-Snapshot **v4** inclui versão do gerador (3), seed/configurações geológica e de cogumelos, extensões do catálogo, alterações de clima por coluna, células modificadas, estoques modificados e agentes/colônias. Tipos físicos são reconstruídos das proporções salvas. Feromônios são serializados apenas onde não são zero. Cabeçalho, limite de tamanho e SHA-256 permanecem.
+Snapshot **v5** inclui versão do gerador (3), seed/configurações geológica, de cogumelos, de vegetação e de ninhos, extensões do catálogo, alterações de clima por coluna, células modificadas, estoques modificados e agentes/colônias. Tipos físicos são reconstruídos das proporções salvas. Feromônios são serializados apenas onde não são zero. Cabeçalho, limite de tamanho e SHA-256 permanecem.
 
 Arrays base, depósitos base e chunks carregados não são gravados. Ao carregar, reconstrói-se o mesmo plano e reaplicam-se os deltas; nenhum chunk precisa ser materializado. Uma extração não desaparece após unload/load ou save/load. Catálogos adicionais também são restaurados.
 
-Saves v1/v2/v3 e geradores desconhecidos são rejeitados explicitamente. Não há migração aproximada que invente propriedades. Os arquivos antigos são preservados pelo carregamento. SQLite mantém schema 1 e faz upsert transacional do BLOB: os deltas são acumulados relativamente à seed; **não há journal incremental entre saves nem atualização SQL individual por chunk**.
+Saves v1/v2/v3/v4 e geradores desconhecidos são rejeitados explicitamente. Não há migração aproximada que invente propriedades. Os arquivos antigos são preservados pelo carregamento. SQLite mantém schema 1 e faz upsert transacional do BLOB: os deltas são acumulados relativamente à seed; **não há journal incremental entre saves nem atualização SQL individual por chunk**.
 
 ## Testes e benchmarks
 
