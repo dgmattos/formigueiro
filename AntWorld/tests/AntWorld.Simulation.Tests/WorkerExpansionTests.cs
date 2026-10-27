@@ -115,6 +115,7 @@ public sealed class WorkerExpansionTests
         var s=SimulationFactory.Create(new(42,64,48),[new(2,0){Workers=1,Soldiers=0,Larvae=0,InitialFood=1000}]);
         var colony=s.Colonies[0];colony.Queen!.StoredSperm=0;
         var worker=s.Ants.First(a=>a.Caste==AntCaste.Worker);worker.WorkerRole=WorkerRole.Digger;
+        var escort=AntFactory.Create(s,colony);escort.QueenEscort=true;s.Ants.Add(escort);
         worker.Position=new(63,colony.Nest.Y);worker.PreviousPosition=worker.Position;
         worker.CargoResourceId=ExcavationSpoil.ResourceId(s.World);worker.Carrying=1;worker.Energy=100;
         var id=worker.CargoResourceId;var exit=ExcavationSpoil.Exit(s.World,colony);var engine=new SimulationEngine(s);

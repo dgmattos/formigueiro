@@ -12,6 +12,6 @@ public static class BroodTransport
     {
         if (!brood.IsTransportableBrood || brood.CarrierId.HasValue || brood.ColonyId != colony.Id || !NurseryAvailable(world, colony)) return false;
         if (brood.Position == colony.BroodChamber) return false;
-        return brood.Stage == LifeStage.Egg || world.GetCell(brood.Position, false).WaterAmount >= 200 || world.Distance(brood.Position, colony.Nest) > 2;
+        return true;
     }
 }

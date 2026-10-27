@@ -130,7 +130,7 @@ public sealed class AgentAiTests
         var s=Create();var a=Worker(s);var larva=s.Ants.First(x=>x.ColonyId==a.ColonyId&&x.Stage==LifeStage.Larva);larva.Nutrition=.1;a.TargetId=larva.Id;
         Assert.True(new FeedLarvaAction().Execute(Context(s,a)));Assert.True(larva.Nutrition>.1);
         Assert.True(new CarryAction().Execute(Context(s,a)));Assert.Equal(a.Id,larva.CarrierId);
-        a.Destination=a.Position;Assert.True(new CarryAction().Execute(Context(s,a)));Assert.Null(larva.CarrierId);Assert.Null(a.CarriedAntId);
+        OrganicNestTests.WalkTo(Context(s,a),s.Colonies[0].BroodChamber);Assert.True(new CarryAction().Execute(Context(s,a)));Assert.Null(larva.CarrierId);Assert.Null(a.CarriedAntId);
     }
     [Fact] public void DiggingChangesChunksButPreservesFiniteDeposits()
     {
@@ -200,7 +200,7 @@ public sealed class AgentAiTests
     [Fact] public void HysteresisPreservesValidTaskUntilEmergencyDominates()
     {
         var s=Create();s.World.ClearFood(true);var a=Worker(s);var colony=s.Colonies[0];colony.Priorities=new(.1,0,0,0,.1);
-        foreach(var larva in s.Ants.Where(ant=>ant.Stage==LifeStage.Larva)) larva.Energy=larva.MaxEnergy;
+        foreach(var larva in s.Ants.Where(ant=>ant.Stage==LifeStage.Larva)) {larva.Energy=larva.MaxEnergy;larva.Position=s.Colonies.Single(c=>c.Id==larva.ColonyId).BroodChamber;}
         a.WorkerRole=WorkerRole.Collector; a.Health=a.MaxHealth*.8;a.Energy=100;var decision=new DecisionSystem(new());var context=Context(s,a);
         a.CurrentTask=AntTask.RecoverHealth;decision.Decide(context);Assert.Equal(AntTask.RecoverHealth,a.CurrentTask);
         a.CurrentTask=AntTask.Explore;decision.Decide(context);Assert.Equal(AntTask.Explore,a.CurrentTask);

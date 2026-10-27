@@ -13,8 +13,8 @@ public sealed class CarryAction() : AntAction(AntTask.Carry, AntCapability.Carry
         if (brood is null || !brood.IsTransportableBrood || !recognition.Recognize(c.Ant, brood, c.State).KnownMembership) return false;
         var destination = c.Ant.Destination ?? c.Colony.BroodChamber;
         if (!c.State.World.CanWalk(destination) || c.State.World.GetCell(destination, false).WaterAmount >= 200) return false;
-        // Eggs belong below the queen chamber; larvae can still be evacuated to other safe chambers.
-        if (brood.Stage == LifeStage.Egg && destination != c.Colony.BroodChamber) return false;
+        // Eggs and larvae share the safe nursery nearest the queen.
+        if (destination != c.Colony.BroodChamber) return false;
         if (destination == c.Colony.BroodChamber && !c.Movement.CanReachBroodChamber(c)) return false;
         if (c.Ant.CarriedAntId.HasValue) return brood.CarrierId == c.Ant.Id;
         return brood.CarrierId is null && brood.Position != destination && c.State.World.CanWalk(brood.Position) && c.State.World.Distance(c.Ant.Position, brood.Position) <= 1;

@@ -12,9 +12,11 @@ public sealed class ForagingNavigationTests
         for(var x=3;x<=35;x++)s.World.SetTerrain(new(x,12),TerrainKind.Tunnel);
         for(var y=12;y<=24;y++)s.World.SetTerrain(new(15,y),TerrainKind.Tunnel);
         for(var y=6;y<=12;y++)s.World.SetTerrain(new(25,y),TerrainKind.Tunnel);
-        var colony=s.Colonies[0];colony.RelocateChamber(new(8,12));colony.Queen!.StoredSperm=0;
+        var colony=s.Colonies[0];
+        var escort=AntFactory.Create(s,colony);escort.QueenEscort=true;s.Ants.Insert(1,escort);
+        colony.RelocateChamber(new(8,12));colony.Queen!.StoredSperm=0;
         foreach(var a in s.Ants) {a.Position=a.PreviousPosition=colony.Nest;a.Energy=100;}
-        s.Ants.Single(a=>a.Caste==AntCaste.Worker).WorkerRole=WorkerRole.Collector;
+        s.Ants.Last().WorkerRole=WorkerRole.Collector;
         return s;
     }
     private static AntContext Context(SimulationState s,Ant a)

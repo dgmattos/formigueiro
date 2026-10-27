@@ -86,7 +86,7 @@ public sealed class OrganicNestConstruction
         foreach(var job in jobs.OrderBy(j=>j.AssignedAntId==c.Ant.Id?0:1).ThenBy(j=>c.State.World.Distance(c.Ant.Position,j.Target)))
         {
             if(job.Status is not (NestStructureStatus.Available or NestStructureStatus.InProgress)||job.AssignedAntId is {} id&&id!=c.Ant.Id || job.Support is not {} access)continue;
-            if(!c.State.World.CanDig(job.Target)||!c.Movement.CanReach(c,access))
+            if(!QueenEscortSystem.Allows(c,access)||!QueenEscortSystem.Allows(c,job.Target)||!c.State.World.CanDig(job.Target)||!c.Movement.CanReach(c,access))
             {if(job.AssignedAntId==c.Ant.Id)job.AssignedAntId=null;continue;}
             if(job.AssignedAntId is null)job.LastProgressTick=c.State.Tick;
             foreach(var previous in jobs)if(previous!=job&&previous.AssignedAntId==c.Ant.Id)previous.AssignedAntId=null;
@@ -110,7 +110,7 @@ public sealed class OrganicNestConstruction
             var room=layout.Chambers[i];
             if(room.Status==NestStructureStatus.Completed||!room.Cells.All(world.IsOpen)||!reachable.ContainsKey(world.Index(room.Access)))continue;
             layout.Chambers[i]=room with{Status=NestStructureStatus.Completed};changed=true;
-            if(room.Type==NestChamberType.Brood&&room.Access.Y>layout.Designated(layout.BroodChamberId)!.Access.Y)layout.BroodChamberId=room.Id;
+
         }
         for(var i=0;i<layout.Tunnels.Count;i++)
         {

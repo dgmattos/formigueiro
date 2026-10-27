@@ -123,7 +123,7 @@ public sealed class MushroomTests
         var ant = state.Ants.First(a => a.Caste == AntCaste.Worker); var colony = state.Colonies[0];
         ant.WorkerRole = WorkerRole.Collector;
         // This scenario isolates resource collection; hungry brood is covered by care tests.
-        foreach (var larva in state.Ants.Where(a => a.Stage == LifeStage.Larva)) larva.Energy = larva.MaxEnergy;
+        foreach (var larva in state.Ants.Where(a => a.Stage == LifeStage.Larva)) {larva.Energy = larva.MaxEnergy;larva.Position=state.Colonies.Single(c=>c.Id==larva.ColonyId).BroodChamber;}
         var support = new CellPosition(ant.Position.X, ant.Position.Y + 1);
         state.World.ClearFood(true); state.World.SetTerrain(support, TerrainKind.Soil);
         state.World.SetResource(support, ResourceIds.RedMushroom, new(4, 4, 10000));

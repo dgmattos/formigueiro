@@ -10,14 +10,16 @@ public sealed class NurseryCalendarTests
         var index = new AgentSpatialIndex(); index.Rebuild(state);
         return new(state, ant, state.Colonies[0], index, new());
     }
-    [Fact] public void WorkersAutonomouslyDeliverQueensEggToLowerChamber()
+    [Fact] public void WorkersAutonomouslyDeliverDisplacedEggToChamberNearestQueen()
     {
         var state = Create(); var colony = state.Colonies[0]; var queen = colony.Queen!;
         Assert.True(colony.BroodChamber.Y > queen.Position.Y); Assert.True(state.World.CanWalk(colony.BroodChamber));
         Assert.True(new LayEggAction().Execute(Context(state, queen)));
         var egg = state.Ants.Last(); Assert.Equal(queen.Position, egg.Position); queen.StoredSperm = 0;
+        egg.Position=colony.BroodChamber;
+        new NurseryChamberSelection().Step(state,colony);
         var count = state.Ants.Count; var engine = new SimulationEngine(state); var carried = false;
-        for (var i = 0; i < 1000 && (egg.Position != colony.BroodChamber || egg.CarrierId.HasValue); i++)
+        for (var i = 0; i < 2000 && (egg.Position != colony.BroodChamber || egg.CarrierId.HasValue); i++)
         {
             engine.Step(); carried |= egg.CarrierId.HasValue;
             if (egg.CarrierId is {} id) Assert.Equal(state.Ants.Single(a => a.Id == id).Position, egg.Position);

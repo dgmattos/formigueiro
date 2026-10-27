@@ -40,6 +40,26 @@ public sealed class MovementSystem
         return GlobalSpeedMultiplier*AntCapabilities.Attributes(state,ant).Speed*surfaceBonus*(.25+.75*ant.Energy/100)*
             (.3+.7*ant.Health/ant.MaxHealth)*ant.Efficiency(SkillType.Navigation)/(1+load+cell.WaterAmount/200.0+state.RainIntensity*.1);
     }
+    private IReadOnlyDictionary<int,int> EscortDistances(AntContext c,CellPosition goal)
+    {
+        if(!c.Ant.QueenEscort || c.Colony.Queen is not {IsAlive:true} queen)return navigation.Distances(c.State.World,goal);
+        var world=c.State.World;
+        var radius=Math.Max(QueenEscortSystem.MaximumRadius,world.Distance(c.Ant.Position,queen.Position));
+        var distances=new Dictionary<int,int>();var queue=new Queue<CellPosition>();
+        distances[world.Index(goal)]=0;queue.Enqueue(goal);
+        Span<CellPosition> neighbors=stackalloc CellPosition[8];
+        while(queue.TryDequeue(out var current) && distances.Count<32768)
+        {
+            var count=world.GetWalkableNeighbors(current,neighbors);
+            for(var i=0;i<count;i++)
+            {
+                var next=neighbors[i];
+                if(world.Distance(next,queen.Position)>radius)continue;
+                if(distances.TryAdd(world.Index(next),distances[world.Index(current)]+1))queue.Enqueue(next);
+            }
+        }
+        return distances;
+    }
     public bool Move(AntContext c,bool explore=false,bool flee=false)
     {
         var ant=c.Ant; var state=c.State; var world=state.World;
@@ -50,11 +70,14 @@ public sealed class MovementSystem
         var total=0.0;
         var destination=ant.Destination;
         if (destination is {} invalid && !world.CanWalk(invalid) && !flee) return false;
-        var home=destination is {} goal && !flee ? navigation.Distances(world,goal) : null;
+        var home=destination is {} goal && !flee ? EscortDistances(c,goal) : null;
         if(home is not null && !home.ContainsKey(world.Index(ant.Position))) return false;
         for(var i=0;i<count;i++)
         {
             var p=candidates[i]; var weight=1.0;
+            if(ant.QueenEscort && c.Colony.Queen is {IsAlive:true} queen &&
+                world.Distance(p,queen.Position)>Math.Max(QueenEscortSystem.MaximumRadius,world.Distance(ant.Position,queen.Position)))
+            {weights[i]=0;continue;}
             if(destination is {} target)
             {
                 var before=home?.GetValueOrDefault(world.Index(ant.Position),int.MaxValue)??world.Distance(ant.Position,target);
@@ -79,7 +102,8 @@ public sealed class MovementSystem
             weights[i]=weight; total+=weight;
         }
         if (total <= 0) return false;
-        var choice=state.Random.NextDouble()*total; var selected=count-1;
+        var choice=state.Random.NextDouble()*total; var selected=0;
+        for(var i=0;i<count;i++)if(weights[i]>0)selected=i;
         for(var i=0;i<count;i++) { choice-=weights[i]; if(weights[i]>0 && choice<=0) { selected=i; break; } }
         var cost=StepCost(ant.Position,candidates[selected]);
         if(ant.MovementCredit<cost)return false;

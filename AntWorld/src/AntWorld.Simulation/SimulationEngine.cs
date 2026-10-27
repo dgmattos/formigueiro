@@ -13,6 +13,8 @@ public sealed class SimulationEngine
     private readonly ColonyAiSystem colonyAi=new();
     private readonly ColonySystem colonies=new();
     private readonly ColonyExpansionSystem expansion=new();
+    private readonly QueenEscortSystem escorts=new();
+    private readonly NurseryChamberSelection nursery=new();
     private readonly ActionCatalog actions=new();
     private readonly MovementSystem movement=new();
     private readonly AntBehaviorSystem behavior;
@@ -39,6 +41,8 @@ public sealed class SimulationEngine
         }
         spatial.Rebuild(State);
         if(State.Tick%State.Performance.ColonyIntervalTicks==0) { colonyAi.Step(State,spatial); expansion.Step(State); colonies.Step(State); }
+        if(State.Tick==1 || State.Tick%State.Performance.ColonyIntervalTicks==0)
+        { escorts.Step(State); foreach(var colony in State.Colonies)nursery.Step(State,colony); }
         Scheduler.Decide(State,a=>decision.Decide(Context(a)));
         // Rotating execution order avoids permanent priority for low IDs at contested resources.
         for(var i=0;i<count;i++)
@@ -75,7 +79,7 @@ public sealed class SimulationEngine
                         ant.CargoResourceId, State.World.GetCell(ant.Position, false).WaterAmount));
             }
         }
-        State.Ants.RemoveAll(a=>!a.IsAlive);
+        if(State.Ants.RemoveAll(a=>!a.IsAlive)>0)escorts.Step(State);
     }
     public void Run(int ticks)
     { ArgumentOutOfRangeException.ThrowIfNegative(ticks); for(var i=0;i<ticks;i++) Step(); }
