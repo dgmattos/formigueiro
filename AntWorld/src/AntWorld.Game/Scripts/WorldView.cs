@@ -1,15 +1,37 @@
 using AntWorld.Domain;
+using AntWorld.Infrastructure;
 using Godot;
 namespace AntWorld.Game;
 
 public partial class WorldView : Node2D
 {
-    private readonly Dictionary<int, TerrainChunkView> terrainViews = [];
+    private readonly Dictionary<(int Id, int Copy), TerrainChunkView> terrainViews = [];
     private (int, int, int, int)? previousBounds;
+    private readonly HashSet<(int Id, int Copy)> visible = [];
     private PreparedSpriteCatalog sprites = null!;
     private int tileSize;
     public SimulationState State { get; private set; } = null!;
     public EntityView Entities { get; private set; } = null!;
+    public int ValidateVisibleTerrainCoverage()
+    {
+        StreamVisibleTerrain();
+        var area = WorldViewport.Bounds(this); var world = State.World; var checkedCells = 0;
+        var firstY = Math.Max(0, (int)Math.Floor(area.Position.Y / tileSize));
+        var lastY = Math.Min(world.Height, (int)Math.Ceiling(area.End.Y / tileSize));
+        for (var x = (int)Math.Floor(area.Position.X / tileSize); x < (int)Math.Ceiling(area.End.X / tileSize); x++)
+        for (var y = firstY; y < lastY; y++)
+        {
+            var p = world.Normalize(new(x, y));
+            if (world.GetCell(p, false).SolidFill == 0) continue;
+            var key = (world.ChunkManager.ChunkId(p), (int)Math.Floor((double)x / world.Width));
+            if (!terrainViews.TryGetValue(key, out var view) || !view.HasRenderedCell(p, new(x, y)))
+                throw new InvalidOperationException($"Terreno ausente/desalinhado em {x},{y}, cópia {key.Item2}.");
+            checkedCells++;
+        }
+        if (world.ChunkManager.LoadedCount > world.Configuration.MaximumLoadedChunks)
+            throw new InvalidOperationException("Streaming ultrapassou limite do cache lógico.");
+        return checkedCells;
+    }
     public void ValidateTerrainLayers()
     {
         if (terrainViews.Count == 0 || terrainViews.Values.Sum(v => v.RenderedTileCount) == 0) throw new InvalidOperationException("Terreno não populou TileMapLayers visíveis.");
@@ -31,42 +53,47 @@ public partial class WorldView : Node2D
     }
     private void StreamVisibleTerrain()
     {
-        var world = State.World; var size = world.Configuration.ChunkSize;
-        var inverse = GetGlobalTransformWithCanvas().AffineInverse();
-        var a = inverse * Vector2.Zero; var b = inverse * GetViewportRect().Size;
-        var minX = Math.Max(0, (int)Math.Floor(Math.Min(a.X, b.X) / (size * tileSize)) - 1);
-        var maxX = Math.Min(world.ChunkManager.ChunkColumns - 1, (int)Math.Floor(Math.Max(a.X, b.X) / (size * tileSize)) + 1);
-        var minY = Math.Max(0, (int)Math.Floor(Math.Min(a.Y, b.Y) / (size * tileSize)) - 1);
-        var maxY = Math.Min((world.Height - 1) / size, (int)Math.Floor(Math.Max(a.Y, b.Y) / (size * tileSize)) + 1);
-        var bounds = (minX, maxX, minY, maxY);
+        var world = State.World;
+        var area = WorldViewport.Bounds(this);
+        // Floor at cell resolution also handles the short final chunk at the circular seam.
+        var bounds = ((int)Math.Floor(area.Position.X / tileSize), (int)Math.Ceiling(area.End.X / tileSize),
+            (int)Math.Floor(area.Position.Y / tileSize), (int)Math.Ceiling(area.End.Y / tileSize));
         if (previousBounds == bounds) return;
-        previousBounds = bounds;
-        var visible = new HashSet<int>();
-        for (var y = minY; y <= maxY; y++)
-        for (var x = minX; x <= maxX; x++)
+        previousBounds = bounds; visible.Clear();
+        foreach (var chunk in CircularTerrainVisibility.Select(world.Configuration, bounds.Item1, bounds.Item3, bounds.Item2, bounds.Item4))
         {
-            var p = new CellPosition(x * size, y * size); var id = world.ChunkManager.ChunkId(p); visible.Add(id);
-            if (terrainViews.ContainsKey(id)) continue;
-            var view = new TerrainChunkView { TextureFilter = TextureFilterEnum.Nearest };
-            view.Initialize(State, world.ChunkManager.Region(p), sprites, tileSize); terrainViews[id] = view; AddChild(view);
+            var key = (chunk.ChunkId, chunk.Copy); visible.Add(key);
+            if (terrainViews.ContainsKey(key)) continue;
+            var view = new TerrainChunkView { TextureFilter = TextureFilterEnum.Nearest, Position = new(chunk.OffsetX * tileSize, 0) };
+            view.Initialize(State, chunk.Region, sprites, tileSize); terrainViews[key] = view; AddChild(view);
         }
-        foreach (var id in terrainViews.Keys.Where(id => !visible.Contains(id)).ToArray())
+        var logicalVisible = visible.Select(key => key.Id).ToHashSet();
+        foreach (var key in terrainViews.Keys.Where(key => !visible.Contains(key)).ToArray())
         {
-            RemoveChild(terrainViews[id]); terrainViews[id].QueueFree(); terrainViews.Remove(id);
-            world.ChunkManager.Unload(new(id % world.ChunkManager.ChunkColumns * size, id / world.ChunkManager.ChunkColumns * size));
+            RemoveChild(terrainViews[key]); terrainViews[key].QueueFree(); terrainViews.Remove(key);
+            // Another visible copy may still use this logical chunk. The shared cache retains its own LRU limit.
+            if (!logicalVisible.Contains(key.Id))
+                world.ChunkManager.Unload(new(key.Id % world.ChunkManager.ChunkColumns * world.Configuration.ChunkSize,
+                    key.Id / world.ChunkManager.ChunkColumns * world.Configuration.ChunkSize));
         }
     }
+
     public override void _Draw()
     {
         var w = State.World.Width * tileSize;
         var h = State.World.Height * tileSize;
         var daylight = (float)Math.Clamp(Math.Sin((State.DayFraction - .25) * Math.Tau) * .5 + .5, 0, 1);
-        DrawRect(new(0, 0, w, h), new Color("111e2b").Lerp(new("527579"), daylight));
+        var area = WorldViewport.Bounds(this);
+        DrawRect(new(area.Position.X, 0, area.Size.X, h), new Color("111e2b").Lerp(new("527579"), daylight));
+        var copies = HorizontalWrap.CopiesIntersecting(area.Position.X, area.End.X, w);
+        for (var copy = copies.First; copy <= copies.Last; copy++)
+        {
         for (var i = 0; i < 45; i++)
         {
             var x = (i * 137 + 31) % w; var y = (i * 47 + 13) % 150;
-            DrawRect(new(x, y, 2, 2), new(.8f, .88f, .82f, 1 - daylight));
+            DrawRect(new(x + copy * w, y, 2, 2), new(.8f, .88f, .82f, 1 - daylight));
         }
-        DrawCircle(new(w * .72f, 85), 17, new Color("d9dbc1").Lerp(new("e4c682"), daylight));
+        DrawCircle(new(w * .72f + copy * w, 85), 17, new Color("d9dbc1").Lerp(new("e4c682"), daylight));
+        }
     }
 }

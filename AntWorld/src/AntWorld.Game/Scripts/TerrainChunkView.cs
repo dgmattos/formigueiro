@@ -15,6 +15,12 @@ public partial class TerrainChunkView : Node2D
     private Node2D overlay = null!;
     private Node2D water = null!;
     public int RenderedTileCount => terrain.GetUsedCells().Count;
+    public bool HasRenderedCell(CellPosition canonical, CellPosition displayed)
+    {
+        var cell = new Vector2I(canonical.X, canonical.Y);
+        var center = Position + terrain.Position + terrain.MapToLocal(cell) * terrain.Scale;
+        return terrain.GetCellSourceId(cell) >= 0 && center.IsEqualApprox(new Vector2((displayed.X + .5f) * tileSize, (displayed.Y + .5f) * tileSize));
+    }
     public void ValidateAlignment()
     {
         var center = terrain.Position + terrain.MapToLocal(new(region.X, region.Y)) * terrain.Scale;

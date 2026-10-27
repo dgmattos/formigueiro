@@ -82,6 +82,8 @@ A ecologia usa um calendário próprio: um dia tem 216.000 ticks (três horas si
 O perfil `LowMemory4GB` limita decisões e desenho, preservando indivíduos fora da tela. As metas de 60 FPS/768 MiB não constituem garantia. L2/L3 e pooling de objetos Ant ainda não estão implementados. Navegação local/BFS tem orçamento limitado; câmaras de fundação continuam instantâneas. Detalhes e limitações estão em [agents-ai.md](docs/agents-ai.md).
 
 `sh scripts/benchmark-agents.sh` mede 100, 500, 2.000 e 10.000 indivíduos sem renderer; gera `artifacts/agent-benchmarks.json`. Os sprites fornecidos são usados por regiões do atlas; a qualidade visual em janela ainda precisa ser conferida fora do sandbox.
+A renderização lateral acompanha a conexão circular em todas as camadas, inclusive com zoom afastado e chunks finais parciais. Veja [correção e testes do streaming](docs/circular-streaming-fix.md).
+
 ## Diagnóstico de mortes
 
 O jogo registra mortes e amostras das colônias em `user://diagnostics/simulation.jsonl`, com rotação limitada. O HUD mostra progresso do dia. Veja [resultado da investigação, configurações e comandos de análise](docs/mortality-diagnostics.md).

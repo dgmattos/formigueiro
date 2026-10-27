@@ -8,7 +8,7 @@ public static class AgentRenderSelection
         foreach(var ant in state.Ants)
         {
             if(result.Count>=state.Performance.MaxRenderedAgents) break;
-            if(ant.Position.X<minimum.X||ant.Position.X>maximum.X||ant.Position.Y<minimum.Y||ant.Position.Y>maximum.Y) continue;
+            if(!HorizontalWrap.Contains(ant.Position.X,minimum.X,maximum.X,state.World.Width)||ant.Position.Y<minimum.Y||ant.Position.Y>maximum.Y) continue;
             result.Add(ant);
         }
         return result.Count;

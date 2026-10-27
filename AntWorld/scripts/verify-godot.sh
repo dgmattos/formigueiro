@@ -11,3 +11,4 @@ mkdir -p artifacts
 cat artifacts/godot-prepare.log artifacts/godot-import.log artifacts/godot-smoke.log
 if grep -E 'ERROR:|SCRIPT ERROR:' artifacts/godot-prepare.log artifacts/godot-import.log artifacts/godot-smoke.log; then exit 1; fi
 grep 'AntWorld: smoke test PASS' artifacts/godot-smoke.log
+grep 'AntWorld: streaming circular PASS' artifacts/godot-smoke.log

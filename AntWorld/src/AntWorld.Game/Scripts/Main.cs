@@ -126,6 +126,8 @@ public partial class Main : Node2D
         var movement = new Vector2((Input.IsPhysicalKeyPressed(Key.D) ? 1 : 0) - (Input.IsPhysicalKeyPressed(Key.A) ? 1 : 0),
             (Input.IsPhysicalKeyPressed(Key.S) ? 1 : 0) - (Input.IsPhysicalKeyPressed(Key.W) ? 1 : 0));
         camera.Position += movement * (float)delta * 650 / camera.Zoom.X;
+        camera.Position = new((float)HorizontalWrap.Normalize(camera.Position.X, engine.State.World.Width * rendering.TileSize), camera.Position.Y);
+        camera.ForceUpdateScroll();
     }
     public override void _UnhandledInput(InputEvent input)
     {
@@ -243,8 +245,41 @@ public partial class Main : Node2D
             GD.Print($"AntWorld: TileMapLayer PASS — tile={rendering.TileSize}px, chunk={preset.World.ChunkSize}, vegetação=" + string.Join(", ", population.GroupBy(v => v.Kind).Select(g => $"{g.Key}:{g.Count()}")));
             var output = OS.GetEnvironment("ANTWORLD_DATA_DIR");
             if (!string.IsNullOrWhiteSpace(output)) VisualPreviewExporter.Export(engine.State.World, new PreparedSpriteCatalog(), output);
+            await ValidateCircularStreaming();
         }
         catch (Exception ex) { Report("Validação visual falhou", ex); GetTree().Quit(1); }
+    }
+    private async Task ValidateCircularStreaming()
+    {
+        var originalPosition = camera.Position; var originalZoom = camera.Zoom;
+        var before = new BinarySnapshotCodec().Encode(engine.State);
+        var checkedCells = 0; var scenarios = 0;
+        SetProcess(false); // Camera test must not advance biology or normalize the deliberately distant positions.
+        try
+        {
+            var width = engine.State.World.Width * rendering.TileSize;
+            foreach (var zoom in new[] { .25f, 1f })
+            foreach (var x in new[] { -4f * width - 8, -8f, 8f, width - 8f, width + 8f, 4f * width + 8 })
+            {
+                camera.Zoom = Vector2.One * zoom;
+                camera.Position = new(x, engine.State.World.Height * rendering.TileSize / 2f);
+                camera.ForceUpdateScroll();
+                await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+                await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+                var count = worldView.ValidateVisibleTerrainCoverage();
+                if (count == 0) throw new InvalidOperationException("Cenário lateral sem tiles sólidos para validar.");
+                if (worldView.Entities.RenderedCount > engine.State.Performance.MaxRenderedAgents)
+                    throw new InvalidOperationException("Cópias visuais excederam limite de indivíduos renderizados.");
+                checkedCells += count; scenarios++;
+            }
+            if (!before.SequenceEqual(new BinarySnapshotCodec().Encode(engine.State)))
+                throw new InvalidOperationException("Mover câmera alterou estado persistente da simulação.");
+            GD.Print($"AntWorld: streaming circular PASS — {scenarios} cenários, {checkedCells} células sólidas verificadas, emendas esquerda/direita, múltiplas voltas, zoom 0.25/1 e estado lógico preservado.");
+        }
+        finally
+        {
+            camera.Position = originalPosition; camera.Zoom = originalZoom; camera.ForceUpdateScroll(); SetProcess(true);
+        }
     }
     private async Task CaptureFrame(string path)
     {

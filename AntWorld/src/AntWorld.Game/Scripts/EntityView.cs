@@ -12,7 +12,7 @@ public partial class EntityView : Node2D
     private Texture2D antAtlas=null!;
     private Texture2D strongAtlas=null!;
     private Texture2D surfaceAtlas=null!;
-    public int RenderedCount => rendered.Count;
+    public int RenderedCount { get; private set; }
     private int[] resourceCells = [];
     private int Cell;
     public void Initialize(SimulationState state, int tileSize)
@@ -28,6 +28,22 @@ public partial class EntityView : Node2D
     public static Color SpeciesColor(int species) => species switch { 3 => new("b8cf42"), 2 => new("bd83ed"), 1 => new("82dbb5"), _ => new("f3997f") };
     public override void _Draw()
     {
+        var bounds = WorldViewport.Bounds(this).Grow(Cell * 2);
+        var world = State.World;
+        AgentRenderSelection.Select(State,new((int)Math.Floor(bounds.Position.X/Cell),(int)Math.Floor(bounds.Position.Y/Cell)),
+            new((int)Math.Ceiling(bounds.End.X/Cell),(int)Math.Ceiling(bounds.End.Y/Cell)),rendered);
+        var copies = HorizontalWrap.CopiesIntersecting(bounds.Position.X, bounds.End.X, world.Width * Cell);
+        RenderedCount = 0;
+        for (var copy = copies.First; copy <= copies.Last; copy++)
+        {
+            var offset = new Vector2(copy * world.Width * Cell, 0);
+            DrawSetTransform(offset);
+            DrawWorldCopy(new(bounds.Position - offset, bounds.Size));
+        }
+        DrawSetTransform(Vector2.Zero);
+    }
+    private void DrawWorldCopy(Rect2 bounds)
+    {
         var world = State.World;
         if (ShowPheromones)
         foreach (var colony in State.Colonies)
@@ -42,17 +58,17 @@ public partial class EntityView : Node2D
             var size = (float)Math.Clamp(world.Food[i] / 5, 2, 6);
             DrawRect(new(i % world.Width * Cell + 3, i / world.Width * Cell + 10 - size, 4, size), new("debd72"));
         }
-        var inverse=GetGlobalTransformWithCanvas().AffineInverse();
-        var top=inverse*Vector2.Zero; var bottom=inverse*GetViewportRect().Size;
-        AgentRenderSelection.Select(State,new((int)(top.X/Cell)-2,(int)(top.Y/Cell)-2),new((int)(bottom.X/Cell)+2,(int)(bottom.Y/Cell)+2),rendered);
         foreach(var ant in rendered)
         {
+            if (RenderedCount >= State.Performance.MaxRenderedAgents) break;
             var position=new Vector2(ant.Position.X*Cell+Cell/2f,ant.Position.Y*Cell+Cell*.6f);
             var row=ant.Stage switch { LifeStage.Egg=>4,LifeStage.Larva or LifeStage.Pupa=>3,_=>ant.Caste switch { AntCaste.Queen=>0,AntCaste.Soldier=>1,_=>2 } };
             var frame=ant.Movement is MovementState.Idle ? 0 : (int)(State.Tick/4%AntSpriteAtlas.FrameCount);
             var size=row==0?new Vector2(20,12):row==1?new(16,10):new Vector2(12,7);
             size *= Cell / 10f;
             var rect=new Rect2((position-size/2).Round(),size.Round());
+            if (!rect.Intersects(bounds)) continue;
+            RenderedCount++;
             if(world.HorizontalDelta(ant.PreviousPosition.X,ant.Position.X)<0) { rect.Position+=new Vector2(size.X,0); rect.Size=new(-size.X,size.Y); }
             var atlas = ant.SpeciesId switch { 3 => surfaceAtlas, 2 => strongAtlas, _ => antAtlas };
             DrawTextureRectRegion(atlas,rect,AntSpriteAtlas.FrameRegion(row,frame,ant.SpeciesId));

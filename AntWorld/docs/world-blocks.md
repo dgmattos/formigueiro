@@ -77,7 +77,7 @@ var extracted = world.Extract(new CellPosition(-1, 20), 99, 2);
 
 `GetCell(position, load: false)` combina seed e alterações sem carregar arrays. Portanto vizinhos descarregados continuam consultáveis, sem disparar geração recursiva. `ChunkManager.Load` materializa apenas a região solicitada e aplica suas alterações. O cache é limitado por `MaximumLoadedChunks`, com descarte por recência de carregamento; alterações ficam no diário lógico e sobrevivem ao descarte. Não há consultas SQLite durante ticks.
 
-O renderer cria/remove `TerrainChunkView` para os chunks intersectados pelo viewport, com margem de um chunk. A câmera e seus comandos permanecem os mesmos. A conectividade circular é lógica: o renderer não desenha cópias infinitas do mundo além dos limites da câmera.
+O renderer cria/remove representações `TerrainChunkView` por chunk e cópia circular visível, com margem de um chunk. O deslocamento usa a largura real do mundo, incluindo o último chunk parcial. Câmera, vegetação, objetos e agentes seguem a mesma topologia circular, sem duplicar o estado lógico. Veja [correção do streaming lateral e validação](circular-streaming-fix.md).
 
 Máscaras ortogonais de exposição produzem bordas e superfícies, recortes seguem material/preenchimento e mistura de rocha, água tem overlay e ferro tem marcadores. Escavar a borda invalida também chunks adjacentes, inclusive na emenda. Consultas visuais não modificam o modelo. A aparência acompanha os atlas de primavera, verão, outono e inverno.
 
