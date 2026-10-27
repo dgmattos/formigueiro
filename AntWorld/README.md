@@ -115,3 +115,5 @@ Ninhos orgânicos: câmaras, entradas, construção por operárias e snapshots e
 Escolta com reposição automática, patrulha e berçário próximo da rainha: [regras e limitações](docs/queen-escort-and-patrol.md).
 
 Coletoras consultam a rainha por contato antes de entregar provisões: [regras de alimentação e transporte](docs/collector-food-delivery.md).
+
+Clique em indivíduos ou blocos para inspecionar propriedades; indivíduos selecionados são acompanhados horizontalmente pela câmera. Esc fecha o card. Veja [inspeção do observador](docs/observer-inspection.md).

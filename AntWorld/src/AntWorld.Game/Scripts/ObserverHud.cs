@@ -10,6 +10,7 @@ public partial class ObserverHud : CanvasLayer
     private TextureButton pause=null!;
     private Texture2D playTexture=null!,pauseTexture=null!;
     private Label time=null!,status=null!;
+    public InspectionCard Inspector { get; }=new(){Name="InspectionCard",AnchorBottom=1,OffsetLeft=18,OffsetRight=338,OffsetTop=86,OffsetBottom=-54};
     private readonly Dictionary<int,TextureButton> speeds=[];
     public bool ShowsPlay { get; private set; }
     public int ActionButtonCount => speeds.Count+1;
@@ -33,6 +34,7 @@ public partial class ObserverHud : CanvasLayer
             button.Name=$"Speed{i+1}"; button.Pressed+=()=>SpeedRequested?.Invoke(multiplier); speeds.Add(multiplier,button); row.AddChild(button);
         }
         time=new Label { Position=new(18,18),MouseFilter=Control.MouseFilterEnum.Ignore }; root.AddChild(time);
+        root.AddChild(Inspector);
         status=new Label { MouseFilter=Control.MouseFilterEnum.Ignore }; status.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.BottomLeft); status.Position=new(18,-32); root.AddChild(status);
         status.Text="Câmera: WASD / arrastar botão direito · Zoom: rolagem ou +/− · Tempo: espaço e 1–3";
     }
@@ -50,6 +52,8 @@ public partial class ObserverHud : CanvasLayer
         var rhythm=playback.IsPaused?"Pausado":$"Tempo: {playback.SelectedMultiplier}×";
         if(!playback.IsPaused && playback.Clock.PendingSeconds>2) rhythm+=" · Aceleração limitada pelo desempenho";
         status.Text=$"{rhythm} · Câmera: WASD / botão direito · Zoom: rolagem ou +/− · Tempo: espaço e 1–3";
+        Inspector.OffsetTop=time.Position.Y+time.Size.Y+14;
+        Inspector.Refresh(state);
         ShowsPlay=playback.IsPaused;
         pause.TextureNormal=ShowsPlay?playTexture:pauseTexture;
         pause.TooltipText=ShowsPlay?"Retomar a simulação [Espaço]":"Pausar toda a simulação [Espaço]";

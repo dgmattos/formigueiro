@@ -79,6 +79,7 @@ public partial class Main : Node2D
             engine.AntDied -= diagnostics.RecordDeath;
             diagnostics.Dispose(); diagnostics = null;
         }
+        hud.Inspector.Clear();
         engine = new(state); playback = new(settings); sampleSeconds = 0; sampleTicks = 0;
         diagnosticSeconds = 0; diagnosticTicks = 0; diagnosticFailureReported = false;
         worldView = new WorldView(); worldView.Initialize(state, rendering); AddChild(worldView);
@@ -126,7 +127,10 @@ public partial class Main : Node2D
         if (GetViewport().GuiGetFocusOwner() is LineEdit) return;
         var movement = new Vector2((Input.IsPhysicalKeyPressed(Key.D) ? 1 : 0) - (Input.IsPhysicalKeyPressed(Key.A) ? 1 : 0),
             (Input.IsPhysicalKeyPressed(Key.S) ? 1 : 0) - (Input.IsPhysicalKeyPressed(Key.W) ? 1 : 0));
+        var following=worldView.Entities.FollowPosition();
+        if(following.HasValue)movement.X=0;
         camera.Position += movement * (float)delta * 650 / camera.Zoom.X;
+        if(following is {} followed)camera.Position=new(followed.X,camera.Position.Y);
         camera.Position = new((float)HorizontalWrap.Normalize(camera.Position.X, engine.State.World.Width * rendering.TileSize), camera.Position.Y);
         camera.ForceUpdateScroll();
     }
@@ -135,6 +139,11 @@ public partial class Main : Node2D
         if (input is InputEventMouseMotion motion && Input.IsMouseButtonPressed(MouseButton.Right)) camera.Position -= motion.Relative / camera.Zoom;
         if (input is InputEventMouseButton { Pressed: true } mouse)
         {
+            if(mouse.ButtonIndex==MouseButton.Left)
+            {
+                SelectAt(worldView.Entities.GetGlobalTransformWithCanvas().AffineInverse()*mouse.Position);
+                GetViewport().SetInputAsHandled();
+            }
             if (mouse.ButtonIndex is MouseButton.WheelUp or MouseButton.WheelDown)
             {
                 AdjustCameraZoom(mouse.ButtonIndex == MouseButton.WheelUp);
@@ -144,6 +153,7 @@ public partial class Main : Node2D
         if (input is not InputEventKey { Pressed: true, Echo: false } key) return;
         switch (key.Keycode)
         {
+            case Key.Escape: ClearSelection(); break;
             case Key.Plus:
             case Key.Equal:
             case Key.KpAdd: AdjustCameraZoom(true); break;
@@ -154,6 +164,22 @@ public partial class Main : Node2D
             case Key.Key2: SetSpeed(settings.X2); break;
             case Key.Key3: SetSpeed(settings.X3); break;
         }
+    }
+    private void SelectAt(Vector2 point)
+    {
+        if(worldView.Entities.HitTest(point) is {} ant)hud.Inspector.Select(ant,engine.State);
+        else
+        {
+            var cell=new CellPosition((int)Math.Floor(point.X/rendering.TileSize),(int)Math.Floor(point.Y/rendering.TileSize));
+            if(!engine.State.World.Contains(cell)){ClearSelection();return;}
+            hud.Inspector.Select(cell,engine.State);
+        }
+        worldView.Entities.SelectedAnt=hud.Inspector.SelectedAnt;
+        worldView.Entities.SelectedBlock=hud.Inspector.SelectedBlock;
+    }
+    private void ClearSelection()
+    {
+        hud.Inspector.Clear();worldView.Entities.SelectedAnt=null;worldView.Entities.SelectedBlock=null;
     }
     private void StepSimulation()
     {
@@ -240,6 +266,7 @@ public partial class Main : Node2D
         {
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await ValidateInspection();
             worldView.ValidateTerrainLayers();
             var population = engine.State.World.Vegetation.All.ToArray();
             if (preset.World.Vegetation.Enabled && population.Length == 0) throw new InvalidOperationException("Preset sem vegetação.");

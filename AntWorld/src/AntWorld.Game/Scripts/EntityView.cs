@@ -9,6 +9,27 @@ public partial class EntityView : Node2D
     public bool ShowPheromones { get; set; }
     public int? SelectedColony { get; set; }
     private readonly List<Ant> rendered=[];
+    private readonly List<(Ant Ant,Transform2D Transform,Rect2 Bounds)> hitRegions=[];
+    public Ant? SelectedAnt { get; set; }
+    public CellPosition? SelectedBlock { get; set; }
+    public Ant? HitTest(Vector2 point)
+    {
+        for(var i=hitRegions.Count-1;i>=0;i--)
+        {var hit=hitRegions[i];if(hit.Ant.IsAlive && hit.Bounds.HasPoint(hit.Transform.AffineInverse()*point))return hit.Ant;}
+        return null;
+    }
+    public Vector2? DrawnCenter(int id)
+    {
+        foreach(var hit in hitRegions)if(hit.Ant.Id==id)return hit.Transform*hit.Bounds.GetCenter();
+        return null;
+    }
+    public Vector2? FollowPosition()
+    {
+        if(SelectedAnt is not {IsAlive:true} ant)return null;
+        if(!motion.TryGetValue(ant.Id,out var track))motion[ant.Id]=track=new(State.World,ant);
+        if(ant.CarrierId is {} carrierId && motion.TryGetValue(carrierId,out var carrierTrack))track=carrierTrack;
+        return new((float)HorizontalWrap.Normalize(track.X,State.World.Width)*Cell,(float)track.Y*Cell);
+    }
     private readonly Dictionary<int,AgentMotionTrack> motion=[];
     private readonly HashSet<int> visibleIds=[];
     public double PresentationTime { get; set; }
@@ -21,6 +42,8 @@ public partial class EntityView : Node2D
             var carrier=ant.CarrierId is {} id?rendered.Find(a=>a.Id==id):null;
             track.Capture(State.World,ant,carrier?.MovementSpeed??ant.MovementSpeed);
         }
+        if(SelectedAnt is {IsAlive:true} selected && !rendered.Contains(selected) && motion.TryGetValue(selected.Id,out var selectedTrack))
+            selectedTrack.Capture(State.World,selected,selected.MovementSpeed);
     }
     private Texture2D antAtlas=null!;
     private Texture2D strongAtlas=null!;
@@ -51,13 +74,14 @@ public partial class EntityView : Node2D
         var world = State.World;
         AgentRenderSelection.Select(State,new((int)Math.Floor(bounds.Position.X/Cell),(int)Math.Floor(bounds.Position.Y/Cell)),
             new((int)Math.Ceiling(bounds.End.X/Cell),(int)Math.Ceiling(bounds.End.Y/Cell)),rendered);
+        hitRegions.Clear();
         visibleIds.Clear();
         foreach(var ant in rendered)
         {
             visibleIds.Add(ant.Id);
             if(!motion.ContainsKey(ant.Id))motion.Add(ant.Id,new(world,ant));
         }
-        foreach(var id in motion.Keys.Where(id=>!visibleIds.Contains(id)).ToArray())motion.Remove(id);
+        foreach(var id in motion.Keys.Where(id=>!visibleIds.Contains(id)&&id!=SelectedAnt?.Id).ToArray())motion.Remove(id);
         var copies = HorizontalWrap.CopiesIntersecting(bounds.Position.X, bounds.End.X, world.Width * Cell);
         RenderedCount = 0;
         for (var copy = copies.First; copy <= copies.Last; copy++)
@@ -113,9 +137,12 @@ public partial class EntityView : Node2D
             var atlas = ant.SpeciesId switch { 3 => surfaceAtlas, 2 => strongAtlas, _ => antAtlas };
             DrawSetTransform(copyOffset+pivot,angle);
             DrawTextureRectRegion(atlas,rect,AntSpriteAtlas.FrameRegion(row,frame,ant.SpeciesId));
+            hitRegions.Add((ant,new Transform2D(angle,copyOffset+pivot),rect.Abs()));
+            if(ant==SelectedAnt)DrawRect(rect.Abs().Grow(1),new Color("ffe399"),false,1);
             if(ant.Carrying>.1) DrawRect(new(0,-size.Y-2,2,2),new(ExcavationSpoil.Is(world,ant.CargoResourceId) ? "9b8c7b" : "f3d988"));
             DrawSetTransform(copyOffset);
         }
+        if(SelectedBlock is {} selectedBlock)DrawRect(new(selectedBlock.X*Cell,selectedBlock.Y*Cell,Cell,Cell),new Color("ffe399"),false,1.5f);
         if (State.RainIntensity <= 0) return;
         for (var i = 0; i < 90; i++)
         {
