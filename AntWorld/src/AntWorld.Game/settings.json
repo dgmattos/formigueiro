@@ -145,27 +145,27 @@
       "speciesId": 0,
       "nestPositionRatio": 0.25,
       "queens": 1,
-      "workers": 21,
-      "soldiers": 3,
-      "larvae": 2,
+      "workers": 3,
+      "soldiers": 2,
+      "larvae": 0,
       "initialFood": 150
     },
     {
       "speciesId": 2,
       "nestPositionRatio": 0.75,
       "queens": 1,
-      "workers": 21,
-      "soldiers": 3,
-      "larvae": 2,
+      "workers": 3,
+      "soldiers": 2,
+      "larvae": 0,
       "initialFood": 150
     },
     {
       "speciesId": 3,
       "nestPositionRatio": 0.5,
       "queens": 1,
-      "workers": 21,
-      "soldiers": 3,
-      "larvae": 2,
+      "workers": 3,
+      "soldiers": 2,
+      "larvae": 0,
       "initialFood": 150
     }
   ],

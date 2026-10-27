@@ -55,7 +55,7 @@ As verificações automatizadas do Godot estão em `artifacts/foraging-godot-smo
 
 ## Redução global da escavação
 
-A velocidade de escavação de todas as espécies recebeu mais **50% de redução sobre a taxa anterior**, após a primeira redução de 60%. `ExcavationRules.GlobalSpeedMultiplier = 0.2`: cada ação de trabalho ocorre a cada 50 ticks (2,5 segundos simulados), em vez dos 25 ticks anteriores. O teste mede 20 ações em 1.000 ticks para cada uma das quatro definições de espécie, contra 40 na versão anterior e 100 originalmente. A redução acumulada é de **80%**.
+A velocidade de escavação de todas as espécies recebeu mais **50% de redução sobre a taxa anterior**, após a primeira redução de 60%. Posteriormente foi aplicada mais uma redução de 20%: `ExcavationRules.GlobalSpeedMultiplier = 0.16`. A cadência atual alterna 62/63 ticks (média de 3,125 segundos simulados). O teste mede 16 ações em 1.000 ticks para cada uma das quatro definições de espécie, contra 20 antes desta última redução e 100 originalmente. A redução acumulada é de **84%**. A velocidade efetiva de movimentação também recebeu fator global de 0,8.
 
 A redução foi aplicada ao intervalo, mantendo trabalho e custo energético por ação e preservando os coeficientes relativos de solo/rocha das espécies. Isso também evita que o arredondamento para pelo menos uma unidade de material anule a redução em indivíduos fracos. Movimento, calendário e demais ações mantêm suas próprias frequências; pausa e aceleração continuam operando sobre os ticks simulados.
 

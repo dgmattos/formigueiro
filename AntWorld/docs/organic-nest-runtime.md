@@ -1,6 +1,6 @@
 # Ninhos orgânicos: implementação
 
-A branch `feature/organic-nest-generation` continha modelos de domínio e critérios de aceite, mas ainda não gerava terreno nem integrava a construção. A implementação mantém as mudanças mais recentes da `main`: navegação com apoio em chão, paredes e teto, busca de alimento e intervalo de escavação de 50 ticks. Não altera os multiplicadores de velocidade do usuário.
+A branch `feature/organic-nest-generation` continha modelos de domínio e critérios de aceite, mas ainda não gerava terreno nem integrava a construção. A implementação mantém as mudanças mais recentes da `main`: navegação com apoio em chão, paredes e teto, busca de alimento e cadência de escavação centralizada em `ExcavationRules`. Não altera os multiplicadores de velocidade do usuário.
 
 ## Geração e conectividade
 

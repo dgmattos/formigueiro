@@ -73,7 +73,7 @@ public sealed class OrganicNestTests
         var workload=requiredActions*4; // Allows dependencies and supply trips; no ecological multi-day run.
         for(var step=0;step<workload&&layout.Construction.HasPending;step++)
         {
-            s.Tick+=ExcavationRules.ActionIntervalTicks;construction.Step(s,colony);
+            s.Tick+=(long)Math.Ceiling(ExcavationRules.ActionIntervalTicks);construction.Step(s,colony);
             Assert.InRange(layout.Construction.Jobs.Count(j=>j.Status is NestStructureStatus.Available or NestStructureStatus.InProgress),0,6);
             foreach(var ant in workers)
             {

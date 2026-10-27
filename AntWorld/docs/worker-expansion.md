@@ -62,4 +62,6 @@ O CLI informa coletores, cavadores, nível de expansão, profundidades e entulho
 
 Atualização posterior: o formato atual é v9 e o eixo do poço fica separado da âncora da câmara. A caminhada agora exige apoio ortogonal e coletoras compartilham conhecimento dos caminhos. [Detalhes](foraging-and-surface-navigation.md). As medições acima descrevem a versão v8.
 
-A escavação recebeu redução global de 60% e, depois, mais 50% sobre a taxa reduzida, preservando os coeficientes relativos entre espécies/materiais e o custo por ação. Intervalo atual: 50 ticks (2,5 segundos simulados), equivalente a 20% da velocidade original.
+A escavação recebeu redução global de 60% e, depois, mais 50% sobre a taxa reduzida, preservando os coeficientes relativos entre espécies/materiais e o custo por ação. A redução adicional de 20% passa a taxa para 16% da original: intervalo médio de 62,5 ticks (3,125 segundos simulados), alternando 62/63 ticks sem arredondar a taxa.
+
+Movimentação: multiplicador global de 0,8 sobre a velocidade efetiva anterior, aplicado a todas as espécies e castas móveis, preservando bônus de superfície, carga, saúde e energia. O settings do jogo inicia cada colônia com 1 rainha, 3 operárias, 2 soldados e nenhuma larva (6 indivíduos). O preset reduzido vale para novas partidas; saves preservam suas populações.

@@ -12,7 +12,7 @@ public sealed class AntBehaviorSystem(ActionCatalog actions)
         {
             if(state.Tick%(SimulationState.TicksPerSecond/state.Performance.MovementTicksPerSecond)!=0) return false;
         }
-        else if((state.Tick+ant.Id)%(ant.CurrentTask == AntTask.Dig ? ExcavationRules.ActionIntervalTicks : 10)!=0) return false;
+        else if(ant.CurrentTask == AntTask.Dig ? !ExcavationRules.IsActionTick(state.Tick,ant.Id) : (state.Tick+ant.Id)%10!=0) return false;
         return actions.Get(ant.CurrentTask).Execute(context);
     }
 }
