@@ -14,6 +14,7 @@ internal static class WorldSnapshotCodec
         MushroomSettingsCodec.Write(w, c.Mushrooms);
         VegetationSnapshotCodec.WriteSettings(w, c.Vegetation);
         w.Write(c.Nests.NormalBaseDepth); w.Write(c.Nests.NormalDepthMultiplier); w.Write(c.Nests.StrongUndergroundRatio); w.Write(c.Nests.SurfaceDepth);
+        NestSnapshotCodec.Write(w,c.NestLayout);
         var custom = world.ResourceCatalog.Definitions.Where(d => d.Id > ResourceIds.BrownMushroom).ToArray();
         if (custom.Length > 1024) throw new InvalidDataException("Limite de catálogo excedido.");
         w.Write(custom.Length);
@@ -42,6 +43,7 @@ internal static class WorldSnapshotCodec
         c = c with { Mushrooms = MushroomSettingsCodec.Read(r) };
         c = c with { Vegetation = VegetationSnapshotCodec.ReadSettings(r) };
         c = c with { Nests = new(r.ReadInt32(), r.ReadDouble(), r.ReadDouble(), version >= 6 ? r.ReadInt32() : 2) };
+        if(version>=10)c=c with {NestLayout=NestSnapshotCodec.Read<NestLayoutSettings>(r)};
         var world = new WorldGenerator().Generate(c);
         var customCount = Count(r, 1024);
         for (var i = 0; i < customCount; i++)
@@ -76,9 +78,9 @@ internal static class WorldSnapshotCodec
         }
         // Apply removals before births: a full chunk may have changed all occupied mushroom sites.
         foreach (var entry in patches)
-            if (entry.Stack.Quantity == 0) world.SetResource(entry.Position, entry.ResourceId, entry.Stack);
+            if (entry.Stack.Quantity == 0) world.RestoreResourceChange(entry.Position, entry.ResourceId, entry.Stack);
         foreach (var entry in patches)
-            if (entry.Stack.Quantity != 0) world.SetResource(entry.Position, entry.ResourceId, entry.Stack);
+            if (entry.Stack.Quantity != 0) world.RestoreResourceChange(entry.Position, entry.ResourceId, entry.Stack);
         VegetationSnapshotCodec.ReadChanges(r, world);
         return world;
     }

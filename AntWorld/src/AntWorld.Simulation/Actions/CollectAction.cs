@@ -25,6 +25,6 @@ public sealed class CollectAction() : AntAction(AntTask.Collect,AntCapability.Co
             position = c.Ant.Position; type = c.Ant.CargoResourceId;
             return c.State.World.ResourceCatalog.Get(type).Extractable && c.State.World.GetResource(position, type).Quantity > 0;
         }
-        return FoodSources.TryCollectible(c.State.World, c.Ant, out position, out type);
+        return FoodSources.TryCollectible(c.State.World, c.Ant, out position, out type, preferLargest:true);
     }
 }

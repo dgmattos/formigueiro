@@ -19,7 +19,7 @@ public sealed class WorkerExpansionPersistenceTests
         worker.CurrentTask=AntTask.Carry;worker.Destination=ExcavationSpoil.Exit(state.World,colony);
         ExcavationSpoil.Drop(state.World,worker.Destination.Value,3);
         var codec=new BinarySnapshotCodec();var bytes=codec.Encode(state);var restored=codec.Decode(bytes);
-        Assert.Equal(8,BitConverter.ToInt32(bytes,8));Assert.Equal(bytes,codec.Encode(restored));
+        Assert.Equal(BinarySnapshotCodec.Version,BitConverter.ToInt32(bytes,8));Assert.Equal(bytes,codec.Encode(restored));
         Assert.Equal(1,restored.Colonies[0].ExpansionLevel);Assert.Equal(colony.Nest,restored.Colonies[0].Nest);
         Assert.Equal(WorkerRole.Digger,restored.Ants.Single(a=>a.Id==worker.Id).WorkerRole);
         Assert.Equal(3,restored.World.GetResource(worker.Destination.Value,worker.CargoResourceId).Quantity);

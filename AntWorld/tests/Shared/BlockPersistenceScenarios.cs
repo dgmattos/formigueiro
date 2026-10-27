@@ -40,7 +40,7 @@ public static class BlockPersistenceScenarios
         Check.That(Math.Abs(large.Length - small.Length) < 2000 && large.Length < 40000, "Snapshot de mundo base cresceu com todas as células.");
         var invalid = (byte[])small.Clone(); invalid[8] = 1;
         try { codec.Decode(invalid); throw new InvalidOperationException("Versão antiga aceita."); }
-        catch (InvalidDataException ex) { Check.That(ex.Message.Contains("formato 8"), "Rejeição não explica versão."); }
+        catch (InvalidDataException ex) { Check.That(ex.Message.Contains("formato 10"), "Rejeição não explica versão."); }
         Check.That(codec.Decode(large).World.Configuration == largeState.World.Configuration, "Configuração geológica não recuperada.");
     }
     public static void Run() { ModifiedCellsAndResources(); SeedBasedSizeAndVersion(); }

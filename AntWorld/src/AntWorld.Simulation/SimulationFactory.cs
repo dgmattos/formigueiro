@@ -16,9 +16,10 @@ public static class SimulationFactory
         {
             var species = spawn.SpeciesId;
             var x = (int)(world.Width * spawn.NestPositionRatio);
-            var nest = ExcavateNest(world, x, species);
+            var layout = NestFoundation.Create(world, state.NextColonyId, x, species, state.Colonies.Select(c=>c.Layout!).Where(n=>n is not null).ToArray());
+            var nest = layout.Designated(layout.QueenChamberId)!.Access;
             var genes = species == 1 ? Genome.Moss : Genome.Ember;
-            var colony = new Colony(state.NextColonyId++, species, nest, genes) { Food = spawn.InitialFood };
+            var colony = new Colony(state.NextColonyId++, species, nest, genes) { Food = spawn.InitialFood, ShaftX = x, Layout = layout };
             state.Colonies.Add(colony);
             colony.Signature=ChemicalSignature.ForColony(configuration.Seed,colony.Id,species);
             state.Pheromones[colony.Id] = new(world.CellCount);
@@ -55,8 +56,20 @@ public static class SimulationFactory
             world.Terrain[world.Index(brood)] = TerrainKind.Soil;
             world.Dig(brood);
         }
+        // Initial construction provides a supporting wall where the shaft crosses a natural cavern.
+        for (var y = world.Surface[x]; y <= broodY; y++)
+        {
+            if (y == nestY || y == broodY) continue;
+            if (world.ContactSide(new(x,y)) == SupportSide.None) world.SetTerrain(new(x-1,y),TerrainKind.Soil);
+        }
+        foreach (var y in new[] { nestY, broodY })
+        for (var dx = -2; dx <= 2; dx++)
+        {
+            if (dx == 0 || world.ContactSide(new(x+dx,y)) != SupportSide.None) continue;
+            world.SetTerrain(new(x+dx,y+1),TerrainKind.Soil);
+        }
         PopulateNestMushrooms(world, x, world.Surface[x] - 1, broodY);
-        return new(x, nestY);
+        return world.Normalize(new(x + 1, nestY));
     }
 
     private static void PopulateNestMushrooms(WorldMap world, int x, int top, int bottom)

@@ -8,7 +8,10 @@
 *.db-shm
 *.db-wal
 *.antworld
-artifacts/
+artifacts/*
+!artifacts/nest-validation-report.json
 .packages/
 .dotnet/
 .tools/
+
+!tests/AntWorld.Persistence.Tests/Fixtures/*.antworld

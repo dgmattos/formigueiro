@@ -23,9 +23,17 @@ public sealed class ColonySystem
         if(workers.Length<8) return;
         var x=state.World.ChunkManager.NormalizeX(parent.Nest.X+20+state.Random.NextInt(35));
         if(state.Colonies.Any(c=>c.IsAlive&&Math.Abs(state.World.HorizontalDelta(c.Nest.X,x))<18)) return;
-        var nest=SimulationFactory.ExcavateNest(state.World,x,parent.Species);
+        NestLayout layout;
+        try
+        {
+            layout=NestFoundation.Create(state.World,state.NextColonyId,x,parent.Species,
+                state.Colonies.Where(c=>c.Layout is not null).Select(c=>c.Layout!).ToArray(),
+                workers.Select(a=>a.Position).Append(queen.Position).ToArray());
+        }
+        catch(InvalidOperationException) { return; } // No terrain or resources committed on an inaccessible foundation.
+        var nest=layout.Designated(layout.QueenChamberId)!.Access;
         var daughter=new Colony(state.NextColonyId++,parent.Species,nest,queen.Genes,parent.Generation+1)
-        { Food=70,Queen=queen,QueenId=queen.Id,Signature=parent.Signature.Individual(queen.Id) };
+        { Layout=layout,ShaftX=x,Food=70,Queen=queen,QueenId=queen.Id,Signature=parent.Signature.Individual(queen.Id) };
         parent.Food-=70; state.Colonies.Add(daughter); state.Pheromones[daughter.Id]=new(state.World.CellCount) { LastUpdateTick=state.Tick };
         queen.JoinColony(daughter); foreach(var worker in workers) worker.JoinColony(daughter);
         state.Relations.Set(parent.Id,daughter.Id,ColonyRelation.Tolerated);

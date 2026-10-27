@@ -2,19 +2,7 @@ namespace AntWorld.Domain;
 
 /// <summary>Logical nest topology. Physical access remains authoritative in WorldMap.</summary>
 public enum NestChamberType : byte { Queen, Brood, FoodStorage, Rest, Fungus, Waste, General }
-public enum NestStructureStatus : byte { Planned, InProgress, Completed, Blocked, Cancelled }
-
-public sealed record NestChamber(
-    int Id, NestChamberType Type, CellPosition Center, int RadiusX, int RadiusY,
-    NestStructureStatus Status = NestStructureStatus.Planned);
-
-public sealed record NestTunnel(
-    int Id, int FromChamberId, int ToChamberId, IReadOnlyList<CellPosition> Path,
-    NestStructureStatus Status = NestStructureStatus.Planned);
-
-public sealed record NestEntrance(
-    int Id, CellPosition Position, int ChamberId,
-    NestStructureStatus Status = NestStructureStatus.Planned);
+public enum NestStructureStatus : byte { Planned, InProgress, Completed, Blocked, Cancelled, WaitingDependencies, Available }
 
 /// <summary>
 /// Topology is descriptive: a planned edge never implies a traversable path.
@@ -27,6 +15,19 @@ public sealed class NestLayout
     public List<NestTunnel> Tunnels { get; } = [];
     public List<NestEntrance> Entrances { get; } = [];
     public int Revision { get; private set; }
+    public int QueenChamberId { get; set; } = 1;
+    public int BroodChamberId { get; set; } = 2;
+    public int FoodStorageChamberId { get; set; } = 3;
+    public NestConstructionPlan Construction { get; } = new();
+    public List<string> Diagnostics { get; } = [];
+    public NestChamber? Designated(int id)
+    {
+        foreach(var chamber in Chambers)if(chamber.Id==id&&chamber.Status==NestStructureStatus.Completed)return chamber;
+        return null;
+    }
+    public void Touch() => Revision++;
+    public void RestoreRevision(int revision) { ArgumentOutOfRangeException.ThrowIfNegative(revision); Revision=revision; }
+
 
     public NestLayout(int colonyId) => ColonyId = colonyId;
 
@@ -67,10 +68,10 @@ public sealed class NestLayout
 
     public bool IsConnected(bool completedOnly = false)
     {
-        var nodes = Chambers.Where(c => !completedOnly || c.Status == NestStructureStatus.Completed).Select(c => c.Id).ToHashSet();
+        var nodes = Chambers.Where(c => c.Status != NestStructureStatus.Cancelled && (!completedOnly || c.Status == NestStructureStatus.Completed)).Select(c => c.Id).ToHashSet();
         if (nodes.Count <= 1) return true;
         var adjacency = nodes.ToDictionary(id => id, _ => new List<int>());
-        foreach (var t in Tunnels.Where(t => !completedOnly || t.Status == NestStructureStatus.Completed))
+        foreach (var t in Tunnels.Where(t => t.Status != NestStructureStatus.Cancelled && (!completedOnly || t.Status == NestStructureStatus.Completed)))
         {
             if (!nodes.Contains(t.FromChamberId) || !nodes.Contains(t.ToChamberId)) continue;
             adjacency[t.FromChamberId].Add(t.ToChamberId);
@@ -88,8 +89,8 @@ public sealed class NestLayout
 
     public double AlternativeRouteRatio(bool completedOnly = false)
     {
-        var nodes = Chambers.Where(c => !completedOnly || c.Status == NestStructureStatus.Completed).Select(c => c.Id).ToHashSet();
-        var edges = Tunnels.Count(t => (!completedOnly || t.Status == NestStructureStatus.Completed) &&
+        var nodes = Chambers.Where(c => c.Status != NestStructureStatus.Cancelled && (!completedOnly || c.Status == NestStructureStatus.Completed)).Select(c => c.Id).ToHashSet();
+        var edges = Tunnels.Count(t => t.Status != NestStructureStatus.Cancelled && (!completedOnly || t.Status == NestStructureStatus.Completed) &&
                                        nodes.Contains(t.FromChamberId) && nodes.Contains(t.ToChamberId));
         if (edges == 0 || !IsConnected(completedOnly)) return 0;
         return Math.Max(0, edges - nodes.Count + 1) / (double)edges;

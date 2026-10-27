@@ -4,11 +4,17 @@ public sealed class Colony(int id, int species, CellPosition nest, Genome queenG
 {
     public int Id { get; } = id;
     public int Species { get; } = species;
-    public CellPosition Nest { get; private set; } = nest;
+    private CellPosition legacyNest = nest;
+    public NestLayout? Layout { get; set; }
+    public CellPosition Nest => Layout?.Designated(Layout.QueenChamberId)?.Access ?? legacyNest;
+    public CellPosition FoodStorage => Layout?.Designated(Layout.FoodStorageChamberId)?.Access ?? Nest;
+    public int ShaftX { get; set; } = nest.X;
+    public ForagingMemory Foraging { get; } = new();
+    public void RelocateChamber(CellPosition position) { Layout=null; legacyNest=position; }
     public int ExpansionLevel { get; private set; }
     public void AdvanceFloor()
     {
-        Nest = BroodChamber;
+        legacyNest = BroodChamber; Layout=null;
         ExpansionLevel++;
     }
     public void RestoreExpansionLevel(int level)
@@ -17,7 +23,7 @@ public sealed class Colony(int id, int species, CellPosition nest, Genome queenG
         ExpansionLevel = level;
     }
     public const int BroodChamberDepth = 4;
-    public CellPosition BroodChamber => new(Nest.X, Nest.Y + BroodChamberDepth);
+    public CellPosition BroodChamber => Layout?.Designated(Layout.BroodChamberId)?.Access ?? new(Nest.X, Nest.Y + BroodChamberDepth);
     public Genome QueenGenome { get; } = queenGenome;
     public int Generation { get; } = generation;
     public double Food { get; set; } = 150;

@@ -10,7 +10,7 @@ public sealed class SurvivalPersistenceTests
     {
         var state=SimulationFactory.Create(new(42,64,48),survival:new(EnergyPerDay:22,MinimumEggIntervalDays:.5,FoodHydration:.4));
         var codec=new BinarySnapshotCodec();var bytes=codec.Encode(state);var restored=codec.Decode(bytes);
-        Assert.Equal(8,BitConverter.ToInt32(bytes,8));Assert.Equal(state.Survival,restored.Survival);
+        Assert.Equal(BinarySnapshotCodec.Version,BitConverter.ToInt32(bytes,8));Assert.Equal(state.Survival,restored.Survival);
         new SimulationEngine(state).Run(100);new SimulationEngine(restored).Run(100);Assert.Equal(codec.Encode(state),codec.Encode(restored));
     }
     [Fact]

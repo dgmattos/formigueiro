@@ -32,6 +32,9 @@ public sealed class WorkerExpansionTests
     {
         var s=Create();var worker=s.Ants.First(a=>a.Caste==AntCaste.Worker);worker.Energy=100;
         s.World.SetResource(worker.Position,ResourceIds.Food,new(10,10,10000));
+        s.Colonies[0].RelocateChamber(SimulationFactory.ExcavateNest(s.World,s.Colonies[0].ShaftX));
+        worker.Position=s.Colonies[0].Nest;
+        s.World.SetTerrain(new(s.Colonies[0].Nest.X+4,s.Colonies[0].BroodChamber.Y),TerrainKind.Soil);
         var decision=new DecisionSystem(new());var c=Context(s,worker);
         worker.WorkerRole=WorkerRole.Collector;decision.Decide(c);Assert.Equal(AntTask.Collect,worker.CurrentTask);
         worker.WorkerRole=WorkerRole.Digger;decision.Decide(c);Assert.Equal(AntTask.Move,worker.CurrentTask);
@@ -41,9 +44,11 @@ public sealed class WorkerExpansionTests
     }
 
     [Fact]
-    public void WorkersExcavateBothSidesAndLowerFloorThenRelocateQueenAndEgg()
+    public void LegacyNestsStillExpandAndRelocateQueenAndEgg()
     {
-        var s=Create();var colony=s.Colonies[0];var initial=colony.Nest;var nursery=colony.BroodChamber;
+        var s=Create();var colony=s.Colonies[0];colony.RelocateChamber(SimulationFactory.ExcavateNest(s.World,colony.ShaftX));
+        foreach(var ant in s.Ants)ant.Position=ant.PreviousPosition=colony.Nest;
+        var initial=colony.Nest;var nursery=colony.BroodChamber;
         // A known solid site makes every new opening attributable to workers, not procedural caves.
         for(var y=nursery.Y;y<s.World.Height;y++) for(var dx=-5;dx<=5;dx++)
             s.World.SetTerrain(new(initial.X+dx,y),TerrainKind.Soil);

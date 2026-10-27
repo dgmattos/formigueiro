@@ -63,7 +63,7 @@ public sealed class WorldMap
         RemoveUnsupportedMushrooms(p);
         if (p.Y + 1 < Height) RemoveUnsupportedMushrooms(new(p.X, p.Y + 1));
         if (previous.SolidFill != cell.SolidFill || previous.RockFraction != cell.RockFraction || previous.Flags.HasFlag(CellFlags.Excavated) != cell.Flags.HasFlag(CellFlags.Excavated)) TerrainRevision++;
-        if (previous.IsPassable != cell.IsPassable || previous.Flags.HasFlag(CellFlags.Excavated) != cell.Flags.HasFlag(CellFlags.Excavated)) NavigationRevision++;
+        if ((previous.SolidFill == 0) != (cell.SolidFill == 0) || previous.Flags.HasFlag(CellFlags.Excavated) != cell.Flags.HasFlag(CellFlags.Excavated)) NavigationRevision++;
         visualRevision++;
         // Adjacent chunks can change autotile edges, including at the circular seam.
         for (var dy = -1; dy <= 1; dy++)
@@ -95,6 +95,13 @@ public sealed class WorldMap
         ChunkManager.SetResource(p, id, stack);
         if ((previous.Capacity > 0) != (stack.Capacity > 0)) ResourceLayoutRevision++;
         if (id != ResourceIds.Food) chunkRevisions[ChunkManager.ChunkId(p)] = ++visualRevision;
+    }
+    // Snapshot replay preserves even explicit deltas equal to the procedural baseline.
+    // Terrain replay can temporarily invalidate habitats before all cells have been restored.
+    public void RestoreResourceChange(CellPosition position,ushort id,ResourceStack stack)
+    {
+        SetResource(position,id,stack); // Apply the same catalog, habitat and deposit-budget validation.
+        ChunkManager.SetResource(position,id,stack);
     }
     public int CountMushrooms(ChunkRegion region)
     {
@@ -162,23 +169,27 @@ public sealed class WorldMap
         }
         return result;
     }
-    public bool IsOpen(CellPosition p) => Contains(p) && GetCell(p, false).IsPassable;
+    public bool IsOpen(CellPosition p) => Contains(p) && GetCell(p, false).SolidFill == 0;
     // Ants occupy open cells above the ground. Cave floors/ceilings are not surface.
     public bool IsOnExposedSurface(CellPosition p) => Contains(p) && IsOpen(p) &&
         p.Y + 1 < Height && TopSolidY(p.X) == p.Y + 1;
     public bool CanDig(CellPosition p) => Contains(p) && GetCell(p, false).SolidFill > 0;
-    public bool CanWalk(CellPosition p)
+    public SupportSide ContactSide(CellPosition p, SupportSide preferred = SupportSide.Down)
     {
-        if (!IsOpen(p) || Vegetation.BlocksMovement(this, p)) return false;
-        if (GetCell(p, false).Flags.HasFlag(CellFlags.Excavated)) return true;
-        for (var dy = -1; dy <= 1; dy++)
-        for (var dx = -1; dx <= 1; dx++)
-        {
-            var neighbor = new CellPosition(p.X + dx, p.Y + dy);
-            if (Contains(neighbor) && !IsOpen(neighbor)) return true;
-        }
-        return false;
+        if (!IsOpen(p)) return SupportSide.None;
+        if (HasContact(p, preferred)) return preferred;
+        for (var side = SupportSide.Down; side <= SupportSide.Right; side++)
+            if (HasContact(p, side)) return side;
+        return SupportSide.None;
     }
+    private bool HasContact(CellPosition p, SupportSide side)
+    {
+        if (side == SupportSide.None) return false;
+        var offset = SurfaceOrientation.Offset(side);
+        var other = new CellPosition(p.X + offset.X, p.Y + offset.Y);
+        return Contains(other) && GetCell(other, false).SolidFill > 0;
+    }
+    public bool CanWalk(CellPosition p) => ContactSide(p) != SupportSide.None && !Vegetation.BlocksMovement(this, p);
     public int GetWalkableNeighbors(CellPosition p,Span<CellPosition> output)
     {
         if(output.Length<8) throw new ArgumentException("Oito posições necessárias.");

@@ -2,7 +2,7 @@ namespace AntWorld.Domain;
 public enum AntCaste : byte { Queen, Worker, Soldier, MaleReproductive }
 public enum LifeStage : byte { Egg, Larva, Pupa, Adult }
 public enum BiologicalSex : byte { Female, Male }
-public enum MovementState : byte { Idle, Walking, Climbing, Carrying, Fleeing, Attacking, Digging }
+public enum MovementState : byte { Idle, Walking, Climbing, Carrying, Fleeing, Attacking, Digging, Falling }
 public enum AntTask : byte { Rest, Move, Explore, Collect, Carry, Deposit, Dig, Build, Attack, Defend, Flee, FeedLarva, RecoverHealth, LayEgg, Feed, Drink }
 public enum SkillType : byte { Digging, Carrying, Combat, Exploration, BroodCare, Construction, Reproduction, Navigation, Defense, ResourceDetection }
 public enum FamiliarityLevel : byte { Unknown, SameSpecies, Familiar, Nestmate, CloseRelative }

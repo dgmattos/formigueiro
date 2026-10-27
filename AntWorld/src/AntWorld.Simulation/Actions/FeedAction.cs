@@ -5,7 +5,7 @@ public sealed class FeedAction() : AntAction(AntTask.Feed, AntCapability.Feed, 0
     protected override bool IsValid(AntContext c) => NutritionRules.FoodNeeded(c.State, c.Ant) > .000001 &&
         (HasFoodCargo(c.Ant) || AtPantry(c) && c.Colony.Food > 0 || FoodSources.TryCollectible(c.State.World, c.Ant, out _, out _));
     private static bool HasFoodCargo(Ant ant) => ResourceIds.IsEdible(ant.CargoResourceId) && ant.Carrying > 0;
-    private static bool AtPantry(AntContext c) => c.Ant.Position == c.Colony.Nest || c.Ant.Position == c.Colony.BroodChamber;
+    private static bool AtPantry(AntContext c) => c.Ant.Position == c.Colony.FoodStorage || c.Ant.Position == c.Colony.Nest || c.Ant.Position == c.Colony.BroodChamber;
     protected override bool Apply(AntContext c)
     {
         var amount = Math.Min(.5, NutritionRules.FoodNeeded(c.State, c.Ant));

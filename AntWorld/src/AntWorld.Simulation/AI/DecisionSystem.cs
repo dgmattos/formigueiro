@@ -4,6 +4,7 @@ public sealed class DecisionSystem(ActionCatalog actions)
 {
     private readonly RecognitionService recognition=new();
     private readonly WaterSearch waterSearch = new();
+    private readonly ForagingSystem foraging = new();
     private readonly Ant[] nearby=new Ant[48];
     public void Decide(AntContext context)
     {
@@ -33,8 +34,8 @@ public sealed class DecisionSystem(ActionCatalog actions)
         Consider(AntTask.Drink,(1-ant.Hydration)*4);
         Consider(AntTask.RecoverHealth,(1-ant.Health/ant.MaxHealth)*1.5);
         Consider(AntTask.LayEgg,profile.Reproduction*.8);
-        Consider(AntTask.Deposit,ant.Carrying>0 ? (spoil ? 3.2 : 2) : 0);
-        if(ant.Carrying>0) Consider(AntTask.Carry,spoil ? 3 : 1.8,null,spoil ? ExcavationSpoil.Exit(world,colony) : colony.Nest);
+        Consider(AntTask.Deposit,ant.Carrying>0 ? (spoil ? 3.2 : 3.4) : 0);
+        if(ant.Carrying>0) Consider(AntTask.Carry,spoil ? 3 : 3.2,null,spoil ? NestDestinations.Exit(context) : colony.FoodStorage);
         if (ant.Id == colony.QueenId && ant.Position != colony.Nest)
             Consider(AntTask.Move,3,null,colony.Nest);
         if(ant.CarriedAntId is {} carriedId) Consider(AntTask.Carry,2.8*profile.BroodCare,carriedId,colony.BroodChamber);
@@ -43,11 +44,12 @@ public sealed class DecisionSystem(ActionCatalog actions)
         if(colony.Food>0 && ant.Position!=colony.Nest && (ant.Energy<40 || ant.Nutrition<.5 || ant.Hydration<.4))
             Consider(AntTask.Move,1.2+(1-ant.Energy/100),null,colony.Nest);
         if(flood) Consider(AntTask.Flee,10,null,FindDry(world,ant.Position),true);
-        if (collector) Consider(AntTask.Collect,(.7+priorities.FoodCollection)*profile.Foraging);
+        if (collector && ant.Carrying == 0) Consider(AntTask.Collect,(.7+priorities.FoodCollection)*profile.Foraging*ForagingSystem.HarvestQuality(context));
         if(collector && ant.Carrying==0 && ant.CarriedAntId is null)
         {
-            var food=FindFood(world,ant.Position);
-            Consider(AntTask.Explore,(.25+priorities.Exploration+priorities.FoodCollection*.3)*profile.Exploration,null,food);
+            var food=ant.Caste == AntCaste.Worker ? foraging.Destination(context) : FindFood(world,ant.Position);
+            if (food.HasValue && food != ant.Position || ant.Caste != AntCaste.Worker)
+                Consider(AntTask.Explore,(.25+priorities.Exploration+priorities.FoodCollection*.3)*profile.Exploration,null,food);
         }
         if (digger && ant.Carrying == 0 && ant.CarriedAntId is null)
         {
@@ -87,7 +89,7 @@ public sealed class DecisionSystem(ActionCatalog actions)
                     Consider(AntTask.Move,care/(1+distance*.1),other.Id,other.Position);
             }
             if(!relation.PossibleThreat) continue;
-            var territory=world.Distance(other.Position,colony.Nest)<8?1: .3;
+            var territory=world.Distance(other.Position,colony.Nest)<8 || colony.Layout?.Entrances.Any(e=>e.Safe&&world.Distance(other.Position,e.Position)<8)==true ? 1 : .3;
             var danger=(1-ant.Health/ant.MaxHealth)+(1-ant.Energy/100);
             state.Pheromones[ant.ColonyId].Deposit(PheromoneType.Alarm,world.Index(ant.Position),.2);
             Consider(AntTask.Flee,1+danger*3,other.Id,null,true);

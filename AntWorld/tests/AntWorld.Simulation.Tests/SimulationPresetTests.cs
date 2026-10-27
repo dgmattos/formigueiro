@@ -31,7 +31,7 @@ public sealed class SimulationPresetTests
             var expected = preset.Colonies[i]; var colony = state.Colonies[i];
             var ants = state.Ants.Where(a => a.ColonyId == colony.Id).ToArray();
             Assert.Equal(expected.SpeciesId, colony.Species);
-            Assert.Equal((int)(state.World.Width * expected.NestPositionRatio), colony.Nest.X);
+            Assert.Equal((int)(state.World.Width * expected.NestPositionRatio), colony.ShaftX);
             Assert.Equal(expected.InitialFood, colony.Food);
             Assert.Equal(expected.Queens, ants.Count(a => a.Caste == AntCaste.Queen));
             Assert.Equal(expected.Workers, ants.Count(a => a.Stage == LifeStage.Adult && a.Caste == AntCaste.Worker));

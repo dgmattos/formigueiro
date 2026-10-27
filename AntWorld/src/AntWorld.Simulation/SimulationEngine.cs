@@ -34,7 +34,7 @@ public sealed class SimulationEngine
         var count=State.Ants.Count;
         for(var i=0;i<count;i++)
         {
-            var ant=State.Ants[i]; biology.Step(State,ant);
+            var ant=State.Ants[i]; SurfaceAttachmentSystem.Step(State.World, ant); biology.Step(State,ant);
             ant.MovementCredit=Math.Min(2,ant.MovementCredit+movement.EffectiveSpeed(State,ant)*SimulationState.TickSeconds);
         }
         spatial.Rebuild(State);
@@ -63,6 +63,7 @@ public sealed class SimulationEngine
             if(!ant.IsAlive)
             {
                 var colony = colonyIndex[ant.ColonyId]; colony.Deaths++;
+                if(colony.Layout is {} layout)foreach(var job in layout.Construction.Jobs)if(job.AssignedAntId==ant.Id){job.AssignedAntId=null;job.Status=NestStructureStatus.WaitingDependencies;}
                 if (ant.Carrying > 0 && ExcavationSpoil.Is(State.World, ant.CargoResourceId))
                     ExcavationSpoil.Drop(State.World, ant.Position, ant.Carrying);
                 if (AntDied is not null)

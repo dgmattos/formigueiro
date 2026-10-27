@@ -9,11 +9,11 @@ public sealed class SurfaceSpeciesTests
     {
         var state = SimulationFactory.Create(new(42, 96, 96), [new(0, .25), new(2, .75), new(3, .5)]);
         var colony = state.Colonies[2];
-        Assert.Equal(state.World.Surface[colony.Nest.X] + 2, colony.Nest.Y);
+        Assert.Equal(state.World.Surface[colony.ShaftX] + 2, colony.Nest.Y);
         Assert.True(state.World.CanWalk(colony.BroodChamber));
         Assert.Equal(colony.Nest.Y + 4, colony.BroodChamber.Y);
         Assert.All(state.Ants.Where(a => a.ColonyId == colony.Id), a => Assert.Equal(3, a.SpeciesId));
-        Assert.Equal(state.World.Surface[state.Colonies[0].Nest.X] + 5, state.Colonies[0].Nest.Y);
+        Assert.Equal(state.World.Surface[state.Colonies[0].ShaftX] + 5, state.Colonies[0].Nest.Y);
         var founded = SimulationFactory.ExcavateNest(state.World, 5, 3);
         Assert.Equal(state.World.Surface[5] + 2, founded.Y);
         var custom = SimulationFactory.Create(new(42, 96, 96) { Nests = new(SurfaceDepth: 3) }, [new(3, .5)]);

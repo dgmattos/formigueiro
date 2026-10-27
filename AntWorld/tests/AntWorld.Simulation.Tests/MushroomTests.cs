@@ -132,6 +132,7 @@ public sealed class MushroomTests
         var total = colony.Food + 4;
         Assert.True(new CollectAction().Execute(context)); Assert.Equal(ResourceIds.RedMushroom, ant.CargoResourceId);
         Assert.Equal(4, ant.Carrying); Assert.Equal(0, state.World.GetResource(support, ResourceIds.RedMushroom).Quantity);
+        OrganicNestTests.WalkTo(context,colony.FoodStorage);
         Assert.True(new DepositAction().Execute(context)); Assert.Equal(total, colony.Food); Assert.Equal(0, ant.Carrying);
         ant.CargoResourceId = ResourceIds.BrownMushroom; ant.Carrying = 1; ant.Energy = 10;
         Assert.True(new FeedAction().Execute(context)); Assert.Equal(.5, ant.Carrying); Assert.True(ant.Energy > 10);

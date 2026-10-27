@@ -19,7 +19,21 @@ public static class ExcavationSpoil
         world.ResourceCatalog.Register(new(id, "Entulho de escavação", Kind, true, 0, new(31)));
         return id;
     }
-    public static CellPosition Exit(WorldMap world, Colony colony) => new(colony.Nest.X, world.Surface[colony.Nest.X] - 1);
+    public static CellPosition Exit(WorldMap world, Colony colony)
+    {
+        if (colony.Layout is {} layout)
+        {
+            foreach(var entrance in layout.Entrances.Where(e=>e.Safe&&e.Status==NestStructureStatus.Completed))
+                if(world.CanWalk(entrance.Position)&&world.IsOnExposedSurface(entrance.Position))return entrance.Position;
+        }
+        foreach (var dx in new[] {-1,1,-2,2,-3,3,-4,4,0})
+        {
+            var x = world.ChunkManager.NormalizeX(colony.ShaftX+dx);
+            var p = new CellPosition(x,world.Surface[x]-1);
+            if (world.CanWalk(p) && world.IsOnExposedSurface(p)) return p;
+        }
+        return new(colony.ShaftX,world.Surface[colony.ShaftX]-1);
+    }
     public static void Drop(WorldMap world, CellPosition position, double amount)
     {
         var id = ResourceId(world);

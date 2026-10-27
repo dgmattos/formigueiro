@@ -3,6 +3,9 @@ namespace AntWorld.Simulation;
 public static class ExcavationRules
 {
     public const double SoilEnergyCost = .4;
+    public const double GlobalSpeedMultiplier = .2;
+    // 50 ticks halves the previous 25-tick rate, preserving 20% of the original rate without rounding tiny rock work up.
+    public const int ActionIntervalTicks = (int)(10 / GlobalSpeedMultiplier);
     public static double SpeedFactor(SpeciesDefinition species, WorldCell cell) => cell.Type switch
     {
         BlockType.Rock => species.SoilDiggingMultiplier * species.SolidRockSpeedFactor,

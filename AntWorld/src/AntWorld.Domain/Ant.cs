@@ -6,7 +6,7 @@ public sealed class Ant(int id, int colonyId, CellPosition position, Genome gene
     private HealthState health = new(60);
     public int Id { get; } = id;
     public int ColonyId { get; private set; } = colonyId;
-    public void JoinColony(Colony colony) { ColonyId=colony.Id; SpeciesId=colony.Species; Position=PreviousPosition=colony.Nest; Destination=null; TargetId=null; CurrentTask=AntTask.Rest; }
+    public void JoinColony(Colony colony) { ColonyId=colony.Id; SpeciesId=colony.Species; Destination=null; TargetId=null; CurrentTask=AntTask.Rest; }
     public int SpeciesId { get; set; }
     public long LineageId { get; set; } = colonyId;
     public int? MotherId { get; set; }
@@ -54,6 +54,7 @@ public sealed class Ant(int id, int colonyId, CellPosition position, Genome gene
     public double DevelopmentTicks { get; set; }
     public double MovementCredit { get; set; }
     public MovementState Movement { get; set; }
+    public SupportSide Support { get; set; } = SupportSide.Down;
     public AntTask CurrentTask { get; set; } = AntTask.Explore;
     public int? TargetId { get; set; }
     public long LastDecisionTick { get; set; } = -1;

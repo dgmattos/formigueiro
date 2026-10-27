@@ -115,7 +115,8 @@ public sealed class AgentAiTests
     {
         var s=Create();var a=Worker(s);s.World.SetResource(a.Position,ResourceIds.Food,new(5,5,10000));var before=s.Colonies[0].Food+5;
         Assert.True(new CollectAction().Execute(Context(s,a)));Assert.Equal(4,a.Carrying);
-        Assert.True(new DepositAction().Execute(Context(s,a)));Assert.Equal(before,s.Colonies[0].Food+s.World.GetResource(a.Position,ResourceIds.Food).Quantity);
+        var resourcePosition=a.Position;OrganicNestTests.WalkTo(Context(s,a),s.Colonies[0].FoodStorage);
+        Assert.True(new DepositAction().Execute(Context(s,a)));Assert.Equal(before,s.Colonies[0].Food+s.World.GetResource(resourcePosition,ResourceIds.Food).Quantity);
         var queen=s.Colonies[0].Queen!;Assert.False(new CollectAction().Execute(Context(s,queen)));Assert.Equal(0,queen.Skills[(int)SkillType.ResourceDetection].Level);
     }
     [Fact] public void SkillsAreBoundedAndExperienceIsNotInherited()

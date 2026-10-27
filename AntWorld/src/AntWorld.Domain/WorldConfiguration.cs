@@ -6,6 +6,7 @@ public sealed record WorldConfiguration(int Seed = 12345, int Width = 240, int H
     public MushroomSettings Mushrooms { get; init; } = new();
     public VegetationSettings Vegetation { get; init; } = new();
     public NestSettings Nests { get; init; } = new();
+    public NestLayoutSettings NestLayout { get; init; } = new();
     public int MaximumLoadedChunks { get; init; } = 64;
     public void Validate()
     {
@@ -14,7 +15,7 @@ public sealed record WorldConfiguration(int Seed = 12345, int Width = 240, int H
         Geology.Validate();
         Mushrooms.Validate();
         Vegetation.Validate();
-        Nests.Validate();
+        Nests.Validate(); NestLayout.Validate();
         if (MaximumLoadedChunks is < 1 or > 4096) throw new ArgumentOutOfRangeException(nameof(MaximumLoadedChunks));
         if (ChunkSize is < 8 or > 64)
             throw new ArgumentOutOfRangeException(nameof(ChunkSize));

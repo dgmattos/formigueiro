@@ -12,7 +12,7 @@ public sealed class SurfaceSpeciesPersistenceTests
         var state = SimulationFactory.Create(new(42, 96, 64) { Nests = new(SurfaceDepth: 1) }, [new(0, .25), new(2, .75), new(3, .5)]);
         state.Species[3] = new() { SurfaceMovementMultiplier = 1.35, Castes = SpeciesDefinition.Surface.Castes };
         var codec = new BinarySnapshotCodec(); var bytes = codec.Encode(state); var restored = codec.Decode(bytes);
-        Assert.Equal(8, BitConverter.ToInt32(bytes, 8));
+        Assert.Equal(BinarySnapshotCodec.Version, BitConverter.ToInt32(bytes, 8));
         Assert.Equal(1, restored.World.Configuration.Nests.SurfaceDepth);
         Assert.Equal(1.35, restored.Species[3].SurfaceMovementMultiplier);
         Assert.Equal(36, restored.Species[3].For(AntCaste.Soldier).Attack);

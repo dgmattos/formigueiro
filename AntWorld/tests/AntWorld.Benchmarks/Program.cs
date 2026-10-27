@@ -6,6 +6,8 @@ using AntWorld.WorldGeneration;
 using AntWorld.Infrastructure;
 using AntWorld.Simulation;
 
+if(args.Contains("--nests")) { AntWorld.Benchmarks.NestBenchmarks.Run(args.Length>1?args[1]:"artifacts/nest-validation-report.json"); return; }
+
 if(args.Contains("--agents")) { AntWorld.Benchmarks.AgentBenchmarks.Run(); return; }
 
 const int repetitions = 5;

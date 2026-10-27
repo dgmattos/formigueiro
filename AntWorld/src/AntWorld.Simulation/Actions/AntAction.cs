@@ -4,7 +4,7 @@ public abstract class AntAction(AntTask task,AntCapability capability,double ene
 {
     public AntTask Task { get; }=task;
     public bool CanExecute(AntContext c) => AntCapabilities.Has(c.State,c.Ant,capability) && c.Ant.CarrierId is null &&
-        c.Ant.Energy>=EnergyCost(c) && (c.State.World.GetCell(c.Ant.Position,false).WaterAmount<500 || Task is AntTask.Flee or AntTask.Move) && IsValid(c);
+        c.State.World.CanWalk(c.Ant.Position) && c.Ant.Energy>=EnergyCost(c) && (c.State.World.GetCell(c.Ant.Position,false).WaterAmount<500 || Task is AntTask.Flee or AntTask.Move) && IsValid(c);
     protected virtual double EnergyCost(AntContext context) => energyCost;
     protected abstract bool IsValid(AntContext context);
     protected abstract bool Apply(AntContext context);

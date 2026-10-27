@@ -12,17 +12,21 @@ public static class FoodSources
         return amount;
     }
 
-    public static bool TryCollectible(WorldMap world, Ant ant, out CellPosition resourcePosition, out ushort id)
+    public static bool TryCollectible(WorldMap world, Ant ant, out CellPosition resourcePosition, out ushort id, bool preferLargest = false)
     {
         ReadOnlySpan<ushort> types = [ResourceIds.Food, ResourceIds.RedMushroom, ResourceIds.BrownMushroom];
+        resourcePosition = default; id = 0; var best = 0.0;
         foreach (var type in types)
         {
             if (ant.Carrying > 0 && ant.CargoResourceId != type) continue;
             var p = ResourceIds.IsMushroom(type) ? new CellPosition(ant.Position.X, ant.Position.Y + 1) : ant.Position;
             if (!world.Contains(p) || world.GetResource(p, type).Quantity <= 0) continue;
             if (ResourceIds.IsMushroom(type) && !MushroomHabitat.Allows(world, p)) continue;
-            resourcePosition = p; id = type; return true;
+            var quantity = world.GetResource(p,type).Quantity;
+            if (quantity <= best) continue;
+            resourcePosition = p; id = type; best = quantity;
+            if (!preferLargest) return true;
         }
-        resourcePosition = default; id = 0; return false;
+        return id != 0;
     }
 }

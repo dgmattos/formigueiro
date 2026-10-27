@@ -6,11 +6,13 @@ public sealed class ColonyExpansionSystem
 {
     public const int RoomHalfWidth = 4;
     private readonly NestNavigation navigation = new();
+    private readonly OrganicNestConstruction organic = new();
     public void Step(SimulationState state)
     {
         Span<CellPosition> targets = stackalloc CellPosition[RoomHalfWidth * 2 + 1];
         foreach (var colony in state.Colonies)
         {
+            if (colony.Layout is not null) { if (colony.IsAlive) organic.Step(state,colony); continue; }
             if (!colony.IsAlive || colony.Queen?.Position != colony.Nest || !HasLowerFloor(state.World, colony)) continue;
             if (PendingTargets(state.World, colony, targets) != 0) continue;
             var nextNursery = new CellPosition(colony.Nest.X, colony.BroodChamber.Y + Colony.BroodChamberDepth);
@@ -24,6 +26,7 @@ public sealed class ColonyExpansionSystem
 
     public static bool FindJob(AntContext context, out CellPosition target, out CellPosition access)
     {
+        if (context.Colony.Layout is not null) return OrganicNestConstruction.FindJob(context,out target,out access);
         target = access = default;
         var world = context.State.World;
         Span<CellPosition> targets = stackalloc CellPosition[RoomHalfWidth * 2 + 1];
@@ -58,7 +61,7 @@ public sealed class ColonyExpansionSystem
         if (count > 0 || !HasLowerFloor(world, colony)) return count;
         for (var y = colony.BroodChamber.Y + 1; y <= colony.BroodChamber.Y + Colony.BroodChamberDepth; y++)
         {
-            var p = new CellPosition(colony.Nest.X, y);
+            var p = new CellPosition(colony.ShaftX, y);
             if (world.GetCell(p, false).SolidFill == 0) continue;
             targets[0] = p;
             return 1;

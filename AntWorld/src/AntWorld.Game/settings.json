@@ -1,7 +1,7 @@
 {
   "world": {
-    "seed": 12345,
-    "width": 240,
+    "seed": 120207,
+    "width": 2400,
     "height": 96,
     "chunkSize": 32,
     "maximumLoadedChunks": 64,
@@ -62,7 +62,7 @@
         "grassClumps": 0,
         "tallGrass": 0,
         "bushes": 0.01,
-        "berryBushes": 0,
+        "berryBushes": 0.01,
         "flowers": 0,
         "smallPlants": 0.02,
         "grassCoverage": 0
@@ -104,6 +104,40 @@
       "normalDepthMultiplier": 1.25,
       "strongUndergroundRatio": 0.75,
       "surfaceDepth": 2
+    },
+    "nestLayout": {
+      "minimumChamberSpacing": 3,
+      "minimumChamberRadiusX": 2,
+      "maximumChamberRadiusX": 5,
+      "minimumChamberRadiusY": 1,
+      "maximumChamberRadiusY": 2,
+      "minimumAlternativeRouteRatio": 0.2,
+      "targetAlternativeRouteRatio": 0.25,
+      "maximumAlternativeRouteRatio": 0.3,
+      "minimumChambersForLoops": 5,
+      "maximumEntrances": 5,
+      "maximumConcurrentExcavationJobs": 6,
+      "maximumChambers": 60,
+      "planningIntervalTicks": 200,
+      "branchingProbability": 0.65,
+      "normal": {
+        "horizontalBias": 0.65,
+        "depthBias": 0.25,
+        "rockCost": 3,
+        "desiredEntrances": 2
+      },
+      "strong": {
+        "horizontalBias": 0.6,
+        "depthBias": 0.65,
+        "rockCost": 1.5,
+        "desiredEntrances": 2
+      },
+      "surface": {
+        "horizontalBias": 0.9,
+        "depthBias": -0.35,
+        "rockCost": 4,
+        "desiredEntrances": 3
+      }
     }
   },
   "colonies": [

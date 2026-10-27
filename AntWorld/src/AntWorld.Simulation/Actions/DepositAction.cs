@@ -4,8 +4,8 @@ namespace AntWorld.Simulation;
 public sealed class DepositAction() : AntAction(AntTask.Deposit, AntCapability.Carry, .05, SkillType.Carrying)
 {
     protected override bool IsValid(AntContext c) => c.Ant.Carrying > 0 &&
-        (ResourceIds.IsEdible(c.Ant.CargoResourceId) ? c.Ant.Position == c.Colony.Nest :
-        ExcavationSpoil.Is(c.State.World, c.Ant.CargoResourceId) && c.Ant.Position == ExcavationSpoil.Exit(c.State.World, c.Colony));
+        (ResourceIds.IsEdible(c.Ant.CargoResourceId) ? c.Ant.Position == c.Colony.FoodStorage :
+        ExcavationSpoil.Is(c.State.World, c.Ant.CargoResourceId) && NestDestinations.IsExit(c.State.World,c.Colony,c.Ant.Position));
     protected override bool Apply(AntContext c)
     {
         if (ResourceIds.IsEdible(c.Ant.CargoResourceId)) c.Colony.Food += c.Ant.Carrying;
