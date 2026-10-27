@@ -137,5 +137,11 @@
   },
   "rendering": {
     "tileSize": 16
+  },
+  "diagnostics": {
+    "enabled": true,
+    "sampleIntervalSeconds": 60,
+    "maxFileSizeMb": 8,
+    "retainedFiles": 3
   }
 }

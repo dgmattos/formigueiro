@@ -29,7 +29,20 @@ public sealed class Ant(int id, int colonyId, CellPosition position, Genome gene
     public double MaxHealth => health.Maximum;
     public double RecoveryRate => health.RecoveryRate;
     public void ChangeMaximumHealth(double value) => health.ChangeMaximum(value);
-    public void Damage(double value) => health.Damage(value);
+    public DamageCause FatalDamageCauses { get; private set; }
+    public int? FatalAttackerId { get; private set; }
+    public double HealthBeforeFatalDamage { get; private set; }
+    public double FatalDamageAmount { get; private set; }
+    public void Damage(double value, DamageCause causes = DamageCause.Unknown, int? attackerId = null)
+    {
+        var before = health.Current;
+        health.Damage(value);
+        if (before > 0 && !IsAlive)
+        {
+            FatalDamageCauses = causes; FatalAttackerId = attackerId;
+            HealthBeforeFatalDamage = before; FatalDamageAmount = value;
+        }
+    }
     public void Recover(double value) => health.Recover(value);
     public void RestoreHealth(double current,double maximum,double recovery) => health.Restore(current,maximum,recovery);
     public double Carrying { get; set; }

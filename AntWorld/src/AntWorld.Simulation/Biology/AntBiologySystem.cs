@@ -13,7 +13,12 @@ public sealed class AntBiologySystem
         ant.Energy-=.055*ant.Genes.Metabolism*(1+stress*.12)*SimulationState.TickSeconds;
         ant.Nutrition-=.0005*SimulationState.TickSeconds;
         ant.Hydration-=.0006*(1+stress*.05)*SimulationState.TickSeconds;
-        ant.Damage((stress*.004+(ant.Energy==0?.8:0)+(ant.Nutrition==0?.3:0)+(ant.Hydration==0?.6:0))*SimulationState.TickSeconds);
+        var causes = DamageCause.Unknown;
+        if (stress > 0) causes |= DamageCause.ThermalStress;
+        if (ant.Energy == 0) causes |= DamageCause.EnergyDepletion;
+        if (ant.Nutrition == 0) causes |= DamageCause.Starvation;
+        if (ant.Hydration == 0) causes |= DamageCause.Dehydration;
+        ant.Damage((stress*.004+(ant.Energy==0?.8:0)+(ant.Nutrition==0?.3:0)+(ant.Hydration==0?.6:0))*SimulationState.TickSeconds, causes);
         ant.BiologicalCondition=(ant.Nutrition+ant.Hydration+ant.Health/ant.MaxHealth)/3;
         if(ant.Stage!=LifeStage.Adult)
         {
@@ -32,6 +37,6 @@ public sealed class AntBiologySystem
         if(state.Tick%state.Performance.BiologicalIntervalTicks!=ant.Id%state.Performance.BiologicalIntervalTicks) return;
         var definition=AntCapabilities.Definition(state,ant);
         ILongevityPolicy policy=definition.LongevityDays==0 ? unlimited : aging;
-        if(policy.ShouldDie(ant,definition,state,state.Performance.BiologicalIntervalTicks*SimulationState.TickSeconds)) ant.Damage(ant.Health);
+        if(policy.ShouldDie(ant,definition,state,state.Performance.BiologicalIntervalTicks*SimulationState.TickSeconds)) ant.Damage(ant.Health, DamageCause.Aging);
     }
 }

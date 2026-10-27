@@ -18,6 +18,11 @@ public partial class Main : Node2D
     private ObserverHud hud = null!;
     private Camera2D camera = null!;
     private SqliteSnapshotStore? store;
+    private SimulationLogSettings diagnosticSettings = new();
+    private SimulationDiagnostics? diagnostics;
+    private double diagnosticSeconds;
+    private int diagnosticTicks;
+    private bool diagnosticFailureReported;
     private double sampleSeconds;
     private int sampleTicks;
     public override void _Ready()
@@ -36,6 +41,7 @@ public partial class Main : Node2D
             windowSettings=configuration.Window;
             preset=configuration.Simulation;
             rendering=configuration.Rendering;
+            diagnosticSettings=configuration.Diagnostics;
             windowSettings.Apply(GetWindow());
         }
         catch(Exception ex)
@@ -68,14 +74,48 @@ public partial class Main : Node2D
     private void ReplaceWorld(SimulationState state)
     {
         if (worldView is not null) { RemoveChild(worldView); worldView.QueueFree(); }
+        if (diagnostics is not null)
+        {
+            engine.AntDied -= diagnostics.RecordDeath;
+            diagnostics.Dispose(); diagnostics = null;
+        }
         engine = new(state); playback = new(settings); sampleSeconds = 0; sampleTicks = 0;
+        diagnosticSeconds = 0; diagnosticTicks = 0; diagnosticFailureReported = false;
         worldView = new WorldView(); worldView.Initialize(state, rendering); AddChild(worldView);
         camera.Position = new(state.Colonies[0].Nest.X * rendering.TileSize, state.World.Surface[state.Colonies[0].Nest.X] * rendering.TileSize);
         hud.Refresh(state, playback, 0);
+        if (diagnosticSettings.Enabled)
+        {
+            try
+            {
+                var directory = OS.GetEnvironment("ANTWORLD_DATA_DIR");
+                if (string.IsNullOrWhiteSpace(directory)) directory = ProjectSettings.GlobalizePath("user://");
+                diagnostics = new(System.IO.Path.Combine(directory, "diagnostics"), state, diagnosticSettings);
+                engine.AntDied += diagnostics.RecordDeath;
+                diagnostics.RecordPlayback(state.Tick, clock.Speed, clock.PendingSeconds, 0);
+                diagnostics.Flush();
+                GD.Print($"AntWorld: diagnóstico de mortes e população em {diagnostics.FilePath}");
+            }
+            catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+            { Report("Não foi possível iniciar o diagnóstico", ex); }
+        }
     }
     public override void _Process(double delta)
     {
-        sampleTicks += clock.Advance(delta, engine.Step, 100, 450.0/engine.State.Performance.TargetFps);
+        var processed = clock.Advance(delta, StepSimulation, 100, 450.0/engine.State.Performance.TargetFps);
+        sampleTicks += processed;
+        diagnosticTicks += processed; diagnosticSeconds += delta;
+        if (diagnostics is not null)
+        {
+            if (diagnosticSeconds >= 5)
+            {
+                diagnostics.RecordPlayback(engine.State.Tick, clock.Speed, clock.PendingSeconds, diagnosticTicks / diagnosticSeconds);
+                diagnosticSeconds = 0; diagnosticTicks = 0;
+            }
+            diagnostics.Flush();
+            if (diagnostics.Failure is {} failure && !diagnosticFailureReported)
+            { GD.PushWarning(failure); diagnosticFailureReported = true; }
+        }
         sampleSeconds += delta;
         if (sampleSeconds >= .25)
         {
@@ -112,14 +152,24 @@ public partial class Main : Node2D
             case Key.Key3: SetSpeed(settings.X3); break;
         }
     }
+    private void StepSimulation()
+    {
+        engine.Step(); diagnostics?.Observe(engine.State);
+    }
+    public override void _ExitTree()
+    {
+        if (diagnostics is null) return;
+        engine.AntDied -= diagnostics.RecordDeath;
+        diagnostics.Dispose();
+    }
     private void AdjustCameraZoom(bool zoomIn)
     {
         const float step = 1.15f;
         var zoom = Mathf.Clamp(camera.Zoom.X * (zoomIn ? step : 1 / step), .25f, 4);
         camera.Zoom = new(zoom, zoom);
     }
-    private void SetSpeed(int speed) { playback.Select(speed); hud.Refresh(engine.State,playback,0); }
-    private void TogglePause() { playback.TogglePause(); hud.Refresh(engine.State,playback,0); }
+    private void SetSpeed(int speed) { playback.Select(speed); diagnostics?.RecordPlayback(engine.State.Tick, clock.Speed, clock.PendingSeconds, 0); hud.Refresh(engine.State,playback,0); }
+    private void TogglePause() { playback.TogglePause(); diagnostics?.RecordPlayback(engine.State.Tick, clock.Speed, clock.PendingSeconds, 0); hud.Refresh(engine.State,playback,0); }
     private void Report(string message, Exception exception)
     {
         hud.Notify($"{message}: {exception.Message}"); GD.PushError($"{message}: {exception}");

@@ -5,6 +5,7 @@ public sealed class SimulationEngine
     public SimulationState State { get; }
     public AgentScheduler Scheduler { get; }=new();
     public List<AntEvent> Events { get; }=[];
+    public event Action<AntDeath>? AntDied;
     private readonly EnvironmentSystem environment;
     private readonly MushroomSystem mushrooms;
     private readonly AntBiologySystem biology=new();
@@ -58,7 +59,17 @@ public sealed class SimulationEngine
                 else ant.CarrierId=null;
             }
             if(ant.CarriedAntId is {} broodId && (!spatial.ById.TryGetValue(broodId,out var brood)||!brood.IsAlive)) ant.CarriedAntId=null;
-            if(!ant.IsAlive) colonyIndex[ant.ColonyId].Deaths++;
+            if(!ant.IsAlive)
+            {
+                var colony = colonyIndex[ant.ColonyId]; colony.Deaths++;
+                if (AntDied is not null)
+                    AntDied(new(State.Tick, ant.Identity, ant.Caste, ant.Stage, ant.Position, ant.Destination,
+                        ant.Age, ant.CurrentTask, ant.FatalDamageCauses, ant.FatalAttackerId,
+                        ant.HealthBeforeFatalDamage, ant.FatalDamageAmount, ant.MaxHealth,
+                        ant.Energy, ant.Nutrition, ant.Hydration, EnvironmentSystem.TemperatureAt(State, ant.Position),
+                        ant.Genes.ThermalOptimum, ant.Genes.ColdTolerance, colony.Food, ant.Carrying,
+                        ant.CargoResourceId, State.World.GetCell(ant.Position, false).WaterAmount));
+            }
         }
         State.Ants.RemoveAll(a=>!a.IsAlive);
     }

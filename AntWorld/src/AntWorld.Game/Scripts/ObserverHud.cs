@@ -46,7 +46,7 @@ public partial class ObserverHud : CanvasLayer
     public void Refresh(SimulationState state,PlaybackControl playback,double ticksPerSecond)
     {
         var seasons=new[]{"Primavera","Verão","Outono","Inverno"};
-        time.Text=$"Dia {state.DayOfMonth}/28 · Mês {state.Month}/4 · {seasons[state.Season]} · Ano {state.Year}\n{state.Ants.Count} indivíduos";
+        time.Text=$"Dia {state.DayOfMonth}/28 · Mês {state.Month}/4 · {seasons[state.Season]} · Ano {state.Year}\n{state.Ants.Count} indivíduos · Progresso do dia: {state.DayFraction:P1} · {state.Tick * SimulationState.TickSeconds:F0}s simulados";
         var rhythm=playback.IsPaused?"Pausado":$"Tempo: {playback.SelectedMultiplier}×";
         if(!playback.IsPaused && playback.Clock.PendingSeconds>2) rhythm+=" · Aceleração limitada pelo desempenho";
         status.Text=$"{rhythm} · Câmera: WASD / botão direito · Zoom: rolagem ou +/− · Tempo: espaço e 1–3";

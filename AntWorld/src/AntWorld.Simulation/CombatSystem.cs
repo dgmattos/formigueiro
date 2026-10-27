@@ -16,7 +16,7 @@ public sealed class CombatSystem
         var damage=Math.Max(.1,offense*100/(100+defense))*(1-state.RainIntensity*.1);
         if(state.Relations.Get(attacker.ColonyId,target.ColonyId)==ColonyRelation.Unknown)
             state.Relations.Set(attacker.ColonyId,target.ColonyId,ColonyRelation.Hostile);
-        target.Damage(damage); attacker.Energy-=.35; attacker.LastAttackTick=state.Tick; attacker.Movement=MovementState.Attacking;
+        target.Damage(damage, DamageCause.Combat, attacker.Id); attacker.Energy-=.35; attacker.LastAttackTick=state.Tick; attacker.Movement=MovementState.Attacking;
         state.Pheromones[target.ColonyId].Deposit(PheromoneType.Alarm,state.World.Index(target.Position),3);
         return true;
     }

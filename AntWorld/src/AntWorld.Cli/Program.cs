@@ -8,11 +8,11 @@ try
 {
     if (args.Contains("--help"))
     {
-        Console.WriteLine("AntWorld: --seed N --ticks N --width N --height N [--load arquivo.antworld] [--save arquivo.antworld] [--svg mapa.svg]");
+        Console.WriteLine("AntWorld: --seed N --ticks N --width N --height N [--load arquivo.antworld] [--save arquivo.antworld] [--svg mapa.svg] [--settings settings.json] [--diagnostics diretório]");
         return 0;
     }
     var options = new Dictionary<string, string>();
-    var allowed = new[] { "--seed", "--ticks", "--width", "--height", "--load", "--save", "--svg" };
+    var allowed = new[] { "--seed", "--ticks", "--width", "--height", "--load", "--save", "--svg", "--settings", "--diagnostics" };
     for (var i = 0; i < args.Length; i += 2)
     {
         if (!allowed.Contains(args[i]) || i + 1 == args.Length || !options.TryAdd(args[i], args[i + 1])) throw new ArgumentException("Argumento inválido ou repetido. Use --help.");
@@ -21,9 +21,22 @@ try
     var ticks = Number("--ticks", 1000);
     if (ticks is < 0 or > 10000000) throw new ArgumentOutOfRangeException(nameof(ticks), "Ticks: 0–10.000.000.");
     var files = new BinarySnapshotFile();
-    var state = options.TryGetValue("--load", out var load) ? files.Load(load) : SimulationFactory.Create(new(Number("--seed", 12345), Number("--width", 240), Number("--height", 96)));
+    var preset = options.TryGetValue("--settings", out var settingsPath) ? SimulationPreset.Parse(File.ReadAllText(settingsPath)) : null;
+    if (preset is not null && new[] { "--load", "--seed", "--width", "--height" }.Any(options.ContainsKey))
+        throw new ArgumentException("Use --settings sem --load/--seed/--width/--height para evitar configurações ambíguas.");
+    var state = preset is not null ? SimulationFactory.Create(preset.World, preset.Colonies) : options.TryGetValue("--load", out var load) ? files.Load(load) : SimulationFactory.Create(new(Number("--seed", 12345), Number("--width", 240), Number("--height", 96)));
     var engine = new SimulationEngine(state);
-    var watch = Stopwatch.StartNew(); engine.Run(ticks); watch.Stop();
+    using var diagnostics = options.TryGetValue("--diagnostics", out var diagnosticDirectory)
+        ? new SimulationDiagnostics(diagnosticDirectory, state) : null;
+    if (diagnostics is not null) engine.AntDied += diagnostics.RecordDeath;
+    var watch = Stopwatch.StartNew();
+    for (var i = 0; i < ticks; i++)
+    {
+        engine.Step(); diagnostics?.Observe(state);
+        if (i % 1000 == 0) diagnostics?.Flush();
+    }
+    watch.Stop(); diagnostics?.Flush();
+    if (diagnostics?.Failure is {} failure) Console.Error.WriteLine(failure);
     SnapshotValidator.Validate(state);
     if (options.TryGetValue("--save", out var save)) files.Save(save, state);
     if (options.TryGetValue("--svg", out var svg)) new WorldSvgExporter().Export(svg, state);
