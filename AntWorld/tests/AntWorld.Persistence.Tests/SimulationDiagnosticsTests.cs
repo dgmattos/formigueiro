@@ -14,7 +14,7 @@ public sealed class SimulationDiagnosticsTests
         var colony = state.Colonies[0];
         var temperature = EnvironmentSystem.TemperatureAt(state, colony.Nest);
         var victim = AntFactory.Create(state, colony, genes: Genome.Ember with { ThermalOptimum = Math.Clamp(temperature, -5, 40), ColdTolerance = 25 });
-        victim.Energy = victim.Nutrition = victim.Hydration = 0; victim.Health = .001;
+        victim.Energy = victim.Nutrition = victim.Hydration = 0; victim.Health = .000001;
         state.Ants.Add(victim);
         var engine = new SimulationEngine(state); var deaths = new List<AntDeath>();
         engine.AntDied += death => { Assert.Contains(victim, state.Ants); deaths.Add(death); };
@@ -22,7 +22,7 @@ public sealed class SimulationDiagnosticsTests
         var death = Assert.Single(deaths);
         Assert.Equal(victim.Id, death.Identity.Id);
         Assert.Equal(DamageCause.EnergyDepletion | DamageCause.Starvation | DamageCause.Dehydration, death.Causes);
-        Assert.Equal(.001, death.HealthBeforeDamage);
+        Assert.Equal(.000001, death.HealthBeforeDamage);
         Assert.Equal(1, death.Tick); Assert.Equal(1, colony.Deaths);
         Assert.DoesNotContain(victim, state.Ants);
     }
@@ -32,7 +32,7 @@ public sealed class SimulationDiagnosticsTests
         var state = SimulationFactory.Create(new(42, 64, 48));
         var attacker = state.Ants.First(a => a.Caste == AntCaste.Soldier);
         var victim = state.Ants.First(a => a.ColonyId != attacker.ColonyId && a.Caste == AntCaste.Worker);
-        victim.Position = attacker.Position; victim.Health = .001;
+        victim.Position = attacker.Position; victim.Health = .000001;
         state.Relations.Set(attacker.ColonyId, victim.ColonyId, ColonyRelation.Hostile);
         Assert.True(new CombatSystem().Attack(state, attacker, victim));
         victim.Damage(10, DamageCause.Starvation);

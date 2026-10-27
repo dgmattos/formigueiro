@@ -1,5 +1,7 @@
 # Diagnóstico de mortalidade e passagem do tempo
 
+**Atualização:** as causas abaixo foram posteriormente tratadas na [correção de sobrevivência](survival-fix.md). Este documento preserva a investigação anterior e as instruções dos logs.
+
 ## Resultado da investigação de 26/10/2026
 
 O log da sessão gráfica disponível em `~/Library/Application Support/Godot/app_userdata/AntWorld/logs/godot.log` registrava apenas inicialização, seed 12345, 54 indivíduos e velocidades 1/25/50. Não contém causas de morte nem permite reconstruir retrospectivamente cada evento dessa partida.

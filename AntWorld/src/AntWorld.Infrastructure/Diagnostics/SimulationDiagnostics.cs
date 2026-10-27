@@ -27,7 +27,7 @@ public sealed class SimulationDiagnostics : IDisposable
         Directory.CreateDirectory(directory); Rotate();
         Enqueue("session_started", state.Tick, new
         {
-            state.World.Configuration, species = state.Species, state.Performance,
+            state.World.Configuration, species = state.Species, state.Performance, state.Survival,
             ticksPerSecond = SimulationState.TicksPerSecond, secondsPerDay = SimulationState.SecondsPerDay,
             state.Random.State, runtime = Environment.Version.ToString(), format = 1,
             snapshotVersion = BinarySnapshotCodec.Version

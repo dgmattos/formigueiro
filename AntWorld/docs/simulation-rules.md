@@ -22,8 +22,10 @@ O controle de tempo vem de `src/AntWorld.Game/settings.json`; pausa interrompe t
 
 ## Formigas e colônias
 
-Duas colônias começam a 1/4 e 3/4 da largura, cada uma com rainha, 21 operárias, 3 soldados, 2 larvas e 150 unidades de alimento. Não há compensação automática por ambiente inicial, vencedor ou população. Relações começam neutras; hostilidade é configurável independentemente da espécie.
+Três colônias começam a 1/4 (Normal), 3/4 (Forte) e 1/2 (Superfície) da largura, cada uma com rainha, 21 operárias, 3 soldados, 2 larvas e 150 unidades de alimento. Não há compensação automática por ambiente inicial, vencedor ou população. Relações começam neutras; hostilidade é configurável independentemente da espécie.
 
 O sistema anterior de agentes homogêneos foi substituído pelo modelo de [castas, fases, necessidades, habilidades, ações e IA](agents-ai.md). Esse documento especifica as regras atuais de movimento, alimentação, combate, postura, desenvolvimento, fundação, genética e envelhecimento. Rainhas não têm morte por idade no perfil padrão. Não há nascimento instantâneo de operárias nem geração de adultos para repor perdas.
 
 Regeneração ambiental segue por segundo simulado, limitada à capacidade dos recursos. Feromônios são mapas esparsos com evaporação temporal. Recursos, saúde e genética não são agregados por distância: L2/L3 permanecem não implementados.
+
+As necessidades basais e o dano fisiológico agora usam taxas por dia, editáveis em `survival`. Ovos/pupas usam reservas por desenvolvimento, postura mantém reserva alimentar e indivíduos procuram água localmente. Veja [regras de sobrevivência e resultados dos testes](survival-fix.md).

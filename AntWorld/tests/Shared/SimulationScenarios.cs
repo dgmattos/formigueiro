@@ -44,7 +44,8 @@ public static class SimulationScenarios
         var state = SimulationFactory.Create(new(7, 64, 48));
         state.World.ClearFood(true);
         foreach (var colony in state.Colonies) colony.Food = 0;
-        foreach(var ant in state.Ants) { ant.Energy=0;ant.Nutrition=0;ant.Hydration=0; }
+        // Start critically ill to exercise removal for every caste without waiting several biological days.
+        foreach(var ant in state.Ants) { ant.Energy=0;ant.Nutrition=0;ant.Hydration=0;ant.Health=1; }
         var engine = new SimulationEngine(state); engine.Run(4000);
         Check.That(state.Ants.Count == 0 && state.Colonies.All(c => !c.IsAlive), "Colônia imortal sem recursos.");
         var battle = SimulationFactory.Create(new(1, 64, 48));

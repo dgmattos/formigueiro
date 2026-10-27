@@ -12,7 +12,7 @@ public sealed class SurfaceSpeciesPersistenceTests
         var state = SimulationFactory.Create(new(42, 96, 64) { Nests = new(SurfaceDepth: 1) }, [new(0, .25), new(2, .75), new(3, .5)]);
         state.Species[3] = new() { SurfaceMovementMultiplier = 1.35, Castes = SpeciesDefinition.Surface.Castes };
         var codec = new BinarySnapshotCodec(); var bytes = codec.Encode(state); var restored = codec.Decode(bytes);
-        Assert.Equal(6, BitConverter.ToInt32(bytes, 8));
+        Assert.Equal(7, BitConverter.ToInt32(bytes, 8));
         Assert.Equal(1, restored.World.Configuration.Nests.SurfaceDepth);
         Assert.Equal(1.35, restored.Species[3].SurfaceMovementMultiplier);
         Assert.Equal(36, restored.Species[3].For(AntCaste.Soldier).Attack);
@@ -21,7 +21,7 @@ public sealed class SurfaceSpeciesPersistenceTests
         Assert.Equal(codec.Encode(state), codec.Encode(restored));
     }
     [Fact]
-    public void RealFormatFiveFixturesLoadAndPreserveTheirContinuation()
+    public void RealFormatFiveFixturesKeepSavedStateAndResumeUnderCurrentRules()
     {
         // Produced by the previous v5 executable, not by a test implementation of the codec.
         var codec = new BinarySnapshotCodec();
@@ -31,8 +31,11 @@ public sealed class SurfaceSpeciesPersistenceTests
         Assert.Equal(20, state.Tick);
         Assert.All(state.Species.Values, species => Assert.Equal(1, species.SurfaceMovementMultiplier));
         Assert.False(state.Species.ContainsKey(3)); // Loading does not inject a colony or change species in a prior save.
-        new SimulationEngine(state).Run(60);
-        var expected = codec.Decode(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "format5-tick80.antworld")));
-        Assert.Equal(codec.Encode(expected), codec.Encode(state));
+        var copy=codec.Decode(codec.Encode(state));
+        new SimulationEngine(state).Run(60); new SimulationEngine(copy).Run(60);
+        Assert.Equal(codec.Encode(copy),codec.Encode(state));
+        var oldLater = codec.Decode(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Fixtures", "format5-tick80.antworld")));
+        Assert.Equal(80,oldLater.Tick); // Historical values load; changed biology intentionally changes future outcomes.
+
     }
 }

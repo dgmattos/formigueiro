@@ -28,3 +28,5 @@ Build completo sem avisos/erros; **111 testes xUnit aprovados**, incluindo ninho
 O teste Godot headless valida os 90 recortes dos três atlas, transparência, preset e execução da cena (`artifacts/surface-species-game-console.log`). A inspeção manual da janela não foi executada; o ambiente mantém o erro de certificados do macOS documentado nas entregas anteriores. Não houve recalibração dos problemas de sobrevivência identificados no relatório de mortalidade. O sprite mantém o alfa e os contornos fornecidos no arquivo original.
 
 Para iniciar, na pasta AntWorld: `sh scripts/run-game.sh`.
+
+Atualização posterior: snapshots v7 mantêm leitura de v5/v6. As [regras de sobrevivência](survival-fix.md) foram corrigidas; a comparação de continuação histórica v5 descrita acima se refere à versão anterior a essa alteração biológica.

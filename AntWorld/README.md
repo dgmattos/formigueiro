@@ -2,6 +2,8 @@
 
 Simulador 2D de ecossistemas de formigas em C#/.NET, com mundo procedural lateral e observação de colônias. Nenhuma regra escolhe uma espécie vencedora.
 
+A sobrevivência foi corrigida para o dia de três horas: reservas de ovos/pupas, taxas por dia, postura com reserva alimentar, alimentação/hidratação e busca local de água. Configure `survival` no settings; veja [causas, mudanças e validação](docs/survival-fix.md).
+
 A espécie **Superfície** usa o terceiro sprite, ninho raso, soldados reforçados e bônus de 20% de movimento ao caminhar sobre terreno exposto. Veja [regras, configuração e compatibilidade dos saves](docs/surface-species.md).
 
 **Atualização atual:** terreno em TileMapLayer com atlas normalizados, grama por exposição e vegetação determinística nas quatro estações. A espécie Forte usa o novo sprite e ninho profundo; todas as espécies podem escavar rocha, com custos e velocidades próprios. Veja [diagnóstico, arquivos, regras e validação](docs/tilesets-vegetation-strong-species.md). Cogumelos, transporte de ovos, calendário, câmera e controles de tempo foram preservados. Edite [`src/AntWorld.Game/settings.json`](src/AntWorld.Game/settings.json) e reinicie para aplicar.
@@ -9,7 +11,7 @@ A espécie **Superfície** usa o terceiro sprite, ninho raso, soldados reforçad
 Veja [agentes e IA](docs/agents-ai.md), [controles e configuração](docs/time-controls.md) e [resultados da validação](docs/validation-agents.md). A janela gráfica não pôde ser validada neste sandbox; o teste de cena usa Godot headless.
 ## Atualização de blocos e chunks
 
-O mundo usa células físicas compactas de 16 bytes, materiais e água separados, recursos esparsos, depósitos conectados, streaming lógico com cache limitado e vizinhos circulares. O snapshot atual v6 (com leitura de v5) salva seed + alterações e estado biológico/social; rejeita explicitamente v1–v4. Primavera, verão, outono e inverno têm atlas próprios. Veja [modelo, algoritmos e limitações](docs/world-blocks.md) e a [lista de arquivos de blocos](docs/blocks-files.md).
+O mundo usa células físicas compactas de 16 bytes, materiais e água separados, recursos esparsos, depósitos conectados, streaming lógico com cache limitado e vizinhos circulares. O snapshot atual v7 (com leitura de v5/v6) salva seed + alterações e estado biológico/social; rejeita explicitamente v1–v4. Primavera, verão, outono e inverno têm atlas próprios. Veja [modelo, algoritmos e limitações](docs/world-blocks.md) e a [lista de arquivos de blocos](docs/blocks-files.md).
 
 Benchmarks: `sh scripts/benchmark-world.sh`. Testes completos: `sh scripts/verify-full.sh`.
 

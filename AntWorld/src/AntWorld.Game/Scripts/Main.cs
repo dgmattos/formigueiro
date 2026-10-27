@@ -52,7 +52,7 @@ public partial class Main : Node2D
         hud = new ObserverHud { Settings=settings }; AddChild(hud);
         hud.SpeedRequested += SetSpeed;
         hud.PauseRequested += TogglePause;
-        ReplaceWorld(SimulationFactory.Create(preset.World, preset.Colonies));
+        ReplaceWorld(SimulationFactory.Create(preset.World, preset.Colonies, preset.Survival));
         try
         {
             var dataDirectory = OS.GetEnvironment("ANTWORLD_DATA_DIR");

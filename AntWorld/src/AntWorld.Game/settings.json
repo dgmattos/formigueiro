@@ -148,6 +148,18 @@
   "rendering": {
     "tileSize": 16
   },
+  "survival": {
+    "energyPerDay": 12,
+    "nutritionPerDay": 0.35,
+    "hydrationPerDay": 0.6,
+    "thermalDamagePerDegreeDay": 0.5,
+    "exhaustionDamagePerDay": 60,
+    "starvationDamagePerDay": 30,
+    "dehydrationDamagePerDay": 60,
+    "minimumEggIntervalDays": 0.25,
+    "foodReservePerIndividual": 2,
+    "foodHydration": 0.5
+  },
   "diagnostics": {
     "enabled": true,
     "sampleIntervalSeconds": 60,

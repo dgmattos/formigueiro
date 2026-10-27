@@ -5,6 +5,7 @@ namespace AntWorld.Simulation;
 
 public sealed record SimulationPreset(WorldConfiguration World, IReadOnlyList<ColonySpawnSettings> Colonies)
 {
+    public SurvivalSettings Survival { get; init; } = new();
     public static IReadOnlyList<ColonySpawnSettings> DefaultColonies { get; } =
         Array.AsReadOnly(new[] { new ColonySpawnSettings(0, .25), new ColonySpawnSettings(1, .75) });
     public static SimulationPreset Default { get; } = new(new(), DefaultColonies);
@@ -15,7 +16,7 @@ public sealed record SimulationPreset(WorldConfiguration World, IReadOnlyList<Co
 
     public void Validate()
     {
-        World.Validate();
+        World.Validate(); Survival.Validate();
         if (Colonies.Count is < 1 or > ColonySystem.MaximumColonies)
             throw new ArgumentException($"settings.json: colonies deve conter entre 1 e {ColonySystem.MaximumColonies} colônias.");
         long population = 0;
@@ -44,7 +45,10 @@ public sealed record SimulationPreset(WorldConfiguration World, IReadOnlyList<Co
             IReadOnlyList<ColonySpawnSettings> colonies = root.TryGetProperty("colonies", out var coloniesJson)
                 ? coloniesJson.Deserialize<ColonySpawnSettings[]>(JsonOptions) ?? throw new ArgumentException("colonies não pode ser null.")
                 : DefaultColonies;
-            var preset = new SimulationPreset(world, colonies);
+            var survival = root.TryGetProperty("survival", out var survivalJson)
+                ? survivalJson.Deserialize<SurvivalSettings>(JsonOptions) ?? throw new ArgumentException("survival não pode ser null.")
+                : new SurvivalSettings();
+            var preset = new SimulationPreset(world, colonies) { Survival = survival };
             preset.Validate();
             return preset;
         }

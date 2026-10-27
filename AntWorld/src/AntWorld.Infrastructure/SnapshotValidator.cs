@@ -5,6 +5,7 @@ public static class SnapshotValidator
 {
     public static void Validate(SimulationState state)
     {
+        state.Survival.Validate();
         var world = state.World;
         state.Performance.Validate(); foreach(var species in state.Species.Values) species.Validate();
         Require(state.SchedulerCursor>=0,"Cursor inválido.");

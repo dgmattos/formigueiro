@@ -3,6 +3,7 @@ namespace AntWorld.Simulation;
 public sealed class DecisionSystem(ActionCatalog actions)
 {
     private readonly RecognitionService recognition=new();
+    private readonly WaterSearch waterSearch = new();
     private readonly Ant[] nearby=new Ant[48];
     public void Decide(AntContext context)
     {
@@ -24,15 +25,17 @@ public sealed class DecisionSystem(ActionCatalog actions)
             best=task; score=utility; target=candidateTarget; destination=candidateDestination;
         }
         var flood=world.GetCell(ant.Position,false).WaterAmount>=500;
-        Consider(AntTask.Rest,.05+(1-ant.Energy/100)*.3);
-        Consider(AntTask.Feed,Math.Max(1-ant.Energy/100,1-ant.Nutrition)*3+(ant.Hydration<.3?1:0));
+        Consider(AntTask.Rest,.05+(1-ant.Energy/100)*(ant.Energy<30 && ant.Nutrition>.1 ? 3 : .3));
+        Consider(AntTask.Feed,Math.Max(Math.Max(1-ant.Energy/100,1-ant.Nutrition),1-ant.Hydration)*(ant.Energy<40 || ant.Nutrition<.5 || ant.Hydration<.4 ? 4 : 3));
         Consider(AntTask.Drink,(1-ant.Hydration)*4);
         Consider(AntTask.RecoverHealth,(1-ant.Health/ant.MaxHealth)*1.5);
         Consider(AntTask.LayEgg,profile.Reproduction*.8);
         Consider(AntTask.Deposit,ant.Carrying>0?2:0);
         if(ant.Carrying>0) Consider(AntTask.Carry,1.8,null,colony.Nest);
         if(ant.CarriedAntId is {} carriedId) Consider(AntTask.Carry,2.8*profile.BroodCare,carriedId,colony.BroodChamber);
-        if(ant.Energy<40 || ant.Nutrition<.5 || ant.Hydration<.4)
+        if (ant.Hydration < .5 && !WaterSources.TryAccessible(world,ant.Position,out _) && waterSearch.NextStep(world,ant.Position) is {} waterStep)
+            Consider(AntTask.Move,1.4+(1-ant.Hydration)*2,null,waterStep);
+        if(colony.Food>0 && ant.Position!=colony.Nest && (ant.Energy<40 || ant.Nutrition<.5 || ant.Hydration<.4))
             Consider(AntTask.Move,1.2+(1-ant.Energy/100),null,colony.Nest);
         if(flood) Consider(AntTask.Flee,10,null,FindDry(world,ant.Position),true);
         Consider(AntTask.Collect,(.7+priorities.FoodCollection)*profile.Foraging);
@@ -61,7 +64,7 @@ public sealed class DecisionSystem(ActionCatalog actions)
             {
                 if(ant.CarriedAntId is null)
                 {
-                    var care=(1-other.Nutrition)*4*profile.BroodCare;
+                    var care=Math.Max(Math.Max(1-other.Nutrition,1-other.Energy/100),1-other.Hydration)*4*profile.BroodCare;
                     Consider(AntTask.FeedLarva,care,other.Id);
                     if(distance>1 && other.CarrierId is null && (ant.Carrying>0 || colony.Food>0 && other.Position==colony.BroodChamber))
                         Consider(AntTask.Move,care/(1+distance*.1),other.Id,other.Position);

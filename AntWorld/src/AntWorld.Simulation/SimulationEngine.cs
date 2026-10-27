@@ -19,7 +19,7 @@ public sealed class SimulationEngine
     private readonly Dictionary<int,Colony> colonyIndex=[];
     public SimulationEngine(SimulationState state)
     {
-        state.Performance.Validate(); foreach(var species in state.Species.Values) species.Validate();
+        state.Survival.Validate(); state.Performance.Validate(); foreach(var species in state.Species.Values) species.Validate();
         State=state; environment=new(state.World); behavior=new(actions); decision=new(actions);
         mushrooms=new(state.World);
     }

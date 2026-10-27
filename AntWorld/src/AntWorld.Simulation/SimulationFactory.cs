@@ -5,12 +5,12 @@ namespace AntWorld.Simulation;
 
 public static class SimulationFactory
 {
-    public static SimulationState Create(WorldConfiguration configuration, IReadOnlyList<ColonySpawnSettings>? initialColonies = null)
+    public static SimulationState Create(WorldConfiguration configuration, IReadOnlyList<ColonySpawnSettings>? initialColonies = null, SurvivalSettings? survival = null)
     {
-        var preset = new SimulationPreset(configuration, initialColonies ?? SimulationPreset.DefaultColonies);
+        var preset = new SimulationPreset(configuration, initialColonies ?? SimulationPreset.DefaultColonies) { Survival = survival ?? new() };
         preset.Validate();
         var world = new WorldGenerator().Generate(configuration);
-        var state = new SimulationState(world, DeterministicRandom.FromSeed(configuration.Seed, 4));
+        var state = new SimulationState(world, DeterministicRandom.FromSeed(configuration.Seed, 4)) { Survival = preset.Survival };
         var inheritance = new GenomeInheritance();
         foreach (var spawn in preset.Colonies)
         {

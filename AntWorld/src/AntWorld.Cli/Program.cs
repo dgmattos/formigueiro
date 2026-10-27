@@ -24,7 +24,7 @@ try
     var preset = options.TryGetValue("--settings", out var settingsPath) ? SimulationPreset.Parse(File.ReadAllText(settingsPath)) : null;
     if (preset is not null && new[] { "--load", "--seed", "--width", "--height" }.Any(options.ContainsKey))
         throw new ArgumentException("Use --settings sem --load/--seed/--width/--height para evitar configurações ambíguas.");
-    var state = preset is not null ? SimulationFactory.Create(preset.World, preset.Colonies) : options.TryGetValue("--load", out var load) ? files.Load(load) : SimulationFactory.Create(new(Number("--seed", 12345), Number("--width", 240), Number("--height", 96)));
+    var state = preset is not null ? SimulationFactory.Create(preset.World, preset.Colonies, preset.Survival) : options.TryGetValue("--load", out var load) ? files.Load(load) : SimulationFactory.Create(new(Number("--seed", 12345), Number("--width", 240), Number("--height", 96)));
     var engine = new SimulationEngine(state);
     using var diagnostics = options.TryGetValue("--diagnostics", out var diagnosticDirectory)
         ? new SimulationDiagnostics(diagnosticDirectory, state) : null;

@@ -6,7 +6,7 @@ namespace AntWorld.Infrastructure;
 public sealed class BinarySnapshotCodec
 {
     private static readonly byte[] Magic = "ANTWORLD"u8.ToArray();
-    public const int Version = 6;
+    public const int Version = 7;
     public const int MaximumBytes = 64 * 1024 * 1024;
 
     public byte[] Encode(SimulationState state)
@@ -29,7 +29,7 @@ public sealed class BinarySnapshotCodec
         using var reader = new BinaryReader(stream);
         if (!reader.ReadBytes(8).SequenceEqual(Magic)) throw new InvalidDataException("Assinatura de snapshot inválida.");
         var version = reader.ReadInt32();
-        if (version is not (5 or Version)) throw new InvalidDataException("Versão de snapshot incompatível: formato 6 com leitura compatível do formato 5. Saves dos formatos 1 a 4 não são migrados automaticamente; preserve o arquivo original.");
+        if (version is not (5 or 6 or Version)) throw new InvalidDataException("Versão de snapshot incompatível: formato 7 com leitura compatível dos formatos 5 e 6. Saves dos formatos 1 a 4 não são migrados automaticamente; preserve o arquivo original.");
         var size = reader.ReadInt32();
         if (size < 0 || size != snapshot.Length - 48) throw new InvalidDataException("Snapshot truncado ou tamanho inválido.");
         var hash = reader.ReadBytes(32);
@@ -56,6 +56,7 @@ public sealed class BinarySnapshotCodec
         WorldSnapshotCodec.Write(w, world);
         w.Write(state.Random.State); w.Write(state.Tick); w.Write(state.NextAntId); w.Write(state.NextColonyId); w.Write(state.RainIntensity); w.Write(state.DryTicks);
         AiConfigurationCodec.Write(w,state);
+        SurvivalSettingsCodec.Write(w,state.Survival);
         w.Write(state.Colonies.Count);
         foreach (var c in state.Colonies)
         {
@@ -84,6 +85,7 @@ public sealed class BinarySnapshotCodec
         if (randomState == 0) throw new InvalidDataException("PRNG inválido.");
         var state = new SimulationState(world, new(randomState)) { Tick = r.ReadInt64(), NextAntId = r.ReadInt32(), NextColonyId = r.ReadInt32(), RainIntensity = r.ReadDouble(), DryTicks = r.ReadInt32() };
         AiConfigurationCodec.Read(r,state,version);
+        state.Survival=version>=7 ? SurvivalSettingsCodec.Read(r) : new SurvivalSettings();
         var colonyCount = ReadCount(r, 12);
         for (var i = 0; i < colonyCount; i++)
         {
