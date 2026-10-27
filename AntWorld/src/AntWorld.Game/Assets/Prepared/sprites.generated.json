@@ -1,0 +1,2130 @@
+[
+  {
+    "id": "sand_interior",
+    "season": "spring",
+    "region": [
+      0,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_0",
+    "season": "spring",
+    "region": [
+      16,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_1",
+    "season": "spring",
+    "region": [
+      32,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_2",
+    "season": "spring",
+    "region": [
+      48,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_0",
+    "season": "spring",
+    "region": [
+      64,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_1",
+    "season": "spring",
+    "region": [
+      80,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_2",
+    "season": "spring",
+    "region": [
+      96,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_left",
+    "season": "spring",
+    "region": [
+      112,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_right",
+    "season": "spring",
+    "region": [
+      128,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_corner",
+    "season": "spring",
+    "region": [
+      144,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "slope_up_reserved",
+    "season": "spring",
+    "region": [
+      160,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "slope_down_reserved",
+    "season": "spring",
+    "region": [
+      176,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "sand_surface",
+    "season": "spring",
+    "region": [
+      192,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_sand",
+    "season": "spring",
+    "region": [
+      208,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_0",
+    "season": "spring",
+    "region": [
+      224,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_1",
+    "season": "spring",
+    "region": [
+      240,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_2",
+    "season": "spring",
+    "region": [
+      256,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_0",
+    "season": "spring",
+    "region": [
+      272,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_1",
+    "season": "spring",
+    "region": [
+      288,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_2",
+    "season": "spring",
+    "region": [
+      304,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_3",
+    "season": "spring",
+    "region": [
+      320,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_3",
+    "season": "spring",
+    "region": [
+      336,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_4",
+    "season": "spring",
+    "region": [
+      352,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_5",
+    "season": "spring",
+    "region": [
+      368,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "tree_large",
+    "season": "spring",
+    "region": [
+      0,
+      0,
+      96,
+      101
+    ],
+    "anchor": [
+      48,
+      97
+    ]
+  },
+  {
+    "id": "tree_small",
+    "season": "spring",
+    "region": [
+      98,
+      0,
+      61,
+      80
+    ],
+    "anchor": [
+      34,
+      76
+    ]
+  },
+  {
+    "id": "tree_young",
+    "season": "spring",
+    "region": [
+      161,
+      0,
+      32,
+      42
+    ],
+    "anchor": [
+      18,
+      40
+    ]
+  },
+  {
+    "id": "fallen_log",
+    "season": "spring",
+    "region": [
+      195,
+      0,
+      48,
+      24
+    ],
+    "anchor": [
+      24,
+      18
+    ]
+  },
+  {
+    "id": "tree_stump",
+    "season": "spring",
+    "region": [
+      245,
+      0,
+      32,
+      18
+    ],
+    "anchor": [
+      16,
+      17
+    ]
+  },
+  {
+    "id": "dead_wood",
+    "season": "spring",
+    "region": [
+      279,
+      0,
+      32,
+      16
+    ],
+    "anchor": [
+      16,
+      12
+    ]
+  },
+  {
+    "id": "grass_clump",
+    "season": "spring",
+    "region": [
+      313,
+      0,
+      16,
+      12
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "tall_grass",
+    "season": "spring",
+    "region": [
+      331,
+      0,
+      16,
+      14
+    ],
+    "anchor": [
+      8,
+      13
+    ]
+  },
+  {
+    "id": "bush",
+    "season": "spring",
+    "region": [
+      349,
+      0,
+      32,
+      28
+    ],
+    "anchor": [
+      16,
+      25
+    ]
+  },
+  {
+    "id": "berry_bush",
+    "season": "spring",
+    "region": [
+      383,
+      0,
+      32,
+      26
+    ],
+    "anchor": [
+      16,
+      23
+    ]
+  },
+  {
+    "id": "flower",
+    "season": "spring",
+    "region": [
+      417,
+      0,
+      16,
+      13
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "small_plant",
+    "season": "spring",
+    "region": [
+      435,
+      0,
+      14,
+      32
+    ],
+    "anchor": [
+      7,
+      31
+    ]
+  },
+  {
+    "id": "mushroom_red",
+    "season": "spring",
+    "region": [
+      451,
+      0,
+      16,
+      12
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "mushroom_brown",
+    "season": "spring",
+    "region": [
+      469,
+      0,
+      16,
+      14
+    ],
+    "anchor": [
+      8,
+      13
+    ]
+  },
+  {
+    "id": "sand_interior",
+    "season": "summer",
+    "region": [
+      0,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_0",
+    "season": "summer",
+    "region": [
+      16,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_1",
+    "season": "summer",
+    "region": [
+      32,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_2",
+    "season": "summer",
+    "region": [
+      48,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_0",
+    "season": "summer",
+    "region": [
+      64,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_1",
+    "season": "summer",
+    "region": [
+      80,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_2",
+    "season": "summer",
+    "region": [
+      96,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_left",
+    "season": "summer",
+    "region": [
+      112,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_right",
+    "season": "summer",
+    "region": [
+      128,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_corner",
+    "season": "summer",
+    "region": [
+      144,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "slope_up_reserved",
+    "season": "summer",
+    "region": [
+      160,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "slope_down_reserved",
+    "season": "summer",
+    "region": [
+      176,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "sand_surface",
+    "season": "summer",
+    "region": [
+      192,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_sand",
+    "season": "summer",
+    "region": [
+      208,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_0",
+    "season": "summer",
+    "region": [
+      224,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_1",
+    "season": "summer",
+    "region": [
+      240,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_2",
+    "season": "summer",
+    "region": [
+      256,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_0",
+    "season": "summer",
+    "region": [
+      272,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_1",
+    "season": "summer",
+    "region": [
+      288,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_2",
+    "season": "summer",
+    "region": [
+      304,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_3",
+    "season": "summer",
+    "region": [
+      320,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_3",
+    "season": "summer",
+    "region": [
+      336,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_4",
+    "season": "summer",
+    "region": [
+      352,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_5",
+    "season": "summer",
+    "region": [
+      368,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "tree_large",
+    "season": "summer",
+    "region": [
+      0,
+      0,
+      96,
+      101
+    ],
+    "anchor": [
+      48,
+      97
+    ]
+  },
+  {
+    "id": "tree_small",
+    "season": "summer",
+    "region": [
+      98,
+      0,
+      61,
+      80
+    ],
+    "anchor": [
+      34,
+      78
+    ]
+  },
+  {
+    "id": "tree_young",
+    "season": "summer",
+    "region": [
+      161,
+      0,
+      32,
+      42
+    ],
+    "anchor": [
+      18,
+      41
+    ]
+  },
+  {
+    "id": "fallen_log",
+    "season": "summer",
+    "region": [
+      195,
+      0,
+      48,
+      24
+    ],
+    "anchor": [
+      24,
+      20
+    ]
+  },
+  {
+    "id": "tree_stump",
+    "season": "summer",
+    "region": [
+      245,
+      0,
+      32,
+      18
+    ],
+    "anchor": [
+      16,
+      18
+    ]
+  },
+  {
+    "id": "dead_wood",
+    "season": "summer",
+    "region": [
+      279,
+      0,
+      32,
+      16
+    ],
+    "anchor": [
+      16,
+      13
+    ]
+  },
+  {
+    "id": "grass_clump",
+    "season": "summer",
+    "region": [
+      313,
+      0,
+      16,
+      12
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "tall_grass",
+    "season": "summer",
+    "region": [
+      331,
+      0,
+      16,
+      14
+    ],
+    "anchor": [
+      8,
+      14
+    ]
+  },
+  {
+    "id": "bush",
+    "season": "summer",
+    "region": [
+      349,
+      0,
+      32,
+      28
+    ],
+    "anchor": [
+      16,
+      26
+    ]
+  },
+  {
+    "id": "berry_bush",
+    "season": "summer",
+    "region": [
+      383,
+      0,
+      32,
+      26
+    ],
+    "anchor": [
+      16,
+      25
+    ]
+  },
+  {
+    "id": "flower",
+    "season": "summer",
+    "region": [
+      417,
+      0,
+      16,
+      13
+    ],
+    "anchor": [
+      8,
+      12
+    ]
+  },
+  {
+    "id": "small_plant",
+    "season": "summer",
+    "region": [
+      435,
+      0,
+      14,
+      32
+    ],
+    "anchor": [
+      7,
+      32
+    ]
+  },
+  {
+    "id": "mushroom_red",
+    "season": "summer",
+    "region": [
+      451,
+      0,
+      16,
+      12
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "mushroom_brown",
+    "season": "summer",
+    "region": [
+      469,
+      0,
+      16,
+      14
+    ],
+    "anchor": [
+      8,
+      13
+    ]
+  },
+  {
+    "id": "sand_interior",
+    "season": "autumn",
+    "region": [
+      0,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_0",
+    "season": "autumn",
+    "region": [
+      16,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_1",
+    "season": "autumn",
+    "region": [
+      32,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_2",
+    "season": "autumn",
+    "region": [
+      48,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_0",
+    "season": "autumn",
+    "region": [
+      64,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_1",
+    "season": "autumn",
+    "region": [
+      80,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_2",
+    "season": "autumn",
+    "region": [
+      96,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_left",
+    "season": "autumn",
+    "region": [
+      112,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_right",
+    "season": "autumn",
+    "region": [
+      128,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_corner",
+    "season": "autumn",
+    "region": [
+      144,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "slope_up_reserved",
+    "season": "autumn",
+    "region": [
+      160,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "slope_down_reserved",
+    "season": "autumn",
+    "region": [
+      176,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "sand_surface",
+    "season": "autumn",
+    "region": [
+      192,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_sand",
+    "season": "autumn",
+    "region": [
+      208,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_0",
+    "season": "autumn",
+    "region": [
+      224,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_1",
+    "season": "autumn",
+    "region": [
+      240,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_2",
+    "season": "autumn",
+    "region": [
+      256,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_0",
+    "season": "autumn",
+    "region": [
+      272,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_1",
+    "season": "autumn",
+    "region": [
+      288,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_2",
+    "season": "autumn",
+    "region": [
+      304,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_3",
+    "season": "autumn",
+    "region": [
+      320,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_3",
+    "season": "autumn",
+    "region": [
+      336,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_4",
+    "season": "autumn",
+    "region": [
+      352,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_5",
+    "season": "autumn",
+    "region": [
+      368,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "tree_large",
+    "season": "autumn",
+    "region": [
+      0,
+      0,
+      96,
+      101
+    ],
+    "anchor": [
+      48,
+      100
+    ]
+  },
+  {
+    "id": "tree_small",
+    "season": "autumn",
+    "region": [
+      98,
+      0,
+      61,
+      80
+    ],
+    "anchor": [
+      34,
+      78
+    ]
+  },
+  {
+    "id": "tree_young",
+    "season": "autumn",
+    "region": [
+      161,
+      0,
+      32,
+      42
+    ],
+    "anchor": [
+      18,
+      41
+    ]
+  },
+  {
+    "id": "fallen_log",
+    "season": "autumn",
+    "region": [
+      195,
+      0,
+      48,
+      24
+    ],
+    "anchor": [
+      24,
+      19
+    ]
+  },
+  {
+    "id": "tree_stump",
+    "season": "autumn",
+    "region": [
+      245,
+      0,
+      32,
+      18
+    ],
+    "anchor": [
+      16,
+      18
+    ]
+  },
+  {
+    "id": "dead_wood",
+    "season": "autumn",
+    "region": [
+      279,
+      0,
+      32,
+      16
+    ],
+    "anchor": [
+      16,
+      13
+    ]
+  },
+  {
+    "id": "grass_clump",
+    "season": "autumn",
+    "region": [
+      313,
+      0,
+      16,
+      12
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "tall_grass",
+    "season": "autumn",
+    "region": [
+      331,
+      0,
+      16,
+      14
+    ],
+    "anchor": [
+      8,
+      14
+    ]
+  },
+  {
+    "id": "bush",
+    "season": "autumn",
+    "region": [
+      349,
+      0,
+      32,
+      28
+    ],
+    "anchor": [
+      16,
+      26
+    ]
+  },
+  {
+    "id": "berry_bush",
+    "season": "autumn",
+    "region": [
+      383,
+      0,
+      32,
+      26
+    ],
+    "anchor": [
+      16,
+      24
+    ]
+  },
+  {
+    "id": "flower",
+    "season": "autumn",
+    "region": [
+      417,
+      0,
+      16,
+      13
+    ],
+    "anchor": [
+      8,
+      12
+    ]
+  },
+  {
+    "id": "small_plant",
+    "season": "autumn",
+    "region": [
+      435,
+      0,
+      14,
+      32
+    ],
+    "anchor": [
+      7,
+      31
+    ]
+  },
+  {
+    "id": "mushroom_red",
+    "season": "autumn",
+    "region": [
+      451,
+      0,
+      16,
+      12
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "mushroom_brown",
+    "season": "autumn",
+    "region": [
+      469,
+      0,
+      16,
+      14
+    ],
+    "anchor": [
+      8,
+      13
+    ]
+  },
+  {
+    "id": "sand_interior",
+    "season": "winter",
+    "region": [
+      0,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_0",
+    "season": "winter",
+    "region": [
+      16,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_1",
+    "season": "winter",
+    "region": [
+      32,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_2",
+    "season": "winter",
+    "region": [
+      48,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_0",
+    "season": "winter",
+    "region": [
+      64,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_1",
+    "season": "winter",
+    "region": [
+      80,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_top_2",
+    "season": "winter",
+    "region": [
+      96,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_left",
+    "season": "winter",
+    "region": [
+      112,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_right",
+    "season": "winter",
+    "region": [
+      128,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_corner",
+    "season": "winter",
+    "region": [
+      144,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "slope_up_reserved",
+    "season": "winter",
+    "region": [
+      160,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "slope_down_reserved",
+    "season": "winter",
+    "region": [
+      176,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "sand_surface",
+    "season": "winter",
+    "region": [
+      192,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_sand",
+    "season": "winter",
+    "region": [
+      208,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_0",
+    "season": "winter",
+    "region": [
+      224,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_1",
+    "season": "winter",
+    "region": [
+      240,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "rock_2",
+    "season": "winter",
+    "region": [
+      256,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_0",
+    "season": "winter",
+    "region": [
+      272,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_1",
+    "season": "winter",
+    "region": [
+      288,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_2",
+    "season": "winter",
+    "region": [
+      304,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "soil_rock_3",
+    "season": "winter",
+    "region": [
+      320,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_3",
+    "season": "winter",
+    "region": [
+      336,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_4",
+    "season": "winter",
+    "region": [
+      352,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "grass_variation_5",
+    "season": "winter",
+    "region": [
+      368,
+      0,
+      16,
+      16
+    ],
+    "anchor": [
+      0,
+      0
+    ]
+  },
+  {
+    "id": "tree_large",
+    "season": "winter",
+    "region": [
+      0,
+      0,
+      96,
+      101
+    ],
+    "anchor": [
+      48,
+      98
+    ]
+  },
+  {
+    "id": "tree_small",
+    "season": "winter",
+    "region": [
+      98,
+      0,
+      61,
+      80
+    ],
+    "anchor": [
+      34,
+      78
+    ]
+  },
+  {
+    "id": "tree_young",
+    "season": "winter",
+    "region": [
+      161,
+      0,
+      32,
+      42
+    ],
+    "anchor": [
+      18,
+      41
+    ]
+  },
+  {
+    "id": "fallen_log",
+    "season": "winter",
+    "region": [
+      195,
+      0,
+      48,
+      24
+    ],
+    "anchor": [
+      24,
+      20
+    ]
+  },
+  {
+    "id": "tree_stump",
+    "season": "winter",
+    "region": [
+      245,
+      0,
+      32,
+      18
+    ],
+    "anchor": [
+      16,
+      17
+    ]
+  },
+  {
+    "id": "dead_wood",
+    "season": "winter",
+    "region": [
+      279,
+      0,
+      32,
+      16
+    ],
+    "anchor": [
+      16,
+      13
+    ]
+  },
+  {
+    "id": "grass_clump",
+    "season": "winter",
+    "region": [
+      313,
+      0,
+      16,
+      12
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "tall_grass",
+    "season": "winter",
+    "region": [
+      331,
+      0,
+      16,
+      14
+    ],
+    "anchor": [
+      8,
+      13
+    ]
+  },
+  {
+    "id": "bush",
+    "season": "winter",
+    "region": [
+      349,
+      0,
+      32,
+      28
+    ],
+    "anchor": [
+      16,
+      26
+    ]
+  },
+  {
+    "id": "berry_bush",
+    "season": "winter",
+    "region": [
+      383,
+      0,
+      32,
+      26
+    ],
+    "anchor": [
+      16,
+      25
+    ]
+  },
+  {
+    "id": "flower",
+    "season": "winter",
+    "region": [
+      417,
+      0,
+      16,
+      13
+    ],
+    "anchor": [
+      8,
+      12
+    ]
+  },
+  {
+    "id": "small_plant",
+    "season": "winter",
+    "region": [
+      435,
+      0,
+      14,
+      32
+    ],
+    "anchor": [
+      7,
+      31
+    ]
+  },
+  {
+    "id": "mushroom_red",
+    "season": "winter",
+    "region": [
+      451,
+      0,
+      16,
+      12
+    ],
+    "anchor": [
+      8,
+      11
+    ]
+  },
+  {
+    "id": "mushroom_brown",
+    "season": "winter",
+    "region": [
+      469,
+      0,
+      16,
+      14
+    ],
+    "anchor": [
+      8,
+      13
+    ]
+  }
+]

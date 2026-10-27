@@ -1,0 +1,15 @@
+<Project Sdk="Godot.NET.Sdk/4.6.3">
+  <PropertyGroup><EnableDynamicLoading>true</EnableDynamicLoading><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../AntWorld.Simulation/AntWorld.Simulation.csproj" />
+    <ProjectReference Include="../AntWorld.Persistence/AntWorld.Persistence.csproj" />
+  </ItemGroup>
+  <Target Name="SyncAntSpriteAtlas" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../sprites/002-formiga-forte.png" DestinationFiles="$(MSBuildProjectDirectory)/Assets/ants-strong.png" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../sprites/001-formiga-normal.png"
+          DestinationFiles="$(MSBuildProjectDirectory)/Assets/ants.png"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../sprites/001-planice-biome-primavera.png;$(MSBuildProjectDirectory)/../sprites/002-planice-biome-verao.png;$(MSBuildProjectDirectory)/../sprites/003-planice-biome-outono.png;$(MSBuildProjectDirectory)/../sprites/004-planice-biome-inverno.png"
+          DestinationFiles="$(MSBuildProjectDirectory)/Assets/grassland-spring.png;$(MSBuildProjectDirectory)/Assets/grassland-summer.png;$(MSBuildProjectDirectory)/Assets/grassland-autumn.png;$(MSBuildProjectDirectory)/Assets/grassland-winter.png" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

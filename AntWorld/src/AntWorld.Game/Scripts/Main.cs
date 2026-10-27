@@ -1,0 +1,207 @@
+using AntWorld.Domain;
+using AntWorld.Simulation;
+using AntWorld.Persistence;
+using AntWorld.Infrastructure;
+using Godot;
+namespace AntWorld.Game;
+
+public partial class Main : Node2D
+{
+    private PlaybackSettings settings=PlaybackSettings.Default;
+    private WindowSettings windowSettings=WindowSettings.Default;
+    private RenderingSettings rendering = new();
+    private SimulationPreset preset=SimulationPreset.Default;
+    private SimulationEngine engine = null!;
+    private PlaybackControl playback = new();
+    private SimulationClock clock => playback.Clock;
+    private WorldView worldView = null!;
+    private ObserverHud hud = null!;
+    private Camera2D camera = null!;
+    private SqliteSnapshotStore? store;
+    private double sampleSeconds;
+    private int sampleTicks;
+    public override void _Ready()
+    {
+        if (OS.GetCmdlineUserArgs().Contains("--prepare-assets"))
+        {
+            SetProcess(false); SetProcessUnhandledInput(false);
+            try { AssetPreparation.Run(); GetTree().Quit(); }
+            catch (Exception ex) { GD.PushError(ex.ToString()); GetTree().Quit(1); }
+            return;
+        }
+        try
+        {
+            var configuration=GameSettingsLoader.Load();
+            settings=configuration.Playback;
+            windowSettings=configuration.Window;
+            preset=configuration.Simulation;
+            rendering=configuration.Rendering;
+            windowSettings.Apply(GetWindow());
+        }
+        catch(Exception ex)
+        {
+            GD.PushError($"Configuração inválida: {ex.Message}");SetProcess(false);SetProcessUnhandledInput(false);GetTree().Quit(1);return;
+        }
+        camera = new Camera2D { Zoom = new(.5f, .5f), PositionSmoothingEnabled = false }; AddChild(camera);
+        hud = new ObserverHud { Settings=settings }; AddChild(hud);
+        hud.SpeedRequested += SetSpeed;
+        hud.PauseRequested += TogglePause;
+        ReplaceWorld(SimulationFactory.Create(preset.World, preset.Colonies));
+        try
+        {
+            var dataDirectory = OS.GetEnvironment("ANTWORLD_DATA_DIR");
+            var path = string.IsNullOrWhiteSpace(dataDirectory) ? ProjectSettings.GlobalizePath("user://antworld.db") : System.IO.Path.Combine(dataDirectory, "antworld.db");
+            store = new SqliteSnapshotStore(path);
+        }
+        catch (Exception ex) { Report("SQLite indisponível", ex); }
+        GD.Print($"AntWorld: settings x1={settings.X1}, x2={settings.X2}, x3={settings.X3}.");
+        GD.Print($"AntWorld: window mode={windowSettings.Mode}, windowed size={windowSettings.Width}x{windowSettings.Height}.");
+        GD.Print($"AntWorld: cena inicializada, seed {engine.State.World.Configuration.Seed}, {engine.State.World.Width}x{engine.State.World.Height} blocos, {engine.State.Colonies.Count} colônias, {engine.State.Ants.Count} indivíduos.");
+        if (OS.GetCmdlineUserArgs().Contains("--smoke-test"))
+        {
+            try { RunSmokeTest(); }
+            catch (Exception ex) { Report("Smoke test falhou", ex); GetTree().Quit(1); }
+        }
+        var capture = OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith("--capture="));
+        if (capture is not null) _ = CaptureFrame(capture[10..]);
+    }
+    private void ReplaceWorld(SimulationState state)
+    {
+        if (worldView is not null) { RemoveChild(worldView); worldView.QueueFree(); }
+        engine = new(state); playback = new(settings); sampleSeconds = 0; sampleTicks = 0;
+        worldView = new WorldView(); worldView.Initialize(state, rendering); AddChild(worldView);
+        camera.Position = new(state.Colonies[0].Nest.X * rendering.TileSize, state.World.Surface[state.Colonies[0].Nest.X] * rendering.TileSize);
+        hud.Refresh(state, playback, 0);
+    }
+    public override void _Process(double delta)
+    {
+        sampleTicks += clock.Advance(delta, engine.Step, 100, 450.0/engine.State.Performance.TargetFps);
+        sampleSeconds += delta;
+        if (sampleSeconds >= .25)
+        {
+            hud.Refresh(engine.State, playback, sampleTicks / sampleSeconds);
+            sampleSeconds = 0; sampleTicks = 0;
+        }
+        if (GetViewport().GuiGetFocusOwner() is LineEdit) return;
+        var movement = new Vector2((Input.IsPhysicalKeyPressed(Key.D) ? 1 : 0) - (Input.IsPhysicalKeyPressed(Key.A) ? 1 : 0),
+            (Input.IsPhysicalKeyPressed(Key.S) ? 1 : 0) - (Input.IsPhysicalKeyPressed(Key.W) ? 1 : 0));
+        camera.Position += movement * (float)delta * 650 / camera.Zoom.X;
+    }
+    public override void _UnhandledInput(InputEvent input)
+    {
+        if (input is InputEventMouseMotion motion && Input.IsMouseButtonPressed(MouseButton.Right)) camera.Position -= motion.Relative / camera.Zoom;
+        if (input is InputEventMouseButton { Pressed: true } mouse)
+        {
+            if (mouse.ButtonIndex is MouseButton.WheelUp or MouseButton.WheelDown)
+            {
+                AdjustCameraZoom(mouse.ButtonIndex == MouseButton.WheelUp);
+            }
+
+        }
+        if (input is not InputEventKey { Pressed: true, Echo: false } key) return;
+        switch (key.Keycode)
+        {
+            case Key.Plus:
+            case Key.Equal:
+            case Key.KpAdd: AdjustCameraZoom(true); break;
+            case Key.Minus:
+            case Key.KpSubtract: AdjustCameraZoom(false); break;
+            case Key.Space: TogglePause(); break;
+            case Key.Key1: SetSpeed(settings.X1); break;
+            case Key.Key2: SetSpeed(settings.X2); break;
+            case Key.Key3: SetSpeed(settings.X3); break;
+        }
+    }
+    private void AdjustCameraZoom(bool zoomIn)
+    {
+        const float step = 1.15f;
+        var zoom = Mathf.Clamp(camera.Zoom.X * (zoomIn ? step : 1 / step), .25f, 4);
+        camera.Zoom = new(zoom, zoom);
+    }
+    private void SetSpeed(int speed) { playback.Select(speed); hud.Refresh(engine.State,playback,0); }
+    private void TogglePause() { playback.TogglePause(); hud.Refresh(engine.State,playback,0); }
+    private void Report(string message, Exception exception)
+    {
+        hud.Notify($"{message}: {exception.Message}"); GD.PushError($"{message}: {exception}");
+    }
+    private void RunSmokeTest()
+    {
+        if (store is null) throw new InvalidOperationException("SQLite não foi inicializado.");
+        AntSpriteAtlas.ValidateImportedTexture(GD.Load<Texture2D>(AntSpriteAtlas.ResourcePath));
+        AntSpriteAtlas.ValidateImportedTexture(GD.Load<Texture2D>(AntSpriteAtlas.StrongResourcePath));
+        new PreparedSpriteCatalog().Validate();
+        var seasonalTilesets = new SeasonTilesets();
+        var atlasPaths = new HashSet<string>();
+        for (var season = 0; season < 4; season++)
+        {
+            var atlas = seasonalTilesets.ForSeason(season);
+            if (atlas.GetWidth() != 1536 || atlas.GetHeight() != 1024 || !atlasPaths.Add(atlas.ResourcePath))
+                throw new InvalidOperationException("Atlas sazonal ausente, duplicado ou com dimensões incompatíveis.");
+        }
+        foreach (var region in engine.State.World.Chunks())
+        {
+            var sites = Enumerable.Range(0, region.Width * region.Height).Count(i => MushroomHabitat.Allows(engine.State.World, region.Position(i)));
+            var count = engine.State.World.CountMushrooms(region);
+            if (count < Math.Min(sites * 2, preset.World.Mushrooms.MinimumPerChunk) || count > preset.World.Mushrooms.MaximumPerChunk)
+                throw new InvalidOperationException("Quantidade inicial de cogumelos fora dos limites por chunk.");
+        }
+        if (engine.State.World.Configuration!=preset.World || engine.State.Colonies.Count!=preset.Colonies.Count ||
+            engine.State.Ants.Count!=preset.Colonies.Sum(c=>c.Population))
+            throw new InvalidOperationException("O mundo e a população inicial não correspondem ao settings.json.");
+        if (windowSettings.Mode=="windowed" && GetWindow().Size!=new Vector2I(windowSettings.Width,windowSettings.Height))
+            throw new InvalidOperationException("O tamanho da janela não corresponde ao settings.json.");
+        if (DisplayServer.GetName()!="headless")
+        {
+            var expectedMode=windowSettings.Mode=="fullscreen" ? Window.ModeEnum.Fullscreen : Window.ModeEnum.Windowed;
+            if(GetWindow().Mode!=expectedMode) throw new InvalidOperationException("O modo da janela não corresponde ao settings.json.");
+        }
+        hud.GetNode<TextureButton>("Root/TimePanel/Buttons/Speed2").EmitSignal(BaseButton.SignalName.Pressed);
+        clock.Advance(.1, engine.Step,2000);
+        var expectedTicks=settings.X2*2;
+        if (engine.State.Tick != expectedTicks) throw new InvalidOperationException("Velocidade não aplicou settings.json.");
+        hud.GetNode<TextureButton>("Root/TimePanel/Buttons/PausePlay").EmitSignal(BaseButton.SignalName.Pressed);
+        clock.Advance(10, engine.Step);
+        if (engine.State.Tick != expectedTicks) throw new InvalidOperationException("Pausa não congelou o mundo.");
+        var codec = new BinarySnapshotCodec();
+        var before = codec.Encode(engine.State);
+        store.Save("smoke-test", engine.State);
+        engine.Run(10);
+        ReplaceWorld(store.Load("smoke-test"));
+        if (!before.SequenceEqual(codec.Encode(engine.State))) throw new InvalidOperationException("Save/load Godot divergiu.");
+        if(hud.ActionButtonCount!=4) throw new InvalidOperationException("HUD deve conter apenas quatro controles de tempo.");
+        TogglePause();
+        hud.Refresh(engine.State, playback, 0);
+        if(!hud.ShowsPlay) throw new InvalidOperationException("Pausa deve exibir apenas play.");
+        SetSpeed(settings.X3);
+        if(!playback.IsPaused) throw new InvalidOperationException("Selecionar velocidade não deve desfazer pausa.");
+        TogglePause();
+        if(hud.ShowsPlay || clock.Speed!=settings.X3) throw new InvalidOperationException("Play deve retomar a velocidade selecionada e exibir pausa.");
+        TogglePause();
+        GD.Print("AntWorld: smoke test PASS — 30 sprites de indivíduos com transparência, quatro atlas sazonais, limites de cogumelos, x1/x2/x3, pausa/play exclusivos, SQLite, restauração e HUD restrito.");
+        _ = ValidateVisualScene();
+    }
+    private async Task ValidateVisualScene()
+    {
+        try
+        {
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            worldView.ValidateTerrainLayers();
+            var population = engine.State.World.Vegetation.All.ToArray();
+            if (preset.World.Vegetation.Enabled && population.Length == 0) throw new InvalidOperationException("Preset sem vegetação.");
+            GD.Print($"AntWorld: TileMapLayer PASS — tile={rendering.TileSize}px, chunk={preset.World.ChunkSize}, vegetação=" + string.Join(", ", population.GroupBy(v => v.Kind).Select(g => $"{g.Key}:{g.Count()}")));
+            var output = OS.GetEnvironment("ANTWORLD_DATA_DIR");
+            if (!string.IsNullOrWhiteSpace(output)) VisualPreviewExporter.Export(engine.State.World, new PreparedSpriteCatalog(), output);
+        }
+        catch (Exception ex) { Report("Validação visual falhou", ex); GetTree().Quit(1); }
+    }
+    private async Task CaptureFrame(string path)
+    {
+        await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+        await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+        var error = GetViewport().GetTexture().GetImage().SavePng(path);
+        if (error != Error.Ok) GD.PushError($"Captura falhou: {error}");
+        else GD.Print($"AntWorld: captura salva em {path}");
+    }
+
+}

@@ -1,0 +1,7 @@
+<Project Sdk="Godot.NET.Sdk/4.6.3">
+  <PropertyGroup><EnableDynamicLoading>true</EnableDynamicLoading></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../AntWorld.Simulation/AntWorld.Simulation.csproj"/>
+    <ProjectReference Include="../AntWorld.Persistence/AntWorld.Persistence.csproj"/>
+  </ItemGroup>
+</Project>

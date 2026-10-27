@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><IsTestProject>false</IsTestProject></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.extensibility.execution" Version="2.9.3" />
+    <ProjectReference Include="../AntWorld.Domain.Tests/AntWorld.Domain.Tests.csproj" />
+    <ProjectReference Include="../AntWorld.Simulation.Tests/AntWorld.Simulation.Tests.csproj" />
+    <ProjectReference Include="../AntWorld.Persistence.Tests/AntWorld.Persistence.Tests.csproj" />
+  </ItemGroup>
+</Project>

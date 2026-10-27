@@ -1,0 +1,141 @@
+{
+  "world": {
+    "seed": 12345,
+    "width": 240,
+    "height": 96,
+    "chunkSize": 32,
+    "maximumLoadedChunks": 64,
+    "mushrooms": {
+      "undergroundRedChance": 0.1,
+      "undergroundBrownChance": 0.2,
+      "surfaceRedChance": 0.5,
+      "surfaceBrownChance": 0.6,
+      "adjacentBonus": 0.08,
+      "renewalIntervalSeconds": 3600,
+      "minimumPerChunk": 2,
+      "maximumPerChunk": 30,
+      "foodPerMushroom": 4
+    },
+    "vegetation": {
+      "enabled": true,
+      "minimumMoisture": 20,
+      "minimumTemperature": -10,
+      "maximumTemperature": 42,
+      "minimumTreeSpacing": 6,
+      "forest": {
+        "largeTrees": 0.12,
+        "smallTrees": 0.1,
+        "youngTrees": 0.04,
+        "fallenLogs": 0.08,
+        "stumps": 0.03,
+        "deadWood": 0.02,
+        "grassClumps": 0.2,
+        "tallGrass": 0.15,
+        "bushes": 0.15,
+        "berryBushes": 0.06,
+        "flowers": 0.12,
+        "smallPlants": 0.1,
+        "grassCoverage": 0.95
+      },
+      "grassland": {
+        "largeTrees": 0.02,
+        "smallTrees": 0.04,
+        "youngTrees": 0.02,
+        "fallenLogs": 0.06,
+        "stumps": 0.015,
+        "deadWood": 0.01,
+        "grassClumps": 0.18,
+        "tallGrass": 0.12,
+        "bushes": 0.08,
+        "berryBushes": 0.03,
+        "flowers": 0.12,
+        "smallPlants": 0.1,
+        "grassCoverage": 0.95
+      },
+      "desert": {
+        "largeTrees": 0,
+        "smallTrees": 0,
+        "youngTrees": 0,
+        "fallenLogs": 0.005,
+        "stumps": 0.005,
+        "deadWood": 0.005,
+        "grassClumps": 0,
+        "tallGrass": 0,
+        "bushes": 0.01,
+        "berryBushes": 0,
+        "flowers": 0,
+        "smallPlants": 0.02,
+        "grassCoverage": 0
+      },
+      "swamp": {
+        "largeTrees": 0.02,
+        "smallTrees": 0.04,
+        "youngTrees": 0.02,
+        "fallenLogs": 0.03,
+        "stumps": 0.02,
+        "deadWood": 0.02,
+        "grassClumps": 0.12,
+        "tallGrass": 0.25,
+        "bushes": 0.15,
+        "berryBushes": 0.03,
+        "flowers": 0.05,
+        "smallPlants": 0.15,
+        "grassCoverage": 0.95
+      },
+      "tundra": {
+        "largeTrees": 0.005,
+        "smallTrees": 0.01,
+        "youngTrees": 0.005,
+        "fallenLogs": 0.01,
+        "stumps": 0.01,
+        "deadWood": 0.01,
+        "grassClumps": 0.06,
+        "tallGrass": 0.03,
+        "bushes": 0.02,
+        "berryBushes": 0.005,
+        "flowers": 0.02,
+        "smallPlants": 0.03,
+        "grassCoverage": 0.65
+      },
+      "woodBlocksMovement": false
+    },
+    "nests": {
+      "normalBaseDepth": 4,
+      "normalDepthMultiplier": 1.25,
+      "strongUndergroundRatio": 0.75
+    }
+  },
+  "colonies": [
+    {
+      "speciesId": 0,
+      "nestPositionRatio": 0.25,
+      "queens": 1,
+      "workers": 21,
+      "soldiers": 3,
+      "larvae": 2,
+      "initialFood": 150
+    },
+    {
+      "speciesId": 2,
+      "nestPositionRatio": 0.75,
+      "queens": 1,
+      "workers": 21,
+      "soldiers": 3,
+      "larvae": 2,
+      "initialFood": 150
+    }
+  ],
+  "window": {
+    "mode": "windowed",
+    "width": 1440,
+    "height": 900
+  },
+  "speedMultipliers": {
+    "x1": 1,
+    "x2": 25,
+    "x3": 50
+  },
+  "rendering": {
+    "tileSize": 16
+  }
+}

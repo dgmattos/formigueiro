@@ -1,0 +1,949 @@
+{
+  "version": 1,
+  "tilePixels": 16,
+  "backgroundMaximum": 58,
+  "backgroundChroma": 26,
+  "atlases": {
+    "spring": "grassland-spring.png",
+    "summer": "grassland-summer.png",
+    "autumn": "grassland-autumn.png",
+    "winter": "grassland-winter.png"
+  },
+  "sprites": [
+    {
+      "id": "sand_interior",
+      "category": "terrain",
+      "terrain": "Sand",
+      "variation": 0,
+      "region": [
+        182,
+        352,
+        64,
+        64
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "seasonInvariant": true,
+      "material": "sand",
+      "neighborRule": "covered_sand",
+      "visualWidth": 1,
+      "visualHeight": 1
+    },
+    {
+      "id": "soil_0",
+      "category": "terrain",
+      "terrain": "Soil",
+      "variation": 0,
+      "region": [
+        18,
+        168,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "soil",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "soil_1",
+      "category": "terrain",
+      "terrain": "Soil",
+      "variation": 1,
+      "region": [
+        590,
+        168,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "soil",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "soil_2",
+      "category": "terrain",
+      "terrain": "Soil",
+      "variation": 2,
+      "region": [
+        734,
+        168,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "soil",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "grass_top_0",
+      "category": "terrain",
+      "terrain": "GrassTop",
+      "variation": 0,
+      "region": [
+        16,
+        30,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed"
+    },
+    {
+      "id": "grass_top_1",
+      "category": "terrain",
+      "terrain": "GrassTop",
+      "variation": 1,
+      "region": [
+        160,
+        30,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed"
+    },
+    {
+      "id": "grass_top_2",
+      "category": "terrain",
+      "terrain": "GrassTop",
+      "variation": 2,
+      "region": [
+        304,
+        30,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed"
+    },
+    {
+      "id": "grass_left",
+      "category": "terrain",
+      "terrain": "GrassLeftEdge",
+      "variation": 0,
+      "region": [
+        304,
+        168,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": true,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed_left_open"
+    },
+    {
+      "id": "grass_right",
+      "category": "terrain",
+      "terrain": "GrassRightEdge",
+      "variation": 0,
+      "region": [
+        304,
+        168,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed_right_open"
+    },
+    {
+      "id": "grass_corner",
+      "category": "terrain",
+      "terrain": "GrassCorner",
+      "variation": 0,
+      "region": [
+        160,
+        168,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed_both_sides_open"
+    },
+    {
+      "id": "slope_up_reserved",
+      "category": "terrain",
+      "terrain": "GrassSlopeUp",
+      "variation": 0,
+      "region": [
+        448,
+        30,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "reserved_explicit_slope"
+    },
+    {
+      "id": "slope_down_reserved",
+      "category": "terrain",
+      "terrain": "GrassSlopeDown",
+      "variation": 0,
+      "region": [
+        736,
+        30,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "reserved_explicit_slope"
+    },
+    {
+      "id": "sand_surface",
+      "category": "terrain",
+      "terrain": "SandTop",
+      "variation": 0,
+      "region": [
+        160,
+        304,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "sand",
+      "neighborRule": "sky_exposed"
+    },
+    {
+      "id": "soil_sand",
+      "category": "terrain",
+      "terrain": "SoilSandTransition",
+      "variation": 0,
+      "region": [
+        304,
+        304,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "soil",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "rock_0",
+      "category": "terrain",
+      "terrain": "Rock",
+      "variation": 0,
+      "region": [
+        160,
+        440,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "rock",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "rock_1",
+      "category": "terrain",
+      "terrain": "Rock",
+      "variation": 1,
+      "region": [
+        448,
+        440,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "rock",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "rock_2",
+      "category": "terrain",
+      "terrain": "Rock",
+      "variation": 2,
+      "region": [
+        592,
+        440,
+        128,
+        128
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "rock",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "soil_rock_0",
+      "category": "terrain",
+      "terrain": "SoilRockTransition",
+      "variation": 0,
+      "region": [
+        442,
+        876,
+        124,
+        124
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "soil_rock",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "soil_rock_1",
+      "category": "terrain",
+      "terrain": "SoilRockTransition",
+      "variation": 1,
+      "region": [
+        720,
+        876,
+        124,
+        124
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "soil_rock",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "soil_rock_2",
+      "category": "terrain",
+      "terrain": "SoilRockTransition",
+      "variation": 2,
+      "region": [
+        998,
+        876,
+        124,
+        124
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "soil_rock",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "soil_rock_3",
+      "category": "terrain",
+      "terrain": "SoilRockTransition",
+      "variation": 3,
+      "region": [
+        1276,
+        876,
+        124,
+        124
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": false,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": true,
+      "material": "soil_rock",
+      "neighborRule": "material_and_composition"
+    },
+    {
+      "id": "grass_variation_3",
+      "category": "terrain",
+      "terrain": "GrassTop",
+      "variation": 3,
+      "region": [
+        16,
+        744,
+        124,
+        124
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed"
+    },
+    {
+      "id": "grass_variation_4",
+      "category": "terrain",
+      "terrain": "GrassTop",
+      "variation": 4,
+      "region": [
+        160,
+        744,
+        124,
+        124
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed"
+    },
+    {
+      "id": "grass_variation_5",
+      "category": "terrain",
+      "terrain": "GrassTop",
+      "variation": 5,
+      "region": [
+        304,
+        744,
+        124,
+        124
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "weight": 1,
+      "mirrorX": false,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "seasonInvariant": false,
+      "material": "soil",
+      "neighborRule": "sky_exposed"
+    },
+    {
+      "id": "tree_large",
+      "category": "object",
+      "kind": "TreeLarge",
+      "region": [
+        894,
+        4,
+        410,
+        432
+      ],
+      "anchor": [
+        206,
+        414
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": true,
+      "visualWidth": 6,
+      "visualHeight": 7,
+      "seasonAnchors": {
+        "winter": [
+          206,
+          414
+        ],
+        "autumn": [
+          206,
+          419
+        ]
+      },
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "tree_small",
+      "category": "object",
+      "kind": "TreeSmall",
+      "region": [
+        1300,
+        40,
+        236,
+        310
+      ],
+      "anchor": [
+        132,
+        300
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": true,
+      "visualWidth": 4,
+      "visualHeight": 5,
+      "seasonAnchors": {
+        "winter": [
+          132,
+          299
+        ],
+        "autumn": [
+          132,
+          301
+        ]
+      },
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "tree_young",
+      "category": "object",
+      "kind": "TreeYoung",
+      "region": [
+        1300,
+        40,
+        236,
+        310
+      ],
+      "anchor": [
+        132,
+        300
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": true,
+      "visualWidth": 2,
+      "visualHeight": 3,
+      "seasonAnchors": {
+        "winter": [
+          132,
+          299
+        ],
+        "autumn": [
+          132,
+          301
+        ]
+      },
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "fallen_log",
+      "category": "object",
+      "kind": "FallenLog",
+      "region": [
+        1176,
+        348,
+        155,
+        76
+      ],
+      "anchor": [
+        78,
+        65
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": true,
+      "visualWidth": 3,
+      "visualHeight": 2,
+      "material": "wood",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "tree_stump",
+      "category": "object",
+      "kind": "TreeStump",
+      "region": [
+        1236,
+        266,
+        150,
+        85
+      ],
+      "anchor": [
+        74,
+        78
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": true,
+      "visualWidth": 2,
+      "visualHeight": 2,
+      "material": "wood",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "dead_wood",
+      "category": "object",
+      "kind": "DeadWood",
+      "region": [
+        1176,
+        348,
+        155,
+        76
+      ],
+      "anchor": [
+        78,
+        65
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": true,
+      "visualWidth": 2,
+      "visualHeight": 1,
+      "material": "wood",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "grass_clump",
+      "category": "object",
+      "kind": "GrassClump",
+      "region": [
+        900,
+        544,
+        110,
+        83
+      ],
+      "anchor": [
+        55,
+        78
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "tall_grass",
+      "category": "object",
+      "kind": "TallGrass",
+      "region": [
+        900,
+        438,
+        110,
+        96
+      ],
+      "anchor": [
+        55,
+        91
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 2,
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "bush",
+      "category": "object",
+      "kind": "Bush",
+      "region": [
+        898,
+        307,
+        136,
+        119
+      ],
+      "anchor": [
+        68,
+        111
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": true,
+      "visualWidth": 2,
+      "visualHeight": 2,
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "berry_bush",
+      "category": "object",
+      "kind": "BerryBush",
+      "region": [
+        1212,
+        430,
+        122,
+        101
+      ],
+      "anchor": [
+        62,
+        94
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 2,
+      "visualHeight": 2,
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "flower",
+      "category": "object",
+      "kind": "Flower",
+      "region": [
+        1012,
+        538,
+        110,
+        88
+      ],
+      "anchor": [
+        55,
+        82
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "small_plant",
+      "category": "object",
+      "kind": "SmallPlant",
+      "region": [
+        1442,
+        516,
+        88,
+        203
+      ],
+      "anchor": [
+        44,
+        196
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 2,
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "mushroom_red",
+      "category": "object",
+      "kind": null,
+      "region": [
+        910,
+        632,
+        110,
+        84
+      ],
+      "anchor": [
+        55,
+        78
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    },
+    {
+      "id": "mushroom_brown",
+      "category": "object",
+      "kind": null,
+      "region": [
+        1030,
+        632,
+        94,
+        84
+      ],
+      "anchor": [
+        47,
+        78
+      ],
+      "weight": 1,
+      "removeBackground": true,
+      "keepLargestComponent": false,
+      "visualWidth": 1,
+      "visualHeight": 1,
+      "material": "vegetation",
+      "neighborRule": "validated_surface_support_and_clearance"
+    }
+  ]
+}

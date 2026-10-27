@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><IsTestProject>true</IsTestProject><IsPackable>false</IsPackable></PropertyGroup>
+<ItemGroup><ProjectReference Include="../../src/AntWorld.Domain/AntWorld.Domain.csproj"/>
+<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0"/>
+<PackageReference Include="xunit" Version="2.9.3"/>
+<PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" PrivateAssets="all"/>
+<Compile Include="../Shared/Check.cs" Link="Check.cs"/>
+<Compile Include="../Shared/DomainScenarios.cs" Link="DomainScenarios.cs"/>
+<ProjectReference Include="../../src/AntWorld.WorldGeneration/AntWorld.WorldGeneration.csproj"/><ProjectReference Include="../../src/AntWorld.Genetics/AntWorld.Genetics.csproj"/><Compile Include="../Shared/GenerationScenarios.cs" Link="GenerationScenarios.cs"/><Compile Include="../Shared/BlockScenarios.cs" Link="BlockScenarios.cs"/></ItemGroup></Project>

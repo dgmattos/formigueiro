@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+<ItemGroup><ProjectReference Include="../../src/AntWorld.Simulation/AntWorld.Simulation.csproj"/><ProjectReference Include="../../src/AntWorld.Infrastructure/AntWorld.Infrastructure.csproj"/></ItemGroup>
+</Project>

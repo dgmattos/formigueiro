@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+<ItemGroup><ProjectReference Include="../../src/AntWorld.Domain/AntWorld.Domain.csproj"/><Compile Include="../Shared/*.cs" Exclude="../Shared/PersistenceScenarios.cs" Link="Scenarios/%(Filename)%(Extension)"/><ProjectReference Include="../../src/AntWorld.WorldGeneration/AntWorld.WorldGeneration.csproj"/><ProjectReference Include="../../src/AntWorld.Genetics/AntWorld.Genetics.csproj"/><ProjectReference Include="../../src/AntWorld.Simulation/AntWorld.Simulation.csproj"/><ProjectReference Include="../../src/AntWorld.Infrastructure/AntWorld.Infrastructure.csproj"/></ItemGroup>
+</Project>

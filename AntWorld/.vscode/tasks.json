@@ -1,0 +1,7 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "build-core", "type": "process", "command": "dotnet", "args": ["build", "AntWorld.Core.sln", "-m:1", "--disable-build-servers"], "problemMatcher": "$msCompile", "group": {"kind":"build","isDefault":true} },
+    { "label": "build-game", "type": "process", "command": "dotnet", "args": ["build", "src/AntWorld.Game/AntWorld.Game.csproj", "-m:1", "--disable-build-servers"], "problemMatcher": "$msCompile" }
+  ]
+}

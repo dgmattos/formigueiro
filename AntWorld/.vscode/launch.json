@@ -1,0 +1,7 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    { "name": "AntWorld / CLI", "type": "coreclr", "request": "launch", "preLaunchTask": "build-core", "program": "${workspaceFolder}/src/AntWorld.Cli/bin/Debug/net10.0/AntWorld.Cli.dll", "args": ["--seed", "42", "--ticks", "1500"], "cwd": "${workspaceFolder}", "console": "integratedTerminal" },
+    { "name": "AntWorld / Godot", "type": "coreclr", "request": "launch", "preLaunchTask": "build-game", "program": "${env:GODOT4}", "args": ["--path", "${workspaceFolder}/src/AntWorld.Game"], "cwd": "${workspaceFolder}" }
+  ]
+}
