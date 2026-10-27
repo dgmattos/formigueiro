@@ -150,14 +150,16 @@ public sealed class WorkerExpansionTests
     [Fact]
     public void EmptyButDisconnectedCavernDoesNotBecomeNewNursery()
     {
-        var s=Create();var colony=s.Colonies[0];var old=colony.Nest;var bottom=colony.BroodChamber.Y+4;
+        var s=Create();var colony=s.Colonies[0];var old=colony.Nest;var nursery=colony.BroodChamber;var bottom=nursery.Y+4;
         for(var y=colony.BroodChamber.Y;y<=bottom;y++)
         for(var x=0;x<s.World.Width;x++)
             s.World.SetTerrain(new(x,y),y==bottom || y==colony.BroodChamber.Y ? TerrainKind.Tunnel : TerrainKind.Air);
         Assert.True(s.World.CanWalk(new(old.X,bottom)));
         Assert.False(s.World.CanWalk(new(old.X,bottom-2)));
         new ColonyExpansionSystem().Step(s);
-        Assert.Equal(0,colony.ExpansionLevel);Assert.Equal(old,colony.Nest);
+        Assert.Equal(0,colony.ExpansionLevel);Assert.Equal(nursery,colony.BroodChamber);
+        Assert.Equal(old,colony.Queen!.Position); // A new royal destination must not teleport the queen.
+        Assert.Contains(s.World.Index(colony.Nest),new NestNavigation().Distances(s.World,old).Keys);
     }
 
     [Fact]
