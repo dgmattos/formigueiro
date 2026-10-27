@@ -200,6 +200,7 @@ public sealed class AgentAiTests
     [Fact] public void HysteresisPreservesValidTaskUntilEmergencyDominates()
     {
         var s=Create();s.World.ClearFood(true);var a=Worker(s);var colony=s.Colonies[0];colony.Priorities=new(.1,0,0,0,.1);
+        foreach(var entry in s.World.Resources().Where(e=>ResourceIds.IsEdible(e.ResourceId)).ToArray())s.World.SetResource(entry.Position,entry.ResourceId,default);
         foreach(var larva in s.Ants.Where(ant=>ant.Stage==LifeStage.Larva)) {larva.Energy=larva.MaxEnergy;larva.Position=s.Colonies.Single(c=>c.Id==larva.ColonyId).BroodChamber;}
         a.WorkerRole=WorkerRole.Collector; a.Health=a.MaxHealth*.8;a.Energy=100;var decision=new DecisionSystem(new());var context=Context(s,a);
         a.CurrentTask=AntTask.RecoverHealth;decision.Decide(context);Assert.Equal(AntTask.RecoverHealth,a.CurrentTask);

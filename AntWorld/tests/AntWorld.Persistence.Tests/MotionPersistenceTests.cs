@@ -33,4 +33,17 @@ public sealed class MotionPersistenceTests
         Assert.All(state.Ants,a=>{Assert.False(a.QueenEscort);Assert.Equal(0,a.PatrolCursor);});
         Assert.Equal(codec.Encode(state),codec.Encode(codec.Decode(codec.Encode(state))));
     }
+    [Fact]
+    public void DeliveryMemoryAndLocalFoodResumeAndVersionTwelveDefaultsToInspectionOnNextTrip()
+    {
+        var bytes=File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,"Fixtures","format12-delivery.antworld"));
+        Assert.Equal(12,BitConverter.ToInt32(bytes,8));var codec=new BinarySnapshotCodec();var state=codec.Decode(bytes);
+        Assert.All(state.Ants,a=>Assert.Equal(FoodDeliveryStage.None,a.FoodDelivery));
+        var ant=state.Ants.First(a=>a.Caste==AntCaste.Worker);ant.WorkerRole=WorkerRole.Collector;ant.Carrying=4;ant.FoodDelivery=FoodDeliveryStage.Nursery;
+        LocalProvisions.Deposit(state.World,state.Colonies[0].BroodChamber,7);
+        var encoded=codec.Encode(state);var copy=codec.Decode(encoded);Assert.Equal(encoded,codec.Encode(copy));
+        Assert.Equal(FoodDeliveryStage.Nursery,copy.Ants.Single(a=>a.Id==ant.Id).FoodDelivery);
+        Assert.Equal(7,LocalProvisions.Amount(copy.World,copy.Colonies[0].BroodChamber));
+        new SimulationEngine(state).Run(50);new SimulationEngine(copy).Run(50);Assert.Equal(codec.Encode(state),codec.Encode(copy));
+    }
 }

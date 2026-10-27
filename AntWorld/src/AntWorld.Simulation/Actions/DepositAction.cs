@@ -4,13 +4,17 @@ namespace AntWorld.Simulation;
 public sealed class DepositAction() : AntAction(AntTask.Deposit, AntCapability.Carry, .05, SkillType.Carrying)
 {
     protected override bool IsValid(AntContext c) => c.Ant.Carrying > 0 &&
-        (ResourceIds.IsEdible(c.Ant.CargoResourceId) ? c.Ant.Position == c.Colony.FoodStorage :
+        (ResourceIds.IsEdible(c.Ant.CargoResourceId) ? (c.Ant.FoodDelivery==FoodDeliveryStage.None ? c.Ant.Position == c.Colony.FoodStorage : CollectorFoodDelivery.CanDeposit(c)) :
         ExcavationSpoil.Is(c.State.World, c.Ant.CargoResourceId) && NestDestinations.IsExit(c.State.World,c.Colony,c.Ant.Position));
     protected override bool Apply(AntContext c)
     {
-        if (ResourceIds.IsEdible(c.Ant.CargoResourceId)) c.Colony.Food += c.Ant.Carrying;
+        if (ResourceIds.IsEdible(c.Ant.CargoResourceId))
+        {
+            if(c.Ant.FoodDelivery!=FoodDeliveryStage.None)LocalProvisions.Deposit(c.State.World,CollectorFoodDelivery.Recipient(c)!.Value,c.Ant.Carrying);
+            else c.Colony.Food += c.Ant.Carrying;
+        }
         else ExcavationSpoil.Drop(c.State.World, c.Ant.Position, c.Ant.Carrying);
-        c.Ant.Carrying = 0; c.Ant.CargoResourceId = ResourceIds.Food; c.Ant.Returning = false;
+        c.Ant.FoodDelivery=FoodDeliveryStage.None; c.Ant.Carrying = 0; c.Ant.CargoResourceId = ResourceIds.Food; c.Ant.Returning = false;
         return true;
     }
 }

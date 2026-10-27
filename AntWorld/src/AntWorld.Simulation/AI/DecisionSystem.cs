@@ -15,6 +15,9 @@ public sealed class DecisionSystem(ActionCatalog actions)
         var priorities=colony.Priorities;
         var digger = ant.WorkerRole == WorkerRole.Digger;
         var collector = ant.Caste == AntCaste.Worker && ant.WorkerRole != WorkerRole.Digger;
+        CollectorFoodDelivery.Prepare(context);
+        var delivery=ant.FoodDelivery!=FoodDeliveryStage.None;
+        var satisfiedCollector=CollectorFoodDelivery.IsCollector(ant)&&ant.Nutrition>=CollectorFoodDelivery.CollectorSatisfaction;
         var escortReturning=QueenEscortSystem.MustReturn(context);
         var spoil = ant.Carrying > 0 && ExcavationSpoil.Is(world, ant.CargoResourceId);
         var best=AntTask.Rest; var score=-1.0; int? target=null; CellPosition? destination=null;
@@ -42,8 +45,13 @@ public sealed class DecisionSystem(ActionCatalog actions)
         Consider(AntTask.Drink,(1-ant.Hydration)*4);
         Consider(AntTask.RecoverHealth,(1-ant.Health/ant.MaxHealth)*1.5);
         Consider(AntTask.LayEgg,profile.Reproduction*.8);
-        Consider(AntTask.Deposit,ant.Carrying>0 ? (spoil ? 3.2 : 3.4) : 0);
-        if(ant.Carrying>0) Consider(AntTask.Carry,spoil ? 3 : 3.2,null,spoil ? NestDestinations.Exit(context) : colony.FoodStorage);
+        Consider(AntTask.Deposit,ant.Carrying>0 ? (delivery ? 5.2 : spoil ? 3.2 : 3.4) : 0);
+        if(collector && (ant.Nutrition<.5 || ant.Energy<10 || ant.Hydration<.1))Consider(AntTask.Feed,6);
+        if(delivery)
+        {
+            if(CollectorFoodDelivery.Destination(context) is {} deliveryPoint)Consider(AntTask.Carry,5,null,deliveryPoint);
+        }
+        else if(ant.Carrying>0) Consider(AntTask.Carry,spoil ? 3 : 3.2,null,spoil ? NestDestinations.Exit(context) : colony.FoodStorage);
         if (ant.Id == colony.QueenId && ant.Position != colony.Nest)
             Consider(AntTask.Move,3,null,colony.Nest);
         if(ant.CarriedAntId is {} carriedId) Consider(AntTask.Carry,2.8*profile.BroodCare,carriedId,colony.BroodChamber);
@@ -52,12 +60,12 @@ public sealed class DecisionSystem(ActionCatalog actions)
         if(colony.Food>0 && ant.Position!=colony.Nest && (ant.Energy<40 || ant.Nutrition<.5 || ant.Hydration<.4))
             Consider(AntTask.Move,1.2+(1-ant.Energy/100),null,colony.Nest);
         if(flood) Consider(AntTask.Flee,10,null,FindDry(world,ant.Position),true);
-        if (collector && ant.Carrying == 0 && QueenEscortSystem.Allows(context,colony.FoodStorage)) Consider(AntTask.Collect,(.7+priorities.FoodCollection)*profile.Foraging*ForagingSystem.HarvestQuality(context));
+        if (collector && ant.Carrying == 0 && QueenEscortSystem.Allows(context,colony.Queen?.Position??colony.FoodStorage)) Consider(AntTask.Collect,satisfiedCollector ? 4.2*ForagingSystem.HarvestQuality(context) : (.7+priorities.FoodCollection)*profile.Foraging*ForagingSystem.HarvestQuality(context));
         if(collector && ant.Carrying==0 && ant.CarriedAntId is null)
         {
             var food=ant.QueenEscort ? FindFood(world,ant.Position) : foraging.Destination(context);
             if (food.HasValue && food != ant.Position || ant.Caste != AntCaste.Worker)
-                Consider(AntTask.Explore,(.25+priorities.Exploration+priorities.FoodCollection*.3)*profile.Exploration,null,food);
+                Consider(AntTask.Explore,(satisfiedCollector && foraging.HasKnownFood(context,food) ? 3.8 : (.25+priorities.Exploration+priorities.FoodCollection*.3)*profile.Exploration),null,food);
         }
         if (digger && ant.Carrying == 0 && ant.CarriedAntId is null)
         {
@@ -94,7 +102,7 @@ public sealed class DecisionSystem(ActionCatalog actions)
                 {
                     var care=Math.Max(Math.Max(1-other.Nutrition,1-other.Energy/100),1-other.Hydration)*4*profile.BroodCare;
                     Consider(AntTask.FeedLarva,care,other.Id);
-                    if(distance>1 && other.CarrierId is null && (ant.Carrying>0 || colony.Food>0 && other.Position==colony.BroodChamber))
+                    if(distance>1 && other.CarrierId is null && (ant.Carrying>0 || LocalProvisions.Amount(world,other.Position)>0 || colony.Food>0 && other.Position==colony.BroodChamber))
                         Consider(AntTask.Move,care/(1+distance*.1),other.Id,other.Position);
                 }
             }

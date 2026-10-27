@@ -39,6 +39,8 @@ public sealed class WorkerExpansionTests
         worker.WorkerRole=WorkerRole.Collector;decision.Decide(c);Assert.Equal(AntTask.Collect,worker.CurrentTask);
         worker.WorkerRole=WorkerRole.Digger;decision.Decide(c);Assert.Equal(AntTask.Move,worker.CurrentTask);
         var egg=AntFactory.Create(s,s.Colonies[0],stage:LifeStage.Egg);s.Ants.Add(egg);
+        // With no food available, both roles can prioritize nursery care.
+        foreach(var entry in s.World.Resources().Where(e=>ResourceIds.IsEdible(e.ResourceId)).ToArray())s.World.SetResource(entry.Position,entry.ResourceId,default);
         foreach(var role in new[]{WorkerRole.Collector,WorkerRole.Digger})
         {worker.WorkerRole=role;decision.Decide(Context(s,worker));Assert.Equal(AntTask.Carry,worker.CurrentTask);}
     }

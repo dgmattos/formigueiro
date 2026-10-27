@@ -59,6 +59,7 @@ public static class SnapshotValidator
             if(ant.CarriedAntId is {} id) Require(antsById.TryGetValue(id,out var brood)&&brood.CarrierId==ant.Id&&brood.IsTransportableBrood&&brood.ColonyId==ant.ColonyId,"Carga biológica inconsistente.");
             if(ant.CarrierId is {} carrierId) Require(antsById.TryGetValue(carrierId,out var carrier)&&carrier.CarriedAntId==ant.Id&&carrier.Position==ant.Position,"Transportador inconsistente.");
             world.ResourceCatalog.Get(ant.CargoResourceId);
+            Require(Enum.IsDefined(ant.FoodDelivery),"Etapa de entrega inválida.");
             Require(ant.PatrolCursor>=0,"Cursor de patrulha inválido.");
             foreach(var skill in ant.Skills) { var copy=skill; copy.Restore(skill.Level,skill.Experience); }
             Require(ant.Id > 0 && colonyIds.Contains(ant.ColonyId) && world.IsCanonical(ant.Position) && world.IsOpen(ant.Position) && world.IsCanonical(ant.PreviousPosition), "Formiga inválida.");

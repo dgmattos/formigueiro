@@ -4,7 +4,7 @@
 
 `BinarySnapshotCodec` usa `BinaryWriter/BinaryReader`, com ordem de campos explícita, tipos primitivos e tamanho limitado. É a alternativa binária ao MessagePack: evita depender de pacotes não disponíveis e permite controlar versionamento/validação. O envelope é binário; a seção delimitada de metadados dos ninhos usa JSON do .NET. Não usa `BinaryFormatter`.
 
-Cabeçalho: ASCII `ANTWORLD` (8 bytes), versão Int32 (12), tamanho do payload Int32 e SHA-256 (32 bytes). Inteiros e doubles seguem a representação little-endian do BinaryWriter. O payload contém versão do gerador, seed/configuração, extensões do catálogo e alterações de células/recursos/clima, além de PRNG, relógio, IDs, colônias, genes e agentes. Feromônios são serializados esparsamente. Terreno e depósitos base são reconstruídos; a estratégia de blocos continua descrita em [world-blocks.md](world-blocks.md#persistência). Saves v1/v2/v3/v4 são rejeitados explicitamente, sem alterar o arquivo.
+Cabeçalho: ASCII `ANTWORLD` (8 bytes), versão Int32 (13), tamanho do payload Int32 e SHA-256 (32 bytes). Inteiros e doubles seguem a representação little-endian do BinaryWriter. O payload contém versão do gerador, seed/configuração, extensões do catálogo e alterações de células/recursos/clima, além de PRNG, relógio, IDs, colônias, genes e agentes. Feromônios são serializados esparsamente. Terreno e depósitos base são reconstruídos; a estratégia de blocos continua descrita em [world-blocks.md](world-blocks.md#persistência). Saves v1/v2/v3/v4 são rejeitados explicitamente, sem alterar o arquivo.
 
 A leitura exige integridade, versão conhecida, tamanho consistente, ausência de bytes extras e invariantes válidas de mundo/agentes. O limite é 64 MiB de payload. Contagens e dimensões são verificadas antes das principais alocações. SHA-256 detecta corrupção acidental; não autentica arquivos de terceiros.
 
@@ -65,3 +65,7 @@ Acrescenta `MovementSpeed` por agente. O crédito fracionário de movimento cont
 ## Versão 12: escolta e patrulha
 
 Persiste `QueenEscort`, `EscortReturning` e `PatrolCursor` de cada indivíduo. Mantém leitura dos formatos 5 a 11; esses campos iniciam em falso/falso/zero para snapshots anteriores. Vínculos são reavaliados no ciclo coletivo, sem alterar a população. O fixture `format11-escort.antworld` comprova a leitura do formato anterior.
+
+## Versão 13: entrega de provisões
+
+Adiciona `FoodDeliveryStage` por indivíduo, validado como enum. Estoques locais usam o catálogo extensível e os deltas de recursos existentes. O formato 12 é lido com etapa inicial `None`; o fixture real `format12-delivery.antworld` testa essa compatibilidade. A decisão de destino observada junto da rainha é preservada após carregar.

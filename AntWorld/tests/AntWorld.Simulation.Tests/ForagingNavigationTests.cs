@@ -61,6 +61,8 @@ public sealed class ForagingNavigationTests
         var s=Maze();var colony=s.Colonies[0];var worker=s.Ants.Last();var mushroom=new CellPosition(35,13);
         s.World.SetResource(mushroom,ResourceIds.RedMushroom,new(4,4,10000));
         Assert.True(s.World.Distance(worker.Position,new(35,12))>4);
+        // The nursery must be reachable for the new delivery rule when the queen is satiated.
+        for(var y=13;y<=16;y++)s.World.SetTerrain(new(8,y),TerrainKind.Tunnel);
         var engine=new SimulationEngine(s);var delivered=false;var visited=new HashSet<CellPosition>();
         for(var i=0;i<10000;i++)
         {
@@ -69,8 +71,10 @@ public sealed class ForagingNavigationTests
             if(engine.Events.Any(e=>e.AntId==worker.Id && e.Action==AntTask.Deposit)) {delivered=true;break;}
         }
         Assert.True(delivered,$"task={worker.CurrentTask} pos={worker.Position} target={worker.Destination} visited={visited.Count}");
-        Assert.Equal(colony.Nest,worker.Position);Assert.Equal(0,worker.Carrying);
-        Assert.InRange(colony.Food,.01,4);Assert.Equal(0,s.World.GetResource(mushroom,ResourceIds.RedMushroom).Quantity);
+        Assert.Equal(0,worker.Carrying);
+        var deposited=LocalProvisions.Amount(s.World,colony.Queen!.Position)+LocalProvisions.Amount(s.World,colony.BroodChamber);
+        Assert.InRange(deposited,.01,4);
+        Assert.True(s.World.Distance(worker.Position,colony.Queen.Position)==1 || s.World.Distance(worker.Position,colony.BroodChamber)==1);Assert.Equal(0,s.World.GetResource(mushroom,ResourceIds.RedMushroom).Quantity);
         Assert.Contains(new CellPosition(35,12),visited);Assert.True(visited.Count>25);
         Assert.True(colony.Foraging.Visits.Count>25);
     }

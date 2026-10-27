@@ -7,6 +7,9 @@ public sealed class ForagingSystem
     private readonly Queue<(CellPosition Position, int Depth)> queue = new();
     private readonly HashSet<int> seen = [];
 
+    public bool HasKnownFood(AntContext c,CellPosition? position) => position is {} p &&
+        c.Colony.Foraging.Food.Contains(c.State.World.Index(p)) && FoodSources.AmountAt(c.State.World,p)>0;
+
     public CellPosition? Destination(AntContext c)
     {
         Observe(c);

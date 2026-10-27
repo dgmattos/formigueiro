@@ -1,0 +1,11 @@
+# Entrega de alimento pelas coletoras
+
+Satisfação alimentar é `Ant.Nutrition`, normalizada entre 0 e 1. Com pelo menos 0,50, coletoras priorizam coleta e transporte. Abaixo disso, alimentar-se tem prioridade quando possível; energia ou hidratação críticas também podem interromper a entrega. Escapada de inundação e regras de escolta continuam valendo.
+
+Cada carga tem uma etapa persistida (`FoodDeliveryStage`): sem entrega dirigida, visitar rainha, entregar à rainha ou entregar ao berçário. A coletora visita uma célula ortogonalmente adjacente à posição física da rainha. Somente nesse contato consulta sua nutrição: abaixo de 0,80 entrega junto dela; a partir de 0,80 entrega no berçário designado, perto das larvas. Estar na mesma célula não substitui o contato adjacente. A observação vale para aquela viagem; não se consulta remotamente a nutrição enquanto a coletora caminha ao berçário.
+
+A operária permanece no bloco adjacente ao destinatário e transfere a quantidade carregada para um estoque esparso na célula da rainha ou no acesso do berçário. O estoque usa uma definição própria de recurso, sem regeneração, e não aparece como alimento selvagem nas buscas das coletoras. A rainha pode consumi-lo na sua célula; operárias usam o estoque da célula da larva para alimentá-la. A transferência não soma simultaneamente ao estoque global `Colony.Food`, evitando duplicação. O armazenamento global anterior continua disponível para ações antigas e outros papéis.
+
+As rotas respeitam terreno, apoio, água, conexão circular e restrição individual de escolta. Sem adjacência acessível, não há entrega nem teletransporte. Se não houver rainha viva, aplica-se o destino de armazenamento anterior. O berçário pode coincidir com a câmara real; nesse caso ambos os destinos podem compartilhar o estoque físico. Provisões abandonadas não acompanham automaticamente uma rainha que se mudou. Esta alteração não acrescenta um sprite de pilha de alimento nem interface de inventário.
+
+Snapshots v13 guardam a etapa da viagem e os recursos locais; os formatos 5–12 continuam legíveis. Viagens de saves antigos começam sem observação da rainha. Testes cobrem limites de 50%/80%, contato obrigatório, memória por viagem, conservação, alimentação da rainha/larvas, impedimento de recoleta, emenda circular, rotas bloqueadas e retomada determinística.

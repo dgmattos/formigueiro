@@ -13,7 +13,7 @@ internal static class AgentSnapshotCodec
         w.Write(a.CargoResourceId); w.Write(a.CarriedAntId??0); w.Write(a.CarrierId??0);
         foreach(var progress in a.Skills) { w.Write(progress.Level); w.Write(progress.Experience); }
         w.Write((byte)a.WorkerRole); w.Write((byte)a.Support); w.Write(a.MovementSpeed);
-        w.Write(a.QueenEscort); w.Write(a.EscortReturning); w.Write(a.PatrolCursor);
+        w.Write(a.QueenEscort); w.Write(a.EscortReturning); w.Write(a.PatrolCursor);w.Write((byte)a.FoodDelivery);
     }
     public static void Read(BinaryReader r,Ant a,double health,int version)
     {
@@ -31,6 +31,7 @@ internal static class AgentSnapshotCodec
         if (version >= 9) a.Support = (SupportSide)r.ReadByte();
         a.MovementSpeed=version>=11?r.ReadDouble():0;
         if(version>=12){a.QueenEscort=r.ReadBoolean();a.EscortReturning=r.ReadBoolean();a.PatrolCursor=r.ReadInt32();}
+        if(version>=13)a.FoodDelivery=(FoodDeliveryStage)r.ReadByte();
     }
     private static double Unit(BinaryReader r) { var v=r.ReadDouble(); if(!double.IsFinite(v)||v<0||v>1) throw new InvalidDataException("Necessidade inválida."); return v; }
     private static int? Id(BinaryReader r) { var v=r.ReadInt32(); if(v<0) throw new InvalidDataException("Identidade inválida."); return v==0?null:v; }
