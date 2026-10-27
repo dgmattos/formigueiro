@@ -11,7 +11,7 @@ public sealed class OrganicNestTests
         c.Ant.Destination=destination;
         var distance=c.Movement.DistanceTo(c.State.World,c.Ant.Position,destination);Assert.True(distance>=0,$"No route {c.Ant.Position} -> {destination}");
         for(var i=0;i<=distance&&c.Ant.Position!=destination;i++)
-        {c.Ant.MovementCredit=1;Assert.True(c.Movement.Move(c));Assert.True(c.State.World.CanWalk(c.Ant.Position));}
+        {c.Ant.MovementCredit=2;Assert.True(c.Movement.Move(c));Assert.True(c.State.World.CanWalk(c.Ant.Position));}
         Assert.Equal(destination,c.Ant.Position);
     }
     [Theory]

@@ -11,7 +11,7 @@ A espécie **Superfície** usa o terceiro sprite, ninho raso, soldados reforçad
 Veja [agentes e IA](docs/agents-ai.md), [controles e configuração](docs/time-controls.md) e [resultados da validação](docs/validation-agents.md). A janela gráfica não pôde ser validada neste sandbox; o teste de cena usa Godot headless.
 ## Atualização de blocos e chunks
 
-O mundo usa células físicas compactas de 16 bytes, materiais e água separados, recursos esparsos, depósitos conectados, streaming lógico com cache limitado e vizinhos circulares. O snapshot atual v10 (com leitura de v5/v6/v7/v8/v9) salva seed + alterações e estado biológico/social; rejeita explicitamente v1–v4. Primavera, verão, outono e inverno têm atlas próprios. Veja [modelo, algoritmos e limitações](docs/world-blocks.md) e a [lista de arquivos de blocos](docs/blocks-files.md).
+O mundo usa células físicas compactas de 16 bytes, materiais e água separados, recursos esparsos, depósitos conectados, streaming lógico com cache limitado e vizinhos circulares. O snapshot atual v11 (com leitura de v5/v6/v7/v8/v9/v10) salva seed + alterações e estado biológico/social; rejeita explicitamente v1–v4. Primavera, verão, outono e inverno têm atlas próprios. Veja [modelo, algoritmos e limitações](docs/world-blocks.md) e a [lista de arquivos de blocos](docs/blocks-files.md).
 
 Benchmarks: `sh scripts/benchmark-world.sh`. Testes completos: `sh scripts/verify-full.sh`.
 

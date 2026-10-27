@@ -103,6 +103,7 @@ public partial class Main : Node2D
     public override void _Process(double delta)
     {
         var processed = clock.Advance(delta, StepSimulation, 100, 450.0/engine.State.Performance.TargetFps);
+        worldView.Entities.PresentationTime=engine.State.Tick*SimulationState.TickSeconds+Math.Min(clock.PendingSeconds,SimulationState.TickSeconds);
         sampleTicks += processed;
         diagnosticTicks += processed; diagnosticSeconds += delta;
         if (diagnostics is not null)
@@ -156,7 +157,7 @@ public partial class Main : Node2D
     }
     private void StepSimulation()
     {
-        engine.Step(); diagnostics?.Observe(engine.State);
+        engine.Step(); worldView.Entities.CaptureMovement(); diagnostics?.Observe(engine.State);
     }
     public override void _ExitTree()
     {

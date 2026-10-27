@@ -46,7 +46,7 @@ public sealed class ForagingNavigationTests
         s.World.SetCell(p,s.World.GetCell(p,false) with {SolidFill=30});Assert.False(s.World.CanWalk(p));
         s.World.SetTerrain(p,TerrainKind.Tunnel);Assert.True(s.World.NavigationRevision>rev);
         worker.Position=p;s.World.SetTerrain(new(14,20),TerrainKind.Air);s.World.SetTerrain(new(16,20),TerrainKind.Air);
-        Assert.False(s.World.CanWalk(p));worker.MovementCredit=1;
+        Assert.False(s.World.CanWalk(p));worker.MovementCredit=2;
         Assert.False(Context(s,worker).Movement.Move(Context(s,worker)));Assert.Equal(p,worker.Position);
         SurfaceAttachmentSystem.Step(s.World,worker);
         Assert.Equal(new CellPosition(15,21),worker.Position);Assert.Equal(MovementState.Falling,worker.Movement);
@@ -111,7 +111,7 @@ public sealed class ForagingNavigationTests
         var context=Context(s,worker);var distances=new NestNavigation().Distances(world,s.Colonies[0]);
         for(var i=0;i<12;i++)
         {
-            var before=distances[world.Index(worker.Position)];worker.MovementCredit=1;
+            var before=distances[world.Index(worker.Position)];worker.MovementCredit=2;
             Assert.True(context.Movement.Move(context,true));Assert.Equal(before-1,distances[world.Index(worker.Position)]);
         }
         Assert.Equal(s.Colonies[0].Nest,worker.Position);

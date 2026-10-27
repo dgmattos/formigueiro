@@ -3,6 +3,24 @@ namespace AntWorld.Simulation;
 public sealed class MovementSystem
 {
     public const double GlobalSpeedMultiplier = .8;
+    public const double VerticalSpeedMultiplier = .65;
+    public const double AccelerationSeconds = .5;
+    public const double BrakingSeconds = .2;
+    public static double StepCost(CellPosition from,CellPosition to) => from.Y==to.Y?1:1/VerticalSpeedMultiplier;
+    public void AdvanceKinematics(SimulationState state,Ant ant)
+    {
+        var maximum=EffectiveSpeed(state,ant);
+        if(maximum==0){ant.MovementSpeed=0;ant.MovementCredit=0;return;}
+        var moving=ant.IsAlive&&ant.CarrierId is null&&state.World.CanWalk(ant.Position)&&
+            (ant.CurrentTask is AntTask.Move or AntTask.Explore or AntTask.Carry or AntTask.Flee) &&
+            (ant.Destination!=ant.Position || ant.CurrentTask==AntTask.Flee) &&
+            (ant.Destination is not {} goal || state.World.CanWalk(goal) || ant.CurrentTask==AntTask.Flee);
+        var target=moving?maximum:0;
+        var change=Math.Max(maximum,ant.MovementSpeed)*SimulationState.TickSeconds/(target>ant.MovementSpeed?AccelerationSeconds:BrakingSeconds);
+        ant.MovementSpeed+=Math.Clamp(target-ant.MovementSpeed,-change,change);
+        if(!moving||maximum==0){ant.MovementCredit=0;return;}
+        ant.MovementCredit=Math.Min(2,ant.MovementCredit+ant.MovementSpeed*SimulationState.TickSeconds);
+    }
     private readonly NestNavigation navigation=new();
     public bool CanReachBroodChamber(AntContext c) =>
         navigation.Distances(c.State.World,c.Colony,true).ContainsKey(c.State.World.Index(c.Ant.Position));
@@ -63,7 +81,9 @@ public sealed class MovementSystem
         if (total <= 0) return false;
         var choice=state.Random.NextDouble()*total; var selected=count-1;
         for(var i=0;i<count;i++) { choice-=weights[i]; if(weights[i]>0 && choice<=0) { selected=i; break; } }
-        ant.PreviousPosition=ant.Position; ant.Position=candidates[selected]; ant.MovementCredit-=1;
+        var cost=StepCost(ant.Position,candidates[selected]);
+        if(ant.MovementCredit<cost)return false;
+        ant.PreviousPosition=ant.Position; ant.Position=candidates[selected]; ant.MovementCredit-=cost;
         ant.Support=world.ContactSide(ant.Position,ant.Support);
         ant.Movement=flee?MovementState.Fleeing:ant.Carrying>0||ant.CarriedAntId.HasValue?MovementState.Carrying:
             ant.Position.Y!=ant.PreviousPosition.Y?MovementState.Climbing:MovementState.Walking;

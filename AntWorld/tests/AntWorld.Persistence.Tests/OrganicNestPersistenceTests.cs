@@ -41,7 +41,7 @@ public sealed class OrganicNestPersistenceTests
         Assert.Equal(9,BitConverter.ToInt32(bytes,8));var codec=new BinarySnapshotCodec();var state=codec.Decode(bytes);
         Assert.Equal(20,state.Tick);Assert.Equal(84,state.Ants.Count);
         Assert.Contains(state.Colonies,c=>c.Layout is not null);
-        var current=codec.Encode(state);Assert.Equal(10,BitConverter.ToInt32(current,8));
+        var current=codec.Encode(state);Assert.Equal(BinarySnapshotCodec.Version,BitConverter.ToInt32(current,8));
         Assert.Equal(current,codec.Encode(codec.Decode(current)));
     }
     [Fact]

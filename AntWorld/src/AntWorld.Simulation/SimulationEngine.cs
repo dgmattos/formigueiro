@@ -35,7 +35,7 @@ public sealed class SimulationEngine
         for(var i=0;i<count;i++)
         {
             var ant=State.Ants[i]; SurfaceAttachmentSystem.Step(State.World, ant); biology.Step(State,ant);
-            ant.MovementCredit=Math.Min(2,ant.MovementCredit+movement.EffectiveSpeed(State,ant)*SimulationState.TickSeconds);
+            movement.AdvanceKinematics(State,ant);
         }
         spatial.Rebuild(State);
         if(State.Tick%State.Performance.ColonyIntervalTicks==0) { colonyAi.Step(State,spatial); expansion.Step(State); colonies.Step(State); }

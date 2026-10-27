@@ -38,6 +38,6 @@ public sealed class MushroomNurseryPersistenceTests
         var codec = new BinarySnapshotCodec(); var bytes = codec.Encode(SimulationFactory.Create(new(42, 64, 48)));
         BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(8, 4), 3);
         var error = Assert.Throws<InvalidDataException>(() => codec.Decode(bytes));
-        Assert.Contains("formato 10", error.Message);
+        Assert.Contains("formato 11", error.Message);
     }
 }
