@@ -32,9 +32,11 @@ public static class SnapshotValidator
         foreach (var colony in state.Colonies)
         {
             colony.QueenGenome.Validate();
+            Require(colony.ShaftX>=0 && colony.ShaftX<world.Width,"Eixo do ninho inválido.");
+            Require(colony.Foraging.Visits.Count<=ForagingMemory.MaximumCells && colony.Foraging.Visits.All(p=>p.Key>=0 && p.Key<world.CellCount && p.Value>=-1 && p.Value<=state.Tick),"Memória de exploração inválida.");
             Require(colony.ExpansionLevel >= 0 && colony.ExpansionLevel <= world.Height / Colony.BroodChamberDepth &&
                 colony.Nest.Y - colony.ExpansionLevel * Colony.BroodChamberDepth >= 0 && world.IsCanonical(colony.BroodChamber), "Andares da colônia inválidos.");
-            Require(colony.Id > 0 && state.Species.ContainsKey(colony.Species) && colony.Generation >= 0 && world.IsCanonical(colony.Nest) && world.CanWalk(colony.Nest), "Colônia inválida.");
+            Require(colony.Id > 0 && state.Species.ContainsKey(colony.Species) && colony.Generation >= 0 && world.IsCanonical(colony.Nest) && world.IsOpen(colony.Nest), "Colônia inválida.");
             Require(Range(colony.Food, 0, 1e12) && double.IsFinite(colony.QueenHealth) && colony.ReproductionProgress >= 0 && colony.Births >= 0 && colony.Deaths >= 0, "Fisiologia da rainha inválida.");
             Require(state.Pheromones.TryGetValue(colony.Id, out var trail) && trail.Length == world.Terrain.Length && trail.LastUpdateTick>=0 && trail.LastUpdateTick<=state.Tick && Enumerable.Range(0,4).All(t=>trail.Entries((PheromoneType)t).All(p=>p.Key>=0&&p.Key<world.CellCount&&Range(p.Value,.001,15))), "Feromônios inválidos.");
         }
@@ -46,6 +48,7 @@ public static class SnapshotValidator
         foreach (var ant in state.Ants)
         {
             ant.Genes.Validate();
+            Require(Enum.IsDefined(ant.Support),"Contato físico inválido.");
             Require(Enum.IsDefined(ant.WorkerRole) && (ant.WorkerRole == WorkerRole.None || ant.Caste == AntCaste.Worker && ant.Stage == LifeStage.Adult), "Função de operária inválida.");
             Require(state.Species.ContainsKey(ant.SpeciesId) && Enum.IsDefined(ant.Caste)&&Enum.IsDefined(ant.Stage)&&Enum.IsDefined(ant.Movement)&&Enum.IsDefined(ant.CurrentTask),"Estado biológico inválido.");
             Require(ant.SpeciesId==state.Colonies.First(c=>c.Id==ant.ColonyId).Species && ant.LineageId>0 && (ant.MotherId is null or >0) && (ant.FatherId is null or >0),"Identidade familiar inválida.");
@@ -56,7 +59,7 @@ public static class SnapshotValidator
             if(ant.CarrierId is {} carrierId) Require(antsById.TryGetValue(carrierId,out var carrier)&&carrier.CarriedAntId==ant.Id&&carrier.Position==ant.Position,"Transportador inconsistente.");
             world.ResourceCatalog.Get(ant.CargoResourceId);
             foreach(var skill in ant.Skills) { var copy=skill; copy.Restore(skill.Level,skill.Experience); }
-            Require(ant.Id > 0 && colonyIds.Contains(ant.ColonyId) && world.IsCanonical(ant.Position) && world.CanWalk(ant.Position) && world.IsCanonical(ant.PreviousPosition), "Formiga inválida.");
+            Require(ant.Id > 0 && colonyIds.Contains(ant.ColonyId) && world.IsCanonical(ant.Position) && world.IsOpen(ant.Position) && world.IsCanonical(ant.PreviousPosition), "Formiga inválida.");
             Require(Range(ant.Energy, 0, 100) && Range(ant.Health, 0, ant.MaxHealth) && Range(ant.Carrying, 0, 100000) && ant.Age >= 0, "Fisiologia da formiga inválida.");
         }
     }

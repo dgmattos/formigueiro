@@ -34,7 +34,7 @@ public sealed class SimulationEngine
         var count=State.Ants.Count;
         for(var i=0;i<count;i++)
         {
-            var ant=State.Ants[i]; biology.Step(State,ant);
+            var ant=State.Ants[i]; SurfaceAttachmentSystem.Step(State.World, ant); biology.Step(State,ant);
             ant.MovementCredit=Math.Min(2,ant.MovementCredit+movement.EffectiveSpeed(State,ant)*SimulationState.TickSeconds);
         }
         spatial.Rebuild(State);

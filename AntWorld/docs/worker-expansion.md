@@ -21,7 +21,7 @@ A expansão respeita o fundo do mundo e continua utilizando chunks, colisões e 
 
 A remoção completa de cada bloco tem chance de **5%** de produzir uma unidade abstrata de entulho; o sorteio não se repete a cada golpe parcial. Nos outros 95%, o material removido desaparece, conforme a regra solicitada. A operária só inicia escavação com carga livre e capacidade para essa unidade.
 
-O entulho ocupa a carga existente e reduz a velocidade por peso. A operária interrompe a escavação, percorre os túneis até a entrada original na superfície e deposita o material em um recurso esparso. Não é alimento e não cria trilhas de alimento. Pilhas na superfície não são recolhidas repetidamente. Se a transportadora morre, o material fica no local e outra cavadora próxima pode recuperá-lo. Não há transferência automática de minerais existentes: seus depósitos finitos permanecem nas células.
+O entulho ocupa a carga existente e reduz a velocidade por peso. A operária interrompe a escavação, percorre os túneis até um ponto apoiado junto à entrada original na superfície e deposita o material em um recurso esparso. Não é alimento e não cria trilhas de alimento. Pilhas na superfície não são recolhidas repetidamente. Se a transportadora morre, o material fica no local e outra cavadora próxima pode recuperá-lo. Não há transferência automática de minerais existentes: seus depósitos finitos permanecem nas células.
 
 O catálogo registra o tipo extensível `excavation_spoil` com um ID livre, evitando conflito com recursos customizados de saves existentes. A carga e as pilhas são exibidas em cinza/marrom; pilhas são decorativas e não fecham a entrada do ninho.
 
@@ -59,3 +59,7 @@ O CLI informa coletores, cavadores, nível de expansão, profundidades e entulho
 - Infrastructure: codecs de agentes/snapshot, validador e amostras de diagnóstico.
 - Game: `EntityView` distingue visualmente entulho de alimento; CLI expõe contagens e profundidades.
 - Testes novos: `WorkerExpansionTests`, `WorkerExpansionPersistenceTests` e fixture real `format7-tick20.antworld`. Testes existentes de coleta/histerese agora indicam explicitamente a função coletora.
+
+Atualização posterior: o formato atual é v9 e o eixo do poço fica separado da âncora da câmara. A caminhada agora exige apoio ortogonal e coletoras compartilham conhecimento dos caminhos. [Detalhes](foraging-and-surface-navigation.md). As medições acima descrevem a versão v8.
+
+A escavação recebeu posteriormente redução global de 60% na frequência de trabalho, preservando os coeficientes relativos entre espécies/materiais e o custo por ação. Intervalo atual: 25 ticks.

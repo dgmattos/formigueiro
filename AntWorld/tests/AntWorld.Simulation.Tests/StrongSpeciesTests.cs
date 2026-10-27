@@ -32,14 +32,31 @@ public sealed class StrongSpeciesTests
             Assert.Equal(0, state.World.GetCell(target, false).SolidFill);
         }
     }
+    [Fact] public void AllSpeciesExcavateAtFortyPercentOfThePreviousActionRate()
+    {
+        Assert.Equal(.4,ExcavationRules.GlobalSpeedMultiplier);
+        foreach(var species in new[]{0,1,2,3})
+        {
+            var state=SimulationFactory.Create(new(42,64,48),[new(species,.25){Workers=1,Soldiers=0,Larvae=0}]);
+            var worker=state.Ants.First(a=>a.Caste==AntCaste.Worker);worker.CurrentTask=AntTask.Dig;
+            var target=new CellPosition(worker.Position.X+1,worker.Position.Y);worker.Destination=target;
+            var behavior=new AntBehaviorSystem(new());var context=Context(state,worker);var completed=0;
+            for(var tick=1;tick<=1000;tick++)
+            {
+                state.Tick=tick;worker.Energy=100;state.World.SetTerrain(target,TerrainKind.Rock);
+                if(behavior.Step(context))completed++;
+            }
+            Assert.Equal(40,completed); // Previously 100 work actions in the same simulated interval.
+        }
+    }
     [Fact] public void NestDepthUsesFiveBlocksForNormalAndSeventyFivePercentForStrong()
     {
         var state = SimulationFactory.Create(new(42, 96, 96), [new(0, .25), new(2, .75)]);
         var normal = state.Colonies[0]; var strong = state.Colonies[1];
-        Assert.Equal(state.World.Surface[normal.Nest.X] + 5, normal.Nest.Y);
-        Assert.Equal(state.World.Surface[strong.Nest.X] + (int)Math.Round((state.World.Height - 1 - state.World.Surface[strong.Nest.X]) * .75), strong.Nest.Y);
+        Assert.Equal(state.World.Surface[normal.ShaftX] + 5, normal.Nest.Y);
+        Assert.Equal(state.World.Surface[strong.ShaftX] + (int)Math.Round((state.World.Height - 1 - state.World.Surface[strong.ShaftX]) * .75), strong.Nest.Y);
         Assert.True(state.World.CanWalk(strong.BroodChamber)); Assert.True(strong.BroodChamber.Y < state.World.Height - 1);
-        for (var y = state.World.Surface[strong.Nest.X] - 1; y <= strong.BroodChamber.Y; y++) Assert.True(state.World.CanWalk(new(strong.Nest.X, y)));
+        Assert.True(new NestNavigation().Distances(state.World,strong).ContainsKey(state.World.Index(ExcavationSpoil.Exit(state.World,strong))));
         Assert.All(state.Ants.Where(a => a.ColonyId == strong.Id), a => Assert.Equal(2, a.SpeciesId));
     }
 }

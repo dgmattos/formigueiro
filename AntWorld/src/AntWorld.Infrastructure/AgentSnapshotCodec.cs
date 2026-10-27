@@ -12,7 +12,7 @@ internal static class AgentSnapshotCodec
         w.Write(a.LastDecisionTick); w.Write(a.LastAttackTick); w.Write(a.LastEggTick); w.Write(a.StoredSperm); w.Write(a.CurrentUtility);
         w.Write(a.CargoResourceId); w.Write(a.CarriedAntId??0); w.Write(a.CarrierId??0);
         foreach(var progress in a.Skills) { w.Write(progress.Level); w.Write(progress.Experience); }
-        w.Write((byte)a.WorkerRole);
+        w.Write((byte)a.WorkerRole); w.Write((byte)a.Support);
     }
     public static void Read(BinaryReader r,Ant a,double health,int version)
     {
@@ -27,6 +27,7 @@ internal static class AgentSnapshotCodec
         a.WorkerRole = version >= 8 ? (WorkerRole)r.ReadByte() :
             a.Caste == AntCaste.Worker && a.Stage == LifeStage.Adult ?
                 (unchecked((uint)a.Id * 2654435761u) >> 31) == 0 ? WorkerRole.Collector : WorkerRole.Digger : WorkerRole.None;
+        if (version >= 9) a.Support = (SupportSide)r.ReadByte();
     }
     private static double Unit(BinaryReader r) { var v=r.ReadDouble(); if(!double.IsFinite(v)||v<0||v>1) throw new InvalidDataException("Necessidade inválida."); return v; }
     private static int? Id(BinaryReader r) { var v=r.ReadInt32(); if(v<0) throw new InvalidDataException("Identidade inválida."); return v==0?null:v; }
@@ -34,12 +35,22 @@ internal static class AgentSnapshotCodec
     {
         w.Write(c.QueenId); w.Write(c.Signature.PatternA); w.Write(c.Signature.PatternB);
         w.Write(c.Priorities.FoodCollection); w.Write(c.Priorities.Defense); w.Write(c.Priorities.Excavation); w.Write(c.Priorities.BroodCare); w.Write(c.Priorities.Exploration);
-        w.Write(c.ExpansionLevel);
+        w.Write(c.ExpansionLevel); w.Write(c.ShaftX);
+        w.Write(c.Foraging.Visits.Count);
+        foreach (var (index,tick) in c.Foraging.Visits.OrderBy(p=>p.Key))
+        { w.Write(index); w.Write(tick); w.Write(c.Foraging.Food.Contains(index)); }
     }
     public static void ReadColony(BinaryReader r,Colony c,int version)
     {
         c.QueenId=r.ReadInt32(); c.Signature=new(r.ReadUInt64(),r.ReadUInt64());
         c.Priorities=new(Unit(r),Unit(r),Unit(r),Unit(r),Unit(r));
         if (version >= 8) c.RestoreExpansionLevel(r.ReadInt32());
+        if (version >= 9)
+        {
+            c.ShaftX=r.ReadInt32();
+            var count=r.ReadInt32();
+            if (count<0 || count>ForagingMemory.MaximumCells) throw new InvalidDataException("Memória de exploração excede limite.");
+            for (var i=0;i<count;i++) c.Foraging.Restore(r.ReadInt32(),r.ReadInt64(),r.ReadBoolean());
+        }
     }
 }

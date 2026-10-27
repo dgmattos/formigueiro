@@ -54,6 +54,7 @@ public sealed class Ant(int id, int colonyId, CellPosition position, Genome gene
     public double DevelopmentTicks { get; set; }
     public double MovementCredit { get; set; }
     public MovementState Movement { get; set; }
+    public SupportSide Support { get; set; } = SupportSide.Down;
     public AntTask CurrentTask { get; set; } = AntTask.Explore;
     public int? TargetId { get; set; }
     public long LastDecisionTick { get; set; } = -1;

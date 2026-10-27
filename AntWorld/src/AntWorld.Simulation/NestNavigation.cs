@@ -3,6 +3,9 @@ namespace AntWorld.Simulation;
 public sealed class NestNavigation
 {
     private readonly Dictionary<int,Dictionary<int,int>> distances=[];
+    private readonly Queue<int> insertionOrder = new();
+    private const int MaximumCachedCells = 131072;
+    private int cachedCells;
     private WorldMap? cachedWorld;
     private int revision=-1;
     private int vegetationRevision=-1;
@@ -12,13 +15,11 @@ public sealed class NestNavigation
     {
         var objects = world.Configuration.Vegetation.WoodBlocksMovement ? world.Vegetation.Revision : 0;
         if(cachedWorld!=world || revision!=world.NavigationRevision || vegetationRevision!=objects)
-        { distances.Clear(); revision=world.NavigationRevision; vegetationRevision=objects; cachedWorld=world; }
+        { distances.Clear(); insertionOrder.Clear(); cachedCells=0; revision=world.NavigationRevision; vegetationRevision=objects; cachedWorld=world; }
         var key=world.Index(destination);
         if(distances.TryGetValue(key,out var existing)) return existing;
-        if (distances.Count >= 32) distances.Clear();
         var result=new Dictionary<int,int>(); var queue=new Queue<CellPosition>();
-        distances[key]=result;
-        if(!world.CanWalk(destination)) return result;
+        if(!world.CanWalk(destination)) return Remember(key,result);
         result[world.Index(destination)]=0; queue.Enqueue(destination);
         Span<CellPosition> neighbors=stackalloc CellPosition[8];
         while(queue.TryDequeue(out var current) && result.Count<32768)
@@ -30,6 +31,15 @@ public sealed class NestNavigation
                 if(result.TryAdd(index,result[world.Index(current)]+1)) queue.Enqueue(next);
             }
         }
+        return Remember(key,result);
+    }
+    private IReadOnlyDictionary<int,int> Remember(int key,Dictionary<int,int> result)
+    {
+        while (insertionOrder.Count > 0 && (distances.Count >= 128 || cachedCells+result.Count > MaximumCachedCells))
+        {
+            var old = insertionOrder.Dequeue(); cachedCells -= distances[old].Count; distances.Remove(old);
+        }
+        distances[key]=result; insertionOrder.Enqueue(key); cachedCells+=result.Count;
         return result;
     }
 }

@@ -5,6 +5,9 @@ public sealed class Colony(int id, int species, CellPosition nest, Genome queenG
     public int Id { get; } = id;
     public int Species { get; } = species;
     public CellPosition Nest { get; private set; } = nest;
+    public int ShaftX { get; set; } = nest.X;
+    public ForagingMemory Foraging { get; } = new();
+    public void RelocateChamber(CellPosition position) => Nest = position;
     public int ExpansionLevel { get; private set; }
     public void AdvanceFloor()
     {

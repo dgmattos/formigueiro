@@ -38,11 +38,11 @@ public partial class EntityView : Node2D
         {
             var offset = new Vector2(copy * world.Width * Cell, 0);
             DrawSetTransform(offset);
-            DrawWorldCopy(new(bounds.Position - offset, bounds.Size));
+            DrawWorldCopy(new(bounds.Position - offset, bounds.Size), offset);
         }
         DrawSetTransform(Vector2.Zero);
     }
-    private void DrawWorldCopy(Rect2 bounds)
+    private void DrawWorldCopy(Rect2 bounds, Vector2 copyOffset)
     {
         var world = State.World;
         if (ShowPheromones)
@@ -73,13 +73,23 @@ public partial class EntityView : Node2D
             var frame=ant.Movement is MovementState.Idle ? 0 : (int)(State.Tick/4%AntSpriteAtlas.FrameCount);
             var size=row==0?new Vector2(20,12):row==1?new(16,10):new Vector2(12,7);
             size *= Cell / 10f;
-            var rect=new Rect2((position-size/2).Round(),size.Round());
-            if (!rect.Intersects(bounds)) continue;
+            if (!new Rect2(position-size, size*2).Intersects(bounds)) continue;
             RenderedCount++;
-            if(world.HorizontalDelta(ant.PreviousPosition.X,ant.Position.X)<0) { rect.Position+=new Vector2(size.X,0); rect.Size=new(-size.X,size.Y); }
+            var support = world.ContactSide(ant.Position,ant.Support);
+            var angle = (float)SurfaceOrientation.Angle(support);
+            var contact = SurfaceOrientation.Offset(support);
+            var pivot = new Vector2((ant.Position.X+.5f)*Cell,(ant.Position.Y+.5f)*Cell);
+            if (support != SupportSide.None) pivot += new Vector2(contact.X,contact.Y)*Cell*.5f;
+            var rect = new Rect2(new(-size.X/2,support == SupportSide.None ? -size.Y/2 : -size.Y),size);
+            var dx = world.HorizontalDelta(ant.PreviousPosition.X,ant.Position.X);
+            var dy = ant.Position.Y-ant.PreviousPosition.Y;
+            var tangentMotion = dx*Math.Cos(angle)+dy*Math.Sin(angle);
+            if(tangentMotion<0) { rect.Position+=new Vector2(size.X,0); rect.Size=new(-size.X,size.Y); }
             var atlas = ant.SpeciesId switch { 3 => surfaceAtlas, 2 => strongAtlas, _ => antAtlas };
+            DrawSetTransform((copyOffset+pivot).Round(),angle);
             DrawTextureRectRegion(atlas,rect,AntSpriteAtlas.FrameRegion(row,frame,ant.SpeciesId));
-            if(ant.Carrying>.1) DrawRect(new(position.X,position.Y-5,2,2),new(ExcavationSpoil.Is(world,ant.CargoResourceId) ? "9b8c7b" : "f3d988"));
+            if(ant.Carrying>.1) DrawRect(new(0,-size.Y-2,2,2),new(ExcavationSpoil.Is(world,ant.CargoResourceId) ? "9b8c7b" : "f3d988"));
+            DrawSetTransform(copyOffset);
         }
         if (State.RainIntensity <= 0) return;
         for (var i = 0; i < 90; i++)

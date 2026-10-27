@@ -58,7 +58,7 @@ public sealed class ColonyExpansionSystem
         if (count > 0 || !HasLowerFloor(world, colony)) return count;
         for (var y = colony.BroodChamber.Y + 1; y <= colony.BroodChamber.Y + Colony.BroodChamberDepth; y++)
         {
-            var p = new CellPosition(colony.Nest.X, y);
+            var p = new CellPosition(colony.ShaftX, y);
             if (world.GetCell(p, false).SolidFill == 0) continue;
             targets[0] = p;
             return 1;

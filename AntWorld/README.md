@@ -11,7 +11,7 @@ A espécie **Superfície** usa o terceiro sprite, ninho raso, soldados reforçad
 Veja [agentes e IA](docs/agents-ai.md), [controles e configuração](docs/time-controls.md) e [resultados da validação](docs/validation-agents.md). A janela gráfica não pôde ser validada neste sandbox; o teste de cena usa Godot headless.
 ## Atualização de blocos e chunks
 
-O mundo usa células físicas compactas de 16 bytes, materiais e água separados, recursos esparsos, depósitos conectados, streaming lógico com cache limitado e vizinhos circulares. O snapshot atual v8 (com leitura de v5/v6/v7) salva seed + alterações e estado biológico/social; rejeita explicitamente v1–v4. Primavera, verão, outono e inverno têm atlas próprios. Veja [modelo, algoritmos e limitações](docs/world-blocks.md) e a [lista de arquivos de blocos](docs/blocks-files.md).
+O mundo usa células físicas compactas de 16 bytes, materiais e água separados, recursos esparsos, depósitos conectados, streaming lógico com cache limitado e vizinhos circulares. O snapshot atual v9 (com leitura de v5/v6/v7/v8) salva seed + alterações e estado biológico/social; rejeita explicitamente v1–v4. Primavera, verão, outono e inverno têm atlas próprios. Veja [modelo, algoritmos e limitações](docs/world-blocks.md) e a [lista de arquivos de blocos](docs/blocks-files.md).
 
 Benchmarks: `sh scripts/benchmark-world.sh`. Testes completos: `sh scripts/verify-full.sh`.
 
@@ -107,3 +107,5 @@ Para direcionar o SQLite a outra pasta, defina `ANTWORLD_DATA_DIR`. O padrão co
 - [Validação executada e limitações](docs/validation.md)
 
 Operárias têm funções aleatórias de coleta ou escavação, expandem câmaras para baixo/lados e transportam ovos e entulho. Veja [regras, persistência e validação](docs/worker-expansion.md).
+
+Coletoras agora compartilham memória dos caminhos e procuram alimento além da vizinhança imediata. A caminhada exige apoio no chão, parede ou teto e os sprites acompanham esse contato. [Exploração e navegação com apoio](docs/foraging-and-surface-navigation.md).
