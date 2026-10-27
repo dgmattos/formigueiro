@@ -9,7 +9,7 @@ public sealed class SimulationState(WorldMap world, DeterministicRandom random)
     public Dictionary<int, PheromoneField> Pheromones { get; } = [];
     public ColonyRelations Relations { get; } = new();
     public PerformanceProfile Performance { get; set; } = new();
-    public Dictionary<int, SpeciesDefinition> Species { get; } = new() { [0] = new(), [1] = new(), [2] = SpeciesDefinition.Strong };
+    public Dictionary<int, SpeciesDefinition> Species { get; } = new() { [0] = new(), [1] = new(), [2] = SpeciesDefinition.Strong, [3] = SpeciesDefinition.Surface };
     public int SchedulerCursor { get; set; }
     public const int TicksPerSecond = 20;
     public const double TickSeconds = 1.0 / TicksPerSecond;

@@ -7,8 +7,8 @@ public sealed record ColonySpawnSettings(int SpeciesId, double NestPositionRatio
 
     public void Validate()
     {
-        if (SpeciesId is not (0 or 1 or 2))
-            throw new ArgumentException("colony.speciesId deve ser 0 (Normal/Brasa), 1 (Musgo) ou 2 (Forte).");
+        if (SpeciesId is not (0 or 1 or 2 or 3))
+            throw new ArgumentException("colony.speciesId deve ser 0 (Normal/Brasa), 1 (Musgo), 2 (Forte) ou 3 (Superfície).");
         if (!double.IsFinite(NestPositionRatio) || NestPositionRatio is < 0 or >= 1)
             throw new ArgumentException("colony.nestPositionRatio deve estar entre 0 (inclusive) e 1 (exclusive).");
         if (Queens != 1)

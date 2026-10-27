@@ -46,7 +46,7 @@ public sealed class SimulationPresetTests
     [InlineData("{\"colonies\":[]}")]
     [InlineData("{\"colonies\":null}")]
     [InlineData("{\"colonies\":[null]}")]
-    [InlineData("{\"colonies\":[{\"speciesId\":3,\"nestPositionRatio\":0.25}]}")]
+    [InlineData("{\"colonies\":[{\"speciesId\":4,\"nestPositionRatio\":0.25}]}")]
     [InlineData("{\"colonies\":[{\"speciesId\":0,\"nestPositionRatio\":1}]}")]
     [InlineData("{\"colonies\":[{\"speciesId\":0,\"nestPositionRatio\":0.25,\"workers\":-1}]}")]
     [InlineData("{\"colonies\":[{\"speciesId\":0,\"nestPositionRatio\":0.25,\"queens\":2}]}")]

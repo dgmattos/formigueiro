@@ -11,7 +11,7 @@ O jogo lê o preset de `src/AntWorld.Game/settings.json` ao iniciar, junto com j
 | `world.chunkSize` | Lado de cada chunk em blocos | 32 |
 | `world.maximumLoadedChunks` | Limite do cache de chunks | 64 |
 | `colonies` | Lista de colônias a criar; adicionar/remover itens muda a quantidade | 2 colônias |
-| `speciesId` | 0 = Normal/Brasa, 1 = Musgo, 2 = Forte; espécies podem se repetir em colônias diferentes | Normal e Forte |
+| `speciesId` | 0 = Normal/Brasa, 1 = Musgo, 2 = Forte, 3 = Superfície; espécies podem se repetir em colônias diferentes | Normal, Forte e Superfície |
 | `nestPositionRatio` | Posição horizontal proporcional à largura, entre 0 e 1 (exclusive) | 0,25 e 0,75 |
 | `queens` | Rainhas iniciais; o modelo atual exige exatamente uma por colônia | 1 |
 | `workers`, `soldiers`, `larvae` | População inicial de cada colônia | 21, 3 e 2 |
@@ -72,3 +72,5 @@ Assets originais preservados em `src/sprites/player-time-controle.png` e `001-fo
 ## Terreno e ninhos
 
 `rendering.tileSize` define o tamanho visual de uma célula (padrão 16 pixels; múltiplos de 16 até 64). Com `world.chunkSize: 32`, cada chunk ocupa 512 × 512 pixels. `world.vegetation` contém densidades por bioma, distância entre árvores, limites ambientais e colisão opcional da madeira. `world.nests.normalBaseDepth: 4` e `normalDepthMultiplier: 1.25` resultam em cinco blocos abaixo da superfície. `strongUndergroundRatio: 0.75` posiciona o ninho Forte a 75% do subterrâneo disponível, reservando o espaço da câmara de crias. Veja [regras completas](tilesets-vegetation-strong-species.md).
+
+`world.nests.surfaceDepth: 2` controla o ninho raso da espécie Superfície (ID 3). O preset atual tem três colônias e 81 indivíduos. Consulte [regras da espécie](surface-species.md).

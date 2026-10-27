@@ -161,6 +161,9 @@ public sealed class WorldMap
         return result;
     }
     public bool IsOpen(CellPosition p) => Contains(p) && GetCell(p, false).IsPassable;
+    // Ants occupy open cells above the ground. Cave floors/ceilings are not surface.
+    public bool IsOnExposedSurface(CellPosition p) => Contains(p) && IsOpen(p) &&
+        p.Y + 1 < Height && TopSolidY(p.X) == p.Y + 1;
     public bool CanDig(CellPosition p) => Contains(p) && GetCell(p, false).SolidFill > 0;
     public bool CanWalk(CellPosition p)
     {

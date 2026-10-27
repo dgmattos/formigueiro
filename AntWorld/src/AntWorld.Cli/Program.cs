@@ -46,7 +46,7 @@ try
         season = new[] { "Primavera", "Verão", "Outono", "Inverno" }[state.Season],
         ants = state.Ants.Count, elapsedMilliseconds = watch.Elapsed.TotalMilliseconds,
         ticksPerSecond = ticks / Math.Max(.000001, watch.Elapsed.TotalSeconds),
-        colonies = state.Colonies.Select(c => new { c.Id, species = c.Species switch { 2 => "Forte", 1 => "Musgo", _ => "Normal/Brasa" }, c.Generation, alive = c.IsAlive, population = state.Ants.Count(a => a.ColonyId == c.Id), food = Math.Round(c.Food, 2), queenHealth = Math.Round(c.QueenHealth, 2), c.Births, c.Deaths })
+        colonies = state.Colonies.Select(c => new { c.Id, species = c.Species switch { 3 => "Superfície", 2 => "Forte", 1 => "Musgo", _ => "Normal/Brasa" }, c.Generation, alive = c.IsAlive, population = state.Ants.Count(a => a.ColonyId == c.Id), food = Math.Round(c.Food, 2), queenHealth = Math.Round(c.QueenHealth, 2), c.Births, c.Deaths })
     }, new JsonSerializerOptions { WriteIndented = true }));
     return 0;
 }

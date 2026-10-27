@@ -6,4 +6,4 @@
 <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" PrivateAssets="all"/>
 <Compile Include="../Shared/Check.cs" Link="Check.cs"/>
 <Compile Include="../Shared/PersistenceScenarios.cs" Link="PersistenceScenarios.cs"/>
-<ProjectReference Include="../../src/AntWorld.Simulation/AntWorld.Simulation.csproj"/><Compile Include="../Shared/SnapshotScenarios.cs" Link="SnapshotScenarios.cs"/><Compile Include="../Shared/BlockPersistenceScenarios.cs" Link="BlockPersistenceScenarios.cs"/></ItemGroup></Project>
+<ProjectReference Include="../../src/AntWorld.Simulation/AntWorld.Simulation.csproj"/><Compile Include="../Shared/SnapshotScenarios.cs" Link="SnapshotScenarios.cs"/><Compile Include="../Shared/BlockPersistenceScenarios.cs" Link="BlockPersistenceScenarios.cs"/></ItemGroup><ItemGroup><None Update="Fixtures/*.antworld" CopyToOutputDirectory="PreserveNewest" /></ItemGroup></Project>

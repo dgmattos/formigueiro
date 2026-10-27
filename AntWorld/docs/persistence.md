@@ -4,7 +4,7 @@
 
 `BinarySnapshotCodec` usa `BinaryWriter/BinaryReader`, com ordem de campos explícita, tipos primitivos e tamanho limitado. É a alternativa binária ao MessagePack: evita depender de pacotes não disponíveis e permite controlar versionamento/validação. Não usa JSON como snapshot nem `BinaryFormatter`.
 
-Cabeçalho: ASCII `ANTWORLD` (8 bytes), versão Int32 (5), tamanho do payload Int32 e SHA-256 (32 bytes). Inteiros e doubles seguem a representação little-endian do BinaryWriter. O payload contém versão do gerador, seed/configuração, extensões do catálogo e alterações de células/recursos/clima, além de PRNG, relógio, IDs, colônias, genes e agentes. Feromônios são serializados esparsamente. Terreno e depósitos base são reconstruídos; a estratégia de blocos continua descrita em [world-blocks.md](world-blocks.md#persistência). Saves v1/v2/v3/v4 são rejeitados explicitamente, sem alterar o arquivo.
+Cabeçalho: ASCII `ANTWORLD` (8 bytes), versão Int32 (6), tamanho do payload Int32 e SHA-256 (32 bytes). Inteiros e doubles seguem a representação little-endian do BinaryWriter. O payload contém versão do gerador, seed/configuração, extensões do catálogo e alterações de células/recursos/clima, além de PRNG, relógio, IDs, colônias, genes e agentes. Feromônios são serializados esparsamente. Terreno e depósitos base são reconstruídos; a estratégia de blocos continua descrita em [world-blocks.md](world-blocks.md#persistência). Saves v1/v2/v3/v4 são rejeitados explicitamente, sem alterar o arquivo.
 
 A leitura exige integridade, versão conhecida, tamanho consistente, ausência de bytes extras e invariantes válidas de mundo/agentes. O limite é 64 MiB de payload. Contagens e dimensões são verificadas antes das principais alocações. SHA-256 detecta corrupção acidental; não autentica arquivos de terceiros.
 
@@ -36,4 +36,8 @@ O formato 5 preserva `MushroomSettings` e exige gerador 3: o calendário agora u
 
 Persiste `VegetationSettings`, `NestSettings`, os quatro coeficientes de escavação por espécie e alterações esparsas de vegetação (identidade, tipo, saúde, idade e remoção). O plano vegetal é reconstruído pela seed; não é repetido integralmente em cada snapshot. IDs e posições são validados contra esse plano. Caches visuais e de navegação são reconstruídos. Mudanças de estação não alteram a identidade vegetal.
 
-O gerador físico permanece na versão 3; o novo formato binário é incompatível com v4 e rejeita versões anteriores com mensagem explícita. Não há migração automática. Veja [tilesets, vegetação e Forte](tilesets-vegetation-strong-species.md).
+O gerador físico permanece na versão 3. Formatos v1–v4 são rejeitados; a evolução v5→v6 está descrita abaixo. Veja [tilesets, vegetação e Forte](tilesets-vegetation-strong-species.md).
+
+## Formato atual 6 — Superfície
+
+Novas gravações usam v6; o leitor mantém suporte explícito a v5. Acrescenta profundidade do ninho Superfície e multiplicador de movimento superficial por espécie. Na leitura de v5, os multiplicadores são 1,0 e a profundidade superficial é 2; os indivíduos, espécies e colônias do arquivo são preservados. A continuação foi validada contra fixtures produzidos pelo executável v5. As referências a v5 acima descrevem a introdução desses campos anteriores; [detalhes da evolução para v6](surface-species.md).

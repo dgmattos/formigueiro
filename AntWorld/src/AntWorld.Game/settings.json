@@ -102,7 +102,8 @@
     "nests": {
       "normalBaseDepth": 4,
       "normalDepthMultiplier": 1.25,
-      "strongUndergroundRatio": 0.75
+      "strongUndergroundRatio": 0.75,
+      "surfaceDepth": 2
     }
   },
   "colonies": [
@@ -118,6 +119,15 @@
     {
       "speciesId": 2,
       "nestPositionRatio": 0.75,
+      "queens": 1,
+      "workers": 21,
+      "soldiers": 3,
+      "larvae": 2,
+      "initialFood": 150
+    },
+    {
+      "speciesId": 3,
+      "nestPositionRatio": 0.5,
       "queens": 1,
       "workers": 21,
       "soldiers": 3,

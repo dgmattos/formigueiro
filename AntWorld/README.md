@@ -2,16 +2,18 @@
 
 Simulador 2D de ecossistemas de formigas em C#/.NET, com mundo procedural lateral e observação de colônias. Nenhuma regra escolhe uma espécie vencedora.
 
+A espécie **Superfície** usa o terceiro sprite, ninho raso, soldados reforçados e bônus de 20% de movimento ao caminhar sobre terreno exposto. Veja [regras, configuração e compatibilidade dos saves](docs/surface-species.md).
+
 **Atualização atual:** terreno em TileMapLayer com atlas normalizados, grama por exposição e vegetação determinística nas quatro estações. A espécie Forte usa o novo sprite e ninho profundo; todas as espécies podem escavar rocha, com custos e velocidades próprios. Veja [diagnóstico, arquivos, regras e validação](docs/tilesets-vegetation-strong-species.md). Cogumelos, transporte de ovos, calendário, câmera e controles de tempo foram preservados. Edite [`src/AntWorld.Game/settings.json`](src/AntWorld.Game/settings.json) e reinicie para aplicar.
 
 Veja [agentes e IA](docs/agents-ai.md), [controles e configuração](docs/time-controls.md) e [resultados da validação](docs/validation-agents.md). A janela gráfica não pôde ser validada neste sandbox; o teste de cena usa Godot headless.
 ## Atualização de blocos e chunks
 
-O mundo usa células físicas compactas de 16 bytes, materiais e água separados, recursos esparsos, depósitos conectados, streaming lógico com cache limitado e vizinhos circulares. O snapshot atual v5 salva seed + alterações e estado biológico/social; rejeita explicitamente formatos anteriores. Primavera, verão, outono e inverno têm atlas próprios. Veja [modelo, algoritmos e limitações](docs/world-blocks.md) e a [lista de arquivos de blocos](docs/blocks-files.md).
+O mundo usa células físicas compactas de 16 bytes, materiais e água separados, recursos esparsos, depósitos conectados, streaming lógico com cache limitado e vizinhos circulares. O snapshot atual v6 (com leitura de v5) salva seed + alterações e estado biológico/social; rejeita explicitamente v1–v4. Primavera, verão, outono e inverno têm atlas próprios. Veja [modelo, algoritmos e limitações](docs/world-blocks.md) e a [lista de arquivos de blocos](docs/blocks-files.md).
 
 Benchmarks: `sh scripts/benchmark-world.sh`. Testes completos: `sh scripts/verify-full.sh`.
 
-O preset inicial também está em [`src/AntWorld.Game/settings.json`](src/AntWorld.Game/settings.json): `world` define seed, dimensões e chunks; `colonies` define as colônias, espécies, posições dos ninhos, alimento e quantidades iniciais. O preset incluído cria duas colônias (Normal e Forte) e 54 indivíduos, com tiles de 16 pixels e chunks de 32 células. Veja [campos e limites](docs/time-controls.md#mundo-e-população-inicial). Alterações são aplicadas ao reiniciar o jogo.
+O preset inicial também está em [`src/AntWorld.Game/settings.json`](src/AntWorld.Game/settings.json): `world` define seed, dimensões e chunks; `colonies` define as colônias, espécies, posições dos ninhos, alimento e quantidades iniciais. O preset incluído cria três colônias (Normal, Forte e Superfície) e 81 indivíduos, com tiles de 16 pixels e chunks de 32 células. Veja [campos e limites](docs/time-controls.md#mundo-e-população-inicial). Alterações são aplicadas ao reiniciar o jogo.
 
 ## Executar agora, sem dependências externas
 
@@ -68,7 +70,7 @@ O relógio multiplica ações e movimento pelo mesmo fator, com ticks de 0,05 s 
 - Cinco biomas, altitude, camadas de solo/argila/rocha/areia, cavernas, recursos e chunks.
 - Geração determinística com streams aleatórios separados e seed de 32 bits.
 - Dia/noite, estações, chuva, seca, temperatura, umidade e regeneração sazonal.
-- Três definições de espécie (duas colônias no preset), alimentação, custo energético, exploração local, retorno ao ninho, feromônios, escavação, combate e morte.
+- Quatro definições de espécie (três colônias no preset), alimentação, custo energético, exploração local, retorno ao ninho, feromônios, escavação, combate e morte.
 - Rainhas como indivíduos, operárias, soldados, ovos/larvas/pupas, habilidades, genética materna e fundação com transferência de indivíduos existentes.
 - Snapshot binário explícito, versionado, com SHA-256 e restauração do PRNG; armazenamento em arquivo e adaptador SQLite transacional.
 - Cena C# Godot, terreno com invalidação por chunk, câmera e painel de observação. Os atlas fornecidos em `src/sprites` são preservados; um manifesto versionado prepara terreno e objetos separadamente em `Game/Assets/Prepared`.

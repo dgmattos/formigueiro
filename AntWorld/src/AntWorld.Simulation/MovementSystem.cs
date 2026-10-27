@@ -11,7 +11,10 @@ public sealed class MovementSystem
         var capacity=AntCapabilities.Capacity(state,ant);
         var load=capacity>0 ? (ant.Carrying+(ant.CarriedAntId.HasValue?2:0))/capacity : 0;
         var cell=state.World.GetCell(ant.Position,false);
-        return AntCapabilities.Attributes(state,ant).Speed*(.25+.75*ant.Energy/100)*
+        var species = state.Species[ant.SpeciesId];
+        var surfaceBonus = species.SurfaceMovementMultiplier != 1 && state.World.IsOnExposedSurface(ant.Position)
+            ? species.SurfaceMovementMultiplier : 1;
+        return AntCapabilities.Attributes(state,ant).Speed*surfaceBonus*(.25+.75*ant.Energy/100)*
             (.3+.7*ant.Health/ant.MaxHealth)*ant.Efficiency(SkillType.Navigation)/(1+load+cell.WaterAmount/200.0+state.RainIntensity*.1);
     }
     public bool Move(AntContext c,bool explore=false,bool flee=false)

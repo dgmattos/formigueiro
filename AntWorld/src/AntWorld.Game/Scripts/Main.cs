@@ -179,6 +179,7 @@ public partial class Main : Node2D
         if (store is null) throw new InvalidOperationException("SQLite não foi inicializado.");
         AntSpriteAtlas.ValidateImportedTexture(GD.Load<Texture2D>(AntSpriteAtlas.ResourcePath));
         AntSpriteAtlas.ValidateImportedTexture(GD.Load<Texture2D>(AntSpriteAtlas.StrongResourcePath));
+        AntSpriteAtlas.ValidateImportedTexture(GD.Load<Texture2D>(AntSpriteAtlas.SurfaceResourcePath), 3);
         new PreparedSpriteCatalog().Validate();
         var seasonalTilesets = new SeasonTilesets();
         var atlasPaths = new HashSet<string>();
@@ -227,7 +228,7 @@ public partial class Main : Node2D
         TogglePause();
         if(hud.ShowsPlay || clock.Speed!=settings.X3) throw new InvalidOperationException("Play deve retomar a velocidade selecionada e exibir pausa.");
         TogglePause();
-        GD.Print("AntWorld: smoke test PASS — 30 sprites de indivíduos com transparência, quatro atlas sazonais, limites de cogumelos, x1/x2/x3, pausa/play exclusivos, SQLite, restauração e HUD restrito.");
+        GD.Print("AntWorld: smoke test PASS — 90 recortes nos três atlas de indivíduos com transparência, quatro atlas sazonais, limites de cogumelos, x1/x2/x3, pausa/play exclusivos, SQLite, restauração e HUD restrito.");
         _ = ValidateVisualScene();
     }
     private async Task ValidateVisualScene()

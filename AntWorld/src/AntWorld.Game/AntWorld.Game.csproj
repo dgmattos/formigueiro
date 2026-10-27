@@ -5,6 +5,7 @@
     <ProjectReference Include="../AntWorld.Persistence/AntWorld.Persistence.csproj" />
   </ItemGroup>
   <Target Name="SyncAntSpriteAtlas" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../sprites/003-formiga-superficie.png" DestinationFiles="$(MSBuildProjectDirectory)/Assets/ants-surface.png" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)/../sprites/002-formiga-forte.png" DestinationFiles="$(MSBuildProjectDirectory)/Assets/ants-strong.png" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)/../sprites/001-formiga-normal.png"
           DestinationFiles="$(MSBuildProjectDirectory)/Assets/ants.png"

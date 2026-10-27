@@ -5,7 +5,18 @@ public sealed class SpeciesDefinition
     public double MixedDiggingMultiplier { get; init; } = 1;
     public double SolidRockSpeedFactor { get; init; } = .4;
     public double SolidRockEnergyFactor { get; init; } = 1.6;
+    public double SurfaceMovementMultiplier { get; init; } = 1;
     public static SpeciesDefinition Strong => new() { SoilDiggingMultiplier = 1.25, MixedDiggingMultiplier = 1.4, SolidRockSpeedFactor = .8, SolidRockEnergyFactor = 1.2 };
+    public static SpeciesDefinition Surface
+    {
+        get
+        {
+            var species = new SpeciesDefinition { SurfaceMovementMultiplier = 1.2 };
+            var soldier = species.For(AntCaste.Soldier);
+            species.Castes[(int)AntCaste.Soldier] = soldier with { Attack = soldier.Attack * 1.2, Defense = soldier.Defense * 1.2 };
+            return species;
+        }
+    }
     public BehaviorProfile[] Behaviors { get; init; } = [new(0,.8,0,0,0,1),new(1,.4,1,1,1,0),new(0,1,0,0,.6,0),new(0,.1,0,0,0,0)];
     public double EggDays { get; init; } = 2;
     public double LarvaDays { get; init; } = 15;
@@ -23,6 +34,8 @@ public sealed class SpeciesDefinition
     public CasteDefinition For(AntCaste caste) => Castes[(int)caste];
     public void Validate()
     {
+        if (!double.IsFinite(SurfaceMovementMultiplier) || SurfaceMovementMultiplier is <= 0 or > 10)
+            throw new ArgumentException("Multiplicador de movimento na superfície inválido.");
         if (new[] { SoilDiggingMultiplier, MixedDiggingMultiplier, SolidRockSpeedFactor, SolidRockEnergyFactor }.Any(v => !double.IsFinite(v) || v <= 0 || v > 10))
             throw new ArgumentException("Coeficientes de escavação inválidos.");
         if (Castes.Length != 4 || EggIntervalTicks < 1 || EggIntervalTicks > 10000000 ||

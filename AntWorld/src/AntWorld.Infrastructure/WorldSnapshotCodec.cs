@@ -13,7 +13,7 @@ internal static class WorldSnapshotCodec
         w.Write(g.OrganicDepth); w.Write(g.MineralDepth); w.Write(g.DepositSpacing); w.Write(g.VeinSteps); w.Write(g.VeinBudget);
         MushroomSettingsCodec.Write(w, c.Mushrooms);
         VegetationSnapshotCodec.WriteSettings(w, c.Vegetation);
-        w.Write(c.Nests.NormalBaseDepth); w.Write(c.Nests.NormalDepthMultiplier); w.Write(c.Nests.StrongUndergroundRatio);
+        w.Write(c.Nests.NormalBaseDepth); w.Write(c.Nests.NormalDepthMultiplier); w.Write(c.Nests.StrongUndergroundRatio); w.Write(c.Nests.SurfaceDepth);
         var custom = world.ResourceCatalog.Definitions.Where(d => d.Id > ResourceIds.BrownMushroom).ToArray();
         if (custom.Length > 1024) throw new InvalidDataException("Limite de catálogo excedido.");
         w.Write(custom.Length);
@@ -34,14 +34,14 @@ internal static class WorldSnapshotCodec
         }
         VegetationSnapshotCodec.WriteChanges(w, world.Vegetation);
     }
-    public static WorldMap Read(BinaryReader r)
+    public static WorldMap Read(BinaryReader r, int version)
     {
         if (r.ReadInt32() != WorldGenerator.Version) throw new InvalidDataException("Versão do gerador incompatível; não é seguro reconstruir a seed.");
         var c = new WorldConfiguration(r.ReadInt32(), r.ReadInt32(), r.ReadInt32(), r.ReadInt32()) { MaximumLoadedChunks = r.ReadInt32(),
             Geology = new(r.ReadDouble(), r.ReadDouble(), r.ReadDouble(), r.ReadDouble(), r.ReadDouble(), r.ReadDouble(), r.ReadDouble(), r.ReadInt32(), r.ReadInt32(), r.ReadDouble()) };
         c = c with { Mushrooms = MushroomSettingsCodec.Read(r) };
         c = c with { Vegetation = VegetationSnapshotCodec.ReadSettings(r) };
-        c = c with { Nests = new(r.ReadInt32(), r.ReadDouble(), r.ReadDouble()) };
+        c = c with { Nests = new(r.ReadInt32(), r.ReadDouble(), r.ReadDouble(), version >= 6 ? r.ReadInt32() : 2) };
         var world = new WorldGenerator().Generate(c);
         var customCount = Count(r, 1024);
         for (var i = 0; i < customCount; i++)

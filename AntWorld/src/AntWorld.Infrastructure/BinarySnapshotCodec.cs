@@ -6,7 +6,7 @@ namespace AntWorld.Infrastructure;
 public sealed class BinarySnapshotCodec
 {
     private static readonly byte[] Magic = "ANTWORLD"u8.ToArray();
-    public const int Version = 5;
+    public const int Version = 6;
     public const int MaximumBytes = 64 * 1024 * 1024;
 
     public byte[] Encode(SimulationState state)
@@ -28,7 +28,8 @@ public sealed class BinarySnapshotCodec
         using var stream = new MemoryStream(snapshot, false);
         using var reader = new BinaryReader(stream);
         if (!reader.ReadBytes(8).SequenceEqual(Magic)) throw new InvalidDataException("Assinatura de snapshot inválida.");
-        if (reader.ReadInt32() != Version) throw new InvalidDataException("Versão de snapshot incompatível: vegetação persistente exige formato 5. Saves dos formatos 1 a 4 não são migrados automaticamente; preserve o arquivo original.");
+        var version = reader.ReadInt32();
+        if (version is not (5 or Version)) throw new InvalidDataException("Versão de snapshot incompatível: formato 6 com leitura compatível do formato 5. Saves dos formatos 1 a 4 não são migrados automaticamente; preserve o arquivo original.");
         var size = reader.ReadInt32();
         if (size < 0 || size != snapshot.Length - 48) throw new InvalidDataException("Snapshot truncado ou tamanho inválido.");
         var hash = reader.ReadBytes(32);
@@ -38,7 +39,7 @@ public sealed class BinarySnapshotCodec
         {
             using var payload = new MemoryStream(bytes, false);
             using var data = new BinaryReader(payload);
-            var state = ReadState(data);
+            var state = ReadState(data, version);
             if (payload.Position != payload.Length) throw new InvalidDataException("Dados excedentes no snapshot.");
             SnapshotValidator.Validate(state);
             return state;
@@ -76,13 +77,13 @@ public sealed class BinarySnapshotCodec
         }
     }
 
-    private static SimulationState ReadState(BinaryReader r)
+    private static SimulationState ReadState(BinaryReader r, int version)
     {
-        var world = WorldSnapshotCodec.Read(r);
+        var world = WorldSnapshotCodec.Read(r, version);
         var randomState = r.ReadUInt64();
         if (randomState == 0) throw new InvalidDataException("PRNG inválido.");
         var state = new SimulationState(world, new(randomState)) { Tick = r.ReadInt64(), NextAntId = r.ReadInt32(), NextColonyId = r.ReadInt32(), RainIntensity = r.ReadDouble(), DryTicks = r.ReadInt32() };
-        AiConfigurationCodec.Read(r,state);
+        AiConfigurationCodec.Read(r,state,version);
         var colonyCount = ReadCount(r, 12);
         for (var i = 0; i < colonyCount; i++)
         {

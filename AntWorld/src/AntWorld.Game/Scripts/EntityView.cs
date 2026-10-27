@@ -11,6 +11,7 @@ public partial class EntityView : Node2D
     private readonly List<Ant> rendered=[];
     private Texture2D antAtlas=null!;
     private Texture2D strongAtlas=null!;
+    private Texture2D surfaceAtlas=null!;
     public int RenderedCount => rendered.Count;
     private int[] resourceCells = [];
     private int Cell;
@@ -20,10 +21,11 @@ public partial class EntityView : Node2D
         TextureFilter = TextureFilterEnum.Nearest;
         antAtlas=GD.Load<Texture2D>(AntSpriteAtlas.ResourcePath);
         strongAtlas=GD.Load<Texture2D>(AntSpriteAtlas.StrongResourcePath);
+        surfaceAtlas=GD.Load<Texture2D>(AntSpriteAtlas.SurfaceResourcePath);
         resourceCells = state.World.Resources().Where(e => e.ResourceId == ResourceIds.Food).Select(e => state.World.Index(e.Position)).ToArray();
     }
     public override void _Process(double delta) => QueueRedraw();
-    public static Color SpeciesColor(int species) => species switch { 2 => new("bd83ed"), 1 => new("82dbb5"), _ => new("f3997f") };
+    public static Color SpeciesColor(int species) => species switch { 3 => new("b8cf42"), 2 => new("bd83ed"), 1 => new("82dbb5"), _ => new("f3997f") };
     public override void _Draw()
     {
         var world = State.World;
@@ -52,7 +54,8 @@ public partial class EntityView : Node2D
             size *= Cell / 10f;
             var rect=new Rect2((position-size/2).Round(),size.Round());
             if(world.HorizontalDelta(ant.PreviousPosition.X,ant.Position.X)<0) { rect.Position+=new Vector2(size.X,0); rect.Size=new(-size.X,size.Y); }
-            DrawTextureRectRegion(ant.SpeciesId == 2 ? strongAtlas : antAtlas,rect,AntSpriteAtlas.FrameRegion(row,frame));
+            var atlas = ant.SpeciesId switch { 3 => surfaceAtlas, 2 => strongAtlas, _ => antAtlas };
+            DrawTextureRectRegion(atlas,rect,AntSpriteAtlas.FrameRegion(row,frame,ant.SpeciesId));
             if(ant.Carrying>.1) DrawRect(new(position.X,position.Y-5,2,2),new("f3d988"));
         }
         if (State.RainIntensity <= 0) return;

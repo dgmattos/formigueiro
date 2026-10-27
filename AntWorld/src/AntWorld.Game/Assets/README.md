@@ -15,3 +15,5 @@ Os cogumelos indicados na quinta linha, colunas 8 e 9, estão no manifesto como 
 Execute `sh scripts/run-game.sh` na raiz AntWorld para compilar, preparar, importar e abrir. Depois de alterar layouts, revise o manifesto ou os recortes de `AntSpriteAtlas`. Para usar F5 após mudanças nos atlas, prepare/importe primeiro pelo script. O teste `-- --smoke-test` verifica alfa dos dois atlas de formigas, recortes preparados, TileMapLayers e alinhamento; não substitui inspeção de uma janela real.
 
 Diagnóstico, arquivos, decisões e limitações estão em `docs/tilesets-vegetation-strong-species.md`. Preparação não infere automaticamente o significado de novos sprites; artes futuras podem exigir ajuste manual de recorte/fundo/âncora. Os arquivos fonte não informam licença comercial.
+
+`ants-surface.png` sincroniza `003-formiga-superficie.png` (1774 × 887 RGBA). O layout tem recortes próprios por linha em `AntSpriteAtlas`; o ID 3 seleciona esses recortes e a nova textura. Nenhum fundo é removido nem pixel é alterado nesta integração. O smoke test verifica 90 recortes entre os três atlas.
