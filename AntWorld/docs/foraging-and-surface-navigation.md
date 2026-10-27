@@ -55,11 +55,11 @@ As verificações automatizadas do Godot estão em `artifacts/foraging-godot-smo
 
 ## Redução global da escavação
 
-A velocidade de escavação de todas as espécies foi reduzida em **60%**. `ExcavationRules.GlobalSpeedMultiplier = 0.4`: cada ação de trabalho ocorre a cada 25 ticks (1,25 segundo simulado), em vez de 10 ticks (0,5 segundo). O teste mede 40 ações em 1.000 ticks para cada uma das quatro definições de espécie, contra 100 ações no ritmo anterior.
+A velocidade de escavação de todas as espécies recebeu mais **50% de redução sobre a taxa anterior**, após a primeira redução de 60%. `ExcavationRules.GlobalSpeedMultiplier = 0.2`: cada ação de trabalho ocorre a cada 50 ticks (2,5 segundos simulados), em vez dos 25 ticks anteriores. O teste mede 20 ações em 1.000 ticks para cada uma das quatro definições de espécie, contra 40 na versão anterior e 100 originalmente. A redução acumulada é de **80%**.
 
 A redução foi aplicada ao intervalo, mantendo trabalho e custo energético por ação e preservando os coeficientes relativos de solo/rocha das espécies. Isso também evita que o arredondamento para pelo menos uma unidade de material anule a redução em indivíduos fracos. Movimento, calendário e demais ações mantêm suas próprias frequências; pausa e aceleração continuam operando sobre os ticks simulados.
 
-## Resultados finais
+## Resultados anteriores à redução adicional de 50%
 
 - Build da solução: zero avisos/erros. **151 testes xUnit aprovados**, incluindo os quatro tipos de espécie com 40 ações de escavação por 1.000 ticks e escolha de carga útil em vez de sobras próximas.
 - Godot headless: verificações de cena, sprites, UI, SQLite/restauração e streaming circular aprovadas. Permanece o erro de certificados do ambiente descrito acima.
@@ -72,3 +72,7 @@ A redução foi aplicada ao intervalo, mantendo trabalho e custo energético por
 | 1 | 114 | 9538.01 | 0 |
 | 2 | 206 | 4036.27 | 0 |
 | 3 | 136 | 7462.09 | 0 |
+
+## Validação da redução adicional de 50%
+
+Build sem avisos ou erros e 151 testes xUnit aprovados (`artifacts/excavation-half-speed-validation.log`). O teste de frequência confirma 20 ações de escavação em 1.000 ticks em cada espécie. Não foi executada nova simulação de três dias, conforme solicitado.

@@ -32,9 +32,10 @@ public sealed class StrongSpeciesTests
             Assert.Equal(0, state.World.GetCell(target, false).SolidFill);
         }
     }
-    [Fact] public void AllSpeciesExcavateAtFortyPercentOfThePreviousActionRate()
+    [Fact] public void AllSpeciesExcavateAtHalfThePreviousRateAndTwentyPercentOfTheOriginalRate()
     {
-        Assert.Equal(.4,ExcavationRules.GlobalSpeedMultiplier);
+        Assert.Equal(.2,ExcavationRules.GlobalSpeedMultiplier);
+        Assert.Equal(50,ExcavationRules.ActionIntervalTicks);
         foreach(var species in new[]{0,1,2,3})
         {
             var state=SimulationFactory.Create(new(42,64,48),[new(species,.25){Workers=1,Soldiers=0,Larvae=0}]);
@@ -46,7 +47,7 @@ public sealed class StrongSpeciesTests
                 state.Tick=tick;worker.Energy=100;state.World.SetTerrain(target,TerrainKind.Rock);
                 if(behavior.Step(context))completed++;
             }
-            Assert.Equal(40,completed); // Previously 100 work actions in the same simulated interval.
+            Assert.Equal(20,completed); // Half of the previous 40 actions; originally 100 in this interval.
         }
     }
     [Fact] public void NestDepthUsesFiveBlocksForNormalAndSeventyFivePercentForStrong()

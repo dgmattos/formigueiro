@@ -62,4 +62,4 @@ O CLI informa coletores, cavadores, nível de expansão, profundidades e entulho
 
 Atualização posterior: o formato atual é v9 e o eixo do poço fica separado da âncora da câmara. A caminhada agora exige apoio ortogonal e coletoras compartilham conhecimento dos caminhos. [Detalhes](foraging-and-surface-navigation.md). As medições acima descrevem a versão v8.
 
-A escavação recebeu posteriormente redução global de 60% na frequência de trabalho, preservando os coeficientes relativos entre espécies/materiais e o custo por ação. Intervalo atual: 25 ticks.
+A escavação recebeu redução global de 60% e, depois, mais 50% sobre a taxa reduzida, preservando os coeficientes relativos entre espécies/materiais e o custo por ação. Intervalo atual: 50 ticks (2,5 segundos simulados), equivalente a 20% da velocidade original.
