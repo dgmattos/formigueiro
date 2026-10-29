@@ -15,7 +15,8 @@ public sealed class PreparedSpriteCatalog
     private readonly TileSet[] tileSets = new TileSet[4];
     public PreparedSpriteCatalog()
     {
-        var json = System.IO.File.ReadAllText(ProjectSettings.GlobalizePath("res://Assets/Prepared/sprites.generated.json"));
+        using var file = Godot.FileAccess.Open("res://Assets/Prepared/sprites.generated.json", Godot.FileAccess.ModeFlags.Read);
+        var json = file?.GetAsText() ?? throw new InvalidDataException("Asset não encontrado: Assets/Prepared/sprites.generated.json");
         var entries = JsonSerializer.Deserialize<PreparedSprite[]>(json, SpriteManifest.JsonOptions) ?? throw new InvalidDataException("Execute a preparação dos assets.");
         sprites = entries.ToDictionary(s => (s.Season, s.Id));
         terrain = manifest.Sprites.Where(s => s.Terrain.HasValue).GroupBy(s => s.Terrain!.Value).ToDictionary(g => g.Key, g => g.OrderBy(s => s.Variation).ToArray());

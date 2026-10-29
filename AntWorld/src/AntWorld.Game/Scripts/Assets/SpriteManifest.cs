@@ -14,7 +14,8 @@ public sealed record SpriteManifest
     { Converters = { new JsonStringEnumConverter() }, WriteIndented = true, UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow };
     public static SpriteManifest Load()
     {
-        var json = System.IO.File.ReadAllText(ProjectSettings.GlobalizePath("res://Assets/sprites.manifest.json"));
+        using var file = Godot.FileAccess.Open("res://Assets/sprites.manifest.json", Godot.FileAccess.ModeFlags.Read);
+        var json = file?.GetAsText() ?? throw new InvalidDataException("Asset não encontrado: Assets/sprites.manifest.json");
         var manifest = JsonSerializer.Deserialize<SpriteManifest>(json, JsonOptions) ?? throw new InvalidDataException("Manifesto vazio.");
         if (manifest.Version != 1 || manifest.TilePixels != 16 || manifest.Atlases.Count != 4 || manifest.Sprites.Select(s => s.Id).Distinct().Count() != manifest.Sprites.Length)
             throw new InvalidDataException("Manifesto visual incompatível.");

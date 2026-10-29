@@ -1,0 +1,76 @@
+name: Windows executable
+on:
+  pull_request:
+    paths:
+      - 'AntWorld/**'
+      - '.github/workflows/windows-export.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Godot .NET and matching templates
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $ProgressPreference = 'SilentlyContinue'
+          $release = 'https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable'
+          $tools = Join-Path $env:RUNNER_TEMP 'godot-windows'
+          New-Item -ItemType Directory -Force $tools | Out-Null
+          Invoke-WebRequest "$release/Godot_v4.6.3-stable_mono_win64.zip" -OutFile "$tools/editor.zip"
+          Invoke-WebRequest "$release/Godot_v4.6.3-stable_mono_export_templates.tpz" -OutFile "$tools/templates.zip"
+          Expand-Archive "$tools/editor.zip" "$tools/editor"
+          Expand-Archive "$tools/templates.zip" "$tools/templates"
+          $templateDir = Join-Path $env:APPDATA 'Godot/export_templates/4.6.3.stable.mono'
+          New-Item -ItemType Directory -Force $templateDir | Out-Null
+          $releaseTemplate = Get-ChildItem "$tools/templates" -Recurse -Filter windows_release_x86_64.exe | Select-Object -First 1
+          if (!$releaseTemplate) { throw 'Windows .NET export template missing' }
+          Copy-Item "$($releaseTemplate.Directory.FullName)/*" $templateDir -Recurse -Force
+          $editor = Get-ChildItem "$tools/editor" -Recurse -Filter '*mono_win64.exe' | Select-Object -First 1
+          if (!$editor) { throw 'Godot .NET editor missing' }
+          "GODOT4=$($editor.FullName)" >> $env:GITHUB_ENV
+      - name: Build portable executable
+        run: python AntWorld/scripts/export-windows.py
+      - name: Run exported executable on Windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $artifacts = Join-Path $env:GITHUB_WORKSPACE 'AntWorld/artifacts'
+          Expand-Archive "$artifacts/AntWorld-Windows-x64.zip" "$artifacts/windows-validation"
+          $env:ANTWORLD_DATA_DIR = "$artifacts/windows-smoke-data"
+          $exe = "$artifacts/windows-validation/AntWorld-Windows-x64/AntWorld.exe"
+          $log = "$artifacts/windows-runtime.log"
+          $process = Start-Process -FilePath $exe -ArgumentList @('--headless','--log-file', $log, '--quit-after','150','--','--smoke-test') -PassThru -Wait
+          Get-Content $log
+          if ($process.ExitCode -ne 0) { throw "Game exited with $($process.ExitCode)" }
+          $text = Get-Content $log -Raw
+          foreach ($marker in @('smoke test PASS','inspection PASS','TileMapLayer PASS','streaming circular PASS')) {
+            if (!$text.Contains($marker)) { throw "Missing validation: $marker" }
+          }
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: AntWorld-Windows-x64
+          path: AntWorld/artifacts/AntWorld-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-build-logs
+          path: AntWorld/artifacts/*.log
+          if-no-files-found: ignore
+          retention-days: 7
